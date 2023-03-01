@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -68,8 +69,7 @@ namespace Rhinox.XR.Grapple
             }
             //if (_boneConvertorService.GetIsInitialised() && _boneConvertorService.GetAreBonesLoaded())
         }
-
-
+        
         private void GetBonesFromCouplerService(/*bool refreshBoneList = true*/)
         {
             //if (refreshBoneList)
@@ -80,6 +80,19 @@ namespace Rhinox.XR.Grapple
 
             _leftHandBones = _boneConvertorService.GetBones(Hand.Left);
             _rightHandBones = _boneConvertorService.GetBones(Hand.Right);
+        }
+
+        public List<RhinoxBone> GetBonesFromHand(Hand hand)
+        {
+            switch (hand)
+            {
+                case Hand.Left:
+                    return _leftHandBones;
+                case Hand.Right:
+                    return _rightHandBones;
+            }
+
+            return new List<RhinoxBone>();
         }
     }
 
