@@ -65,6 +65,7 @@ namespace Rhinox.XR.Grapple
             else
             {
                 GetBonesFromCouplerService();
+                Debug.Log(_leftHandBones[9].BoneTransform.position);
             }
             //if (_boneConvertorService.GetIsInitialised() && _boneConvertorService.GetAreBonesLoaded())
         }
