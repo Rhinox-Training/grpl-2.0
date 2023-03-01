@@ -55,29 +55,26 @@ namespace Rhinox.XR.Grapple
         void Update()
         {
             if (_boneConvertorService.GetIsInitialised() && !_boneConvertorService.GetAreBonesLoaded())
-                _boneConvertorService.TryLoadSkeletons();
+                _boneConvertorService.TryLoadBones();
             else if (_boneConvertorService.GetIsInitialised() && !IsInitialised)
             {
                 GetBonesFromCouplerService();
                 IsInitialised = true;
                 //onIsInitialised.Invoke();
             }
-            else
-            {
-                GetBonesFromCouplerService();
-                Debug.Log(_leftHandBones[9].BoneTransform.position);
-            }
+
             //if (_boneConvertorService.GetIsInitialised() && _boneConvertorService.GetAreBonesLoaded())
+            //    Debug.Log(_leftHandBones[9].BoneTransform.localPosition);
         }
 
 
-        private void GetBonesFromCouplerService(/*bool refreshBoneList = true*/)
+        private void GetBonesFromCouplerService(bool refreshBoneList = true)
         {
-            //if (refreshBoneList)
-            //{
-            //    _leftHandBones.Clear();
-            //    _rightHandBones.Clear();
-            //}
+            if (refreshBoneList)
+            {
+                _leftHandBones.Clear();
+                _rightHandBones.Clear();
+            }
 
             _leftHandBones = _boneConvertorService.GetBones(Hand.Left);
             _rightHandBones = _boneConvertorService.GetBones(Hand.Right);
