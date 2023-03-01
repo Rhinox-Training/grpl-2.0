@@ -37,18 +37,6 @@ namespace Rhinox.XR.Grapple
 
         private void Start()
         {
-
-            //#if USING_OVR
-            _boneConvertorService = new OculusBoneService();
-            _boneConvertorService.Initialize(this.gameObject);
-            if (!_boneConvertorService.GetIsInitialised())
-                Debug.LogError($"{nameof(OculusBoneService)} was not properly initialised");
-            //#endif
-
-#if USING_TELERIK
-#endif
-
-
         }
 
 
