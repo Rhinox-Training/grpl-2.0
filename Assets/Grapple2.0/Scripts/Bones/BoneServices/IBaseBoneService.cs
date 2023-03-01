@@ -8,7 +8,7 @@ namespace Rhinox.XR.Grapple
     {
         void Initialize(GameObject controllerParent);
         bool GetIsInitialised();
-        bool TryLoadBones();
+        bool TryLoadSkeletons();
         bool GetAreBonesLoaded();
         List<RhinoxBone> GetBones(Hand hand);
     }
@@ -24,7 +24,7 @@ namespace Rhinox.XR.Grapple
             return false;
         }
 
-        public bool TryLoadBones()
+        public bool TryLoadSkeletons()
         {
             return false;
         }

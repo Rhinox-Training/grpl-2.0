@@ -14,7 +14,7 @@ namespace Rhinox.XR.Grapple
         private GameObject _controllerParent = null;
 
         private bool _isInitialised;
-        private bool _areBonesLoaded = false;
+        private bool _areSkeletonsLoaded = false;
 
         public void Initialize(GameObject controllerParent)
         {
@@ -37,12 +37,12 @@ namespace Rhinox.XR.Grapple
         }
         public bool GetAreBonesLoaded()
         {
-            return _areBonesLoaded;
+            return _areSkeletonsLoaded;
         }
 
-        public bool TryLoadBones()
+        public bool TryLoadSkeletons()
         {
-            _areBonesLoaded = false;
+            _areSkeletonsLoaded = false;
 
             var skeletons = _controllerParent.GetComponentsInChildren<OVRSkeleton>();
             foreach (var skeleton in skeletons)
@@ -62,13 +62,13 @@ namespace Rhinox.XR.Grapple
                         _skeletonRefRightHand = skeleton;
                         break;
                     default:
-                        Debug.LogError($"{typeof(OculusBoneService).Namespace + "." + nameof(OculusBoneService)}.TryLoadBones() : Cannot determine hand type");
+                        Debug.LogError($"{typeof(OculusBoneService).Namespace + "." + nameof(OculusBoneService)}.TryLoadSkeletons() : Cannot determine hand type");
                         return false;
                 }
             }
-            Debug.Log($"{typeof(OculusBoneService).Namespace + "." + nameof(OculusBoneService)}.TryLoadBones() : OVRSkeletons loaded in");
+            Debug.Log($"{typeof(OculusBoneService).Namespace + "." + nameof(OculusBoneService)}.TryLoadSkeletons() : OVRSkeletons loaded in");
 
-            _areBonesLoaded = true;
+            _areSkeletonsLoaded = true;
             return true;
         }
 
