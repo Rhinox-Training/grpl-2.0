@@ -1,5 +1,21 @@
 {
   "dependencies": {
+    "com.rhinox.open.grapple": {
+      "version": "1.0.15",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.rhinox.open.lightspeed": "1.1.16"
+      },
+      "url": "https://package.openupm.com"
+    },
+    "com.rhinox.open.lightspeed": {
+      "version": "1.1.16",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://package.openupm.com"
+    },
     "com.unity.collab-proxy": {
       "version": "2.0.0",
       "depth": 0,
@@ -58,15 +74,6 @@
       "depth": 0,
       "source": "registry",
       "dependencies": {},
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.inputsystem": {
-      "version": "1.4.4",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.modules.uielements": "1.0.0"
-      },
       "url": "https://packages.unity.com"
     },
     "com.unity.performance.profile-analyzer": {
@@ -153,30 +160,9 @@
       },
       "url": "https://packages.unity.com"
     },
-    "com.unity.xr.core-utils": {
-      "version": "2.0.1",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.modules.xr": "1.0.0"
-      },
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.xr.hands": {
-      "version": "1.1.0-pre.3",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.inputsystem": "1.4.3",
-        "com.unity.modules.xr": "1.0.0",
-        "com.unity.xr.core-utils": "2.0.0",
-        "com.unity.xr.management": "4.0.1"
-      },
-      "url": "https://packages.unity.com"
-    },
     "com.unity.xr.legacyinputhelpers": {
       "version": "2.1.10",
-      "depth": 1,
+      "depth": 2,
       "source": "registry",
       "dependencies": {
         "com.unity.modules.vr": "1.0.0",
@@ -203,17 +189,6 @@
       "source": "registry",
       "dependencies": {
         "com.unity.xr.management": "4.2.0"
-      },
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.xr.openxr": {
-      "version": "1.6.0",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.xr.management": "4.0.1",
-        "com.unity.xr.legacyinputhelpers": "2.1.2",
-        "com.unity.inputsystem": "1.4.4"
       },
       "url": "https://packages.unity.com"
     },
