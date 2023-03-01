@@ -254,13 +254,8 @@ namespace UnityEngine.XR.Hands.Samples.VisualizerSample
             Vector3[] m_LinePointsReuse = new Vector3[2];
             const float k_LineWidth = 0.005f;
 
-            public HandGameObjects(
-                bool isLeft,
-                Transform parent,
-                GameObject meshPrefab,
-                Material meshMaterial,
-                GameObject debugDrawPrefab,
-                GameObject velocityPrefab)
+            public HandGameObjects(bool isLeft, Transform parent, GameObject meshPrefab, Material meshMaterial,
+                GameObject debugDrawPrefab, GameObject velocityPrefab)
             {
                 void AssignJoint(
                     XRHandJointID jointId,
@@ -506,11 +501,7 @@ namespace UnityEngine.XR.Hands.Samples.VisualizerSample
                 }
             }
 
-            void UpdateJoint(
-                Pose originPose,
-                XRHandJoint joint,
-                ref Pose parentPose,
-                bool cacheParentPose = true)
+            void UpdateJoint(Pose originPose, XRHandJoint joint, ref Pose parentPose, bool cacheParentPose = true)
             {
                 int jointIndex = joint.id.ToIndex();
                 var xform = m_JointXforms[jointIndex];

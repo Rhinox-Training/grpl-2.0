@@ -16,7 +16,7 @@ namespace Rhinox.XR.Grapple
             _boneManager = gameObject.AddComponent<BoneManager>();
             if (_boneManager == null)
             {
-                Debug.LogError($"{nameof(HandInputManager)} Failled to add {nameof(BoneManager)}");
+                Debug.LogError($"{nameof(HandInputManager)} Failed to add {nameof(BoneManager)}");
             }
 
 
