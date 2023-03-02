@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Rhinox.XR.Grapple
 {
-    public class HandInputManager : MonoBehaviour
+    public sealed class HandInputManager : MonoBehaviour
     {
         private BoneManager _boneManager = null;
 
@@ -28,15 +28,16 @@ namespace Rhinox.XR.Grapple
                 case PhysicServices.Socketing:
                     {
                         var newService = new PhysicsSocketService(_boneManager, gameObject);
-                        if (!newService.GetIsInitialised())
-                            _physicsService = null;
-                        else
-                            _physicsService = newService;
+                        _physicsService = newService;
+                        //newService.Initialize();
+                        //if (!newService.GetIsInitialised())
+                        //    _physicsService = null;
+                        //else
                         break;
                     }
             }
 
-            if (_physicsService == null)
+            if (_physicsService.GetType() == typeof(NullPhysicsService))
             {
                 Debug.LogError($"{nameof(HandInputManager)} Failed to add {SelectedPhysicsService} service");
             }
@@ -45,7 +46,12 @@ namespace Rhinox.XR.Grapple
         // Update is called once per frame
         void Update()
         {
+            if (!_physicsService.GetIsInitialised())
+            {
+                _physicsService.TryInitialize();
+            }
 
+            _physicsService.Update();
         }
     }
 }

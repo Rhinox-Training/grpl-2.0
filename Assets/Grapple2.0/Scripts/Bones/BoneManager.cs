@@ -18,10 +18,10 @@ namespace Rhinox.XR.Grapple
 
     public sealed class RhinoxBone
     {
-        public XRHandJointID BoneId { get; private set; }
+        public XRHandJointID BoneId { get; private set; } = XRHandJointID.Invalid;
 
-        public Vector3 BonePosition;
-        public Quaternion BoneRotation;
+        public Vector3 BonePosition = Vector3.zero;
+        public Quaternion BoneRotation = Quaternion.identity;
 
         public RhinoxBone(XRHandJointID boneId)
         {
@@ -29,7 +29,7 @@ namespace Rhinox.XR.Grapple
         }
     }
 
-    public class BoneManager : MonoBehaviour
+    public sealed class BoneManager : MonoBehaviour
     {
         #region XRHands fields
 
@@ -92,7 +92,7 @@ namespace Rhinox.XR.Grapple
         {
             TryEnsureInitialized();
 
-            Debug.Log(_rightHandBones.LastOrDefault().BonePosition);
+            // Debug.Log(_rightHandBones.LastOrDefault().BonePosition);
 
         }
 
@@ -182,6 +182,8 @@ namespace Rhinox.XR.Grapple
                 var rightBone = new RhinoxBone(jointId);
                 _rightHandBones.Add(rightBone);
             }
+
+            IsInitialised = true;
         }
 
         public List<RhinoxBone> GetBonesFromHand(Hand hand)
@@ -196,6 +198,18 @@ namespace Rhinox.XR.Grapple
 
             return new List<RhinoxBone>();
         }
-    }
 
+        public RhinoxBone GetBoneFromHandById(Hand hand, XRHandJointID boneId)
+        {
+            switch (hand)
+            {
+                case Hand.Left:
+                    return _leftHandBones.First(rhinoxBone => rhinoxBone.BoneId == boneId);
+                case Hand.Right:
+                    return _rightHandBones.First(rhinoxBone => rhinoxBone.BoneId == boneId);
+            }
+
+            return null;
+        }
+    }
 }
