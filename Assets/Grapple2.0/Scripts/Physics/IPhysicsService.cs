@@ -3,31 +3,33 @@ using UnityEngine;
 
 namespace Rhinox.XR.Grapple
 {
+    public enum PhysicServices
+    {
+        None,
+        Socketing
+    }
+
     public interface IPhysicsService
     {
-        void Initialize(BoneManager boneManager);
+        void Initialize();
         bool GetIsInitialised();
+        void Update();
         void SetEnabled(bool newState, Hand handedness);
         bool GetIsEnabled(Hand handedness);
-        void ManualUpdate();
-        void SetHandLayer(UnityEngine.LayerMask layer);
     }
 
-    [Serializable]
-    public abstract class BasePhysicsService : IPhysicsService
+    public class NullPhysicsService : IPhysicsService
     {
-        public abstract void Initialize(BoneManager boneManager);
+        void IPhysicsService.Initialize() { }
 
-        public abstract bool GetIsInitialised();
+        bool IPhysicsService.GetIsInitialised()
+        { return false; }
 
-        public abstract void SetEnabled(bool newState, Hand handedness);
+        public void Update() { }
 
-        public abstract bool GetIsEnabled(Hand handedness);
+        void IPhysicsService.SetEnabled(bool newState, Hand handedness) { }
 
-        public abstract void ManualUpdate();
-
-        public abstract void SetHandLayer(LayerMask layer);
+        bool IPhysicsService.GetIsEnabled(Hand handedness)
+        { return false; }
     }
-    
-    
 }

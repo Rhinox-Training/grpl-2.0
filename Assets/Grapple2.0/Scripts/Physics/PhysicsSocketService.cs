@@ -1,40 +1,82 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem.LowLevel;
 
 namespace Rhinox.XR.Grapple
 {
-    public class PhysicsSocketService : BasePhysicsService
+    public class PhysicsSocketService : IPhysicsService
     {
         private bool _isInitialized = false;
-        public override void Initialize(BoneManager boneManager)
+        private BoneManager _boneManager;
+
+        private SphereCollider _sphereColliderL;
+        private SphereCollider _sphereColliderR;
+
+        private bool _enabledL = false;
+        private bool _enabledR = false;
+
+        public PhysicsSocketService(BoneManager boneManager, GameObject parentObject)
         {
-            throw new System.NotImplementedException();
+            _boneManager = boneManager;
+
+            if (parentObject != null)
+            {
+                _sphereColliderL = parentObject.AddComponent<SphereCollider>();
+                _sphereColliderL.isTrigger = true;
+                _sphereColliderL.enabled = false;
+                _sphereColliderR = parentObject.AddComponent<SphereCollider>();
+                _sphereColliderR.enabled = false;
+                _sphereColliderR.isTrigger = true;
+            }
         }
 
-        public override bool GetIsInitialised()
+        public void Initialize()
+        {
+
+            _isInitialized = true;
+        }
+
+        public bool GetIsInitialised()
         {
             return _isInitialized;
         }
 
-        public override void SetEnabled(bool newState, Hand handedness)
+        public void Update()
         {
-            throw new System.NotImplementedException();
+            //_sphereColliderL.center
         }
 
-        public override bool GetIsEnabled(Hand handedness)
+        public void SetEnabled(bool newState, Hand handedness)
         {
-            throw new System.NotImplementedException();
+            switch (handedness)
+            {
+                case Hand.Left:
+                    _enabledL = newState;
+                    break;
+                case Hand.Right:
+                    _enabledR = newState;
+                    break;
+                case Hand.Both:
+                    _enabledL = newState;
+                    _enabledR = newState;
+                    break;
+            }
         }
 
-        public override void ManualUpdate()
+        public bool GetIsEnabled(Hand handedness)
         {
-            throw new System.NotImplementedException();
-        }
-
-        public override void SetHandLayer(LayerMask layer)
-        {
-            throw new System.NotImplementedException();
+            switch (handedness)
+            {
+                case Hand.Left:
+                    return _enabledL;
+                case Hand.Right:
+                    return _enabledR;
+                case Hand.Both:
+                    return _enabledL && _enabledR;
+                default:
+                    return false;
+            }
         }
     }
 }

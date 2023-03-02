@@ -9,7 +9,10 @@ namespace Rhinox.XR.Grapple
     {
         private BoneManager _boneManager = null;
 
-        private IPhysicsService _physicsService = null;
+        private IPhysicsService _physicsService = new NullPhysicsService();
+
+        [Header("Physics")]
+        public PhysicServices SelectedPhysicsService = PhysicServices.None;
 
         void Start()
         {
@@ -17,9 +20,26 @@ namespace Rhinox.XR.Grapple
             if (_boneManager == null)
             {
                 Debug.LogError($"{nameof(HandInputManager)} Failed to add {nameof(BoneManager)}");
+                return;
             }
 
+            switch (SelectedPhysicsService)
+            {
+                case PhysicServices.Socketing:
+                    {
+                        var newService = new PhysicsSocketService(_boneManager, gameObject);
+                        if (!newService.GetIsInitialised())
+                            _physicsService = null;
+                        else
+                            _physicsService = newService;
+                        break;
+                    }
+            }
 
+            if (_physicsService == null)
+            {
+                Debug.LogError($"{nameof(HandInputManager)} Failed to add {SelectedPhysicsService} service");
+            }
         }
 
         // Update is called once per frame
