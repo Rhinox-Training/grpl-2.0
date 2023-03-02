@@ -34,7 +34,7 @@ namespace Rhinox.XR.Grapple
     {
         #region XRHands fields
 
-        XRHandSubsystem _subsystem;
+        private XRHandSubsystem _subsystem;
 
         #endregion
         
@@ -54,6 +54,7 @@ namespace Rhinox.XR.Grapple
         {
             if (_subsystem != null)
                 return;
+            
             //Load the subsystem if possible
             _subsystem = XRGeneralSettings.Instance?.Manager?.activeLoader?.GetLoadedSubsystem<XRHandSubsystem>();
 
@@ -73,28 +74,21 @@ namespace Rhinox.XR.Grapple
 
             if ((updateSuccessFlags & XRHandSubsystem.UpdateSuccessFlags.LeftHandRootPose) != XRHandSubsystem.UpdateSuccessFlags.None)
                 UpdateRootPose(Handedness.Left);
-            //m_LeftHandGameObjects.UpdateRootPose(subsystem.leftHand);
 
             if ((updateSuccessFlags & XRHandSubsystem.UpdateSuccessFlags.LeftHandJoints) != XRHandSubsystem.UpdateSuccessFlags.None)
                 UpdateJoints(Handedness.Left);
-            //m_LeftHandGameObjects.UpdateJoints(m_Origin, m_Subsystem.leftHand);
 
             if ((updateSuccessFlags & XRHandSubsystem.UpdateSuccessFlags.RightHandRootPose) != XRHandSubsystem.UpdateSuccessFlags.None)
                 UpdateRootPose(Handedness.Right);
-            //m_RightHandGameObjects.UpdateRootPose(subsystem.rightHand);
 
             if ((updateSuccessFlags & XRHandSubsystem.UpdateSuccessFlags.RightHandJoints) != XRHandSubsystem.UpdateSuccessFlags.None)
                 UpdateJoints(Handedness.Right);
-            //m_RightHandGameObjects.UpdateJoints(m_Origin, m_Subsystem.rightHand);
 
         }
 
         private void Update()
         {
             TryEnsureInitialized();
-
-            Debug.Log(_rightHandBones.LastOrDefault().BonePosition);
-
         }
 
         private void UpdateRootPose(Handedness hand)

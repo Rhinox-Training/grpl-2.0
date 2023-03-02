@@ -11,7 +11,7 @@ namespace Rhinox.XR.Grapple
     public struct RhinoxGesture
     {
         public string Name;
-        public List<Vector3> JointData;
+        public List<float> JointData;
         public UnityEvent OnRecognized;
     }
     
@@ -62,7 +62,7 @@ namespace Rhinox.XR.Grapple
         {
             var newGesture = new RhinoxGesture();
             newGesture.Name = SavedGestureName;
-            var gestureDistances = new List<Vector3>();
+            var gestureDistances = new List<float>();
             var joints = _boneManager.GetBonesFromHand(handedness);
             var wristJoint = _boneManager.GetBone(XRHandJointID.Wrist, handedness);
             if (wristJoint == null)
@@ -74,7 +74,7 @@ namespace Rhinox.XR.Grapple
             foreach (var joint in joints)
             {
                 //Save the vector from the wrist to the current joint
-                var currentDist = joint.BonePosition - wristJoint.BonePosition;
+                var currentDist = Vector3.Distance(joint.BonePosition, wristJoint.BonePosition);
                 gestureDistances.Add(currentDist);
             }
 
@@ -148,9 +148,10 @@ namespace Rhinox.XR.Grapple
                 var isDiscarded = false;
                 for (var i = 0; i < joints.Count; i++)
                 {
-                    var currentData = joints[i].BonePosition - wristJoint.BonePosition;
-                    var distance = Vector3.Distance(currentData, gesture.JointData[i]);
-                    if (distance > Threshold)
+                    var currentDist = Vector3.Distance(wristJoint.BonePosition, joints[i].BonePosition);
+                    var distance = currentDist - gesture.JointData[i];
+                    
+                    if (-Threshold > distance || distance > Threshold)
                     {
                         isDiscarded = true;
                         break;
