@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.XR.Hands;
@@ -36,7 +37,7 @@ namespace Rhinox.XR.Grapple
         XRHandSubsystem _subsystem;
 
         #endregion
-
+        
 
         private List<RhinoxBone> _leftHandBones = new List<RhinoxBone>();
         private List<RhinoxBone> _rightHandBones = new List<RhinoxBone>();
@@ -196,6 +197,32 @@ namespace Rhinox.XR.Grapple
 
             return new List<RhinoxBone>();
         }
+
+        public List<RhinoxBone> GetBonesFromHand(Handedness hand)
+        {
+            switch (hand)
+            {
+
+                case Handedness.Left:
+                    return _leftHandBones;
+                case Handedness.Right:
+                    return _rightHandBones;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(hand), hand, null);
+            }
+        }
+
+        [CanBeNull]
+        public RhinoxBone GetBone(XRHandJointID jointID,Handedness handedness)
+        {
+            if (handedness == Handedness.Left)
+                return _leftHandBones.Find(x => x.BoneId == jointID);
+            if (handedness == Handedness.Right)
+                return _rightHandBones.Find(x => x.BoneId == jointID);
+
+            return null;
+        }
+        
     }
 
 }

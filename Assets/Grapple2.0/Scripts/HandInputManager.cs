@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.XR.CoreUtils;
 using UnityEngine;
 
 
@@ -11,6 +12,9 @@ namespace Rhinox.XR.Grapple
 
         private IPhysicsService _physicsService = null;
 
+        private GestureRecognizer _gestureRecognizer = null;
+        
+        
         void Start()
         {
             _boneManager = gameObject.AddComponent<BoneManager>();
@@ -19,13 +23,8 @@ namespace Rhinox.XR.Grapple
                 Debug.LogError($"{nameof(HandInputManager)} Failed to add {nameof(BoneManager)}");
             }
 
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
+            _gestureRecognizer =  gameObject.AddComponent<GestureRecognizer>();
+            _gestureRecognizer.Initialize(_boneManager);
         }
     }
 }
