@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace Rhinox.XR.Grapple
 {
+    [RequireComponent(typeof(GestureRecognizer))]
     public class HandInputManager : MonoBehaviour
     {
         private BoneManager _boneManager = null;
@@ -23,7 +24,7 @@ namespace Rhinox.XR.Grapple
                 Debug.LogError($"{nameof(HandInputManager)} Failed to add {nameof(BoneManager)}");
             }
 
-            _gestureRecognizer =  gameObject.AddComponent<GestureRecognizer>();
+            _gestureRecognizer = GetComponent<GestureRecognizer>();
             _gestureRecognizer.Initialize(_boneManager);
         }
     }
