@@ -10,23 +10,41 @@ namespace Rhinox.XR.Grapple
 {
     public sealed class PhysicsSocketService : IPhysicsService
     {
+        enum HandState
+        {
+            Neutral,
+            Grabbing,
+            //Holding,
+            Dropping
+        }
+
         private bool _isInitialized = false;
         private BoneManager _boneManager;
 
         private GameObject _colliderObjL;
         private GameObject _colliderObjR;
 
-        private SphereCollider _sphereColliderL;
-        private SphereCollider _sphereColliderR;
+        private SphereCollider _ColliderL;
+        //private BoxCollider _ColliderL;
+        private SphereCollider _ColliderR;
+        //private SphereCollider _ColliderR;
 
         private bool _enabledL = true;
         private bool _enabledR = true;
 
-        //private bool _isHoldingL = false;
+        private HandState _currentHandStateL = HandState.Neutral;
+        private HandState _previousHandStateL = HandState.Neutral;
+        private HandState _currentHandStateR = HandState.Neutral;
+        private HandState _previousHandStateR = HandState.Neutral;
+
+        //private bool _isInGrabPoseL = false;
+        //private bool _wasInGrabPoseL = false;
+        //private bool _isInGrabPoseR = false;
+        //private bool _wasInGrabPoseR = false;
         //private bool _isHoldingR = false;
 
-        private const float GRABBING_THRESHOLD = 0.04f;
-        private const float DROPPING_THRESHOLD = 0.072f;
+        private const float GRABBING_THRESHOLD = 0.05f;
+        private const float DROPPING_THRESHOLD = 0.065f;//prev: 0.072
 
         private GameObject _potentialGrabItemL = null;
         private GameObject _potentialGrabItemR = null;
@@ -48,11 +66,13 @@ namespace Rhinox.XR.Grapple
                 colliderEventsL.ExitEvent.AddListener(OnHandTriggerExit);
                 colliderEventsL.Hand = Hand.Left;
 
-                _sphereColliderL = _colliderObjL.AddComponent<SphereCollider>();
-                _sphereColliderL.isTrigger = true;
-                _sphereColliderL.enabled = false;
-                _sphereColliderL.center = new(0, -0.04f, 0.04f);//hardcoded values gathered from lot's of eyeballing and testing
-                _sphereColliderL.radius = 0.05f;
+                _ColliderL = _colliderObjL.AddComponent<SphereCollider>();
+                _ColliderL.isTrigger = true;
+                _ColliderL.enabled = false;
+                //_ColliderL.center = new(0, -0.04f, 0.04f);//hardcoded values gathered from lot's of eyeballing and testing
+                _ColliderL.center = new(0, -0.03f, 0.015f);//hardcoded values gathered from lot's of eyeballing and testing
+                //_ColliderL.radius = 0.05f;
+                _ColliderL.radius = 0.04f;
 
                 _colliderObjR = new GameObject("Collider Obj RIGHT");
                 var colliderEventsR = _colliderObjR.AddComponent<PhysicsEventHandler>();
@@ -61,11 +81,11 @@ namespace Rhinox.XR.Grapple
                 colliderEventsR.Hand = Hand.Right;
 
                 _colliderObjR.transform.parent = parentObject.transform;
-                _sphereColliderR = _colliderObjR.AddComponent<SphereCollider>();
-                _sphereColliderR.enabled = false;
-                _sphereColliderR.isTrigger = true;
-                _sphereColliderR.center = new(0, -0.04f, 0.04f); //hardcoded values gathered from lot's of eyeballing and testing
-                _sphereColliderR.radius = 0.05f;
+                _ColliderR = _colliderObjR.AddComponent<SphereCollider>();
+                _ColliderR.enabled = false;
+                _ColliderR.isTrigger = true;
+                _ColliderR.center = new(0, -0.03f, 0.015f); //hardcoded values gathered from lot's of eyeballing and testing
+                _ColliderR.radius = 0.04f;
             }
         }
 
@@ -74,8 +94,8 @@ namespace Rhinox.XR.Grapple
             if (!_boneManager.IsInitialised)
                 return;
 
-            _sphereColliderL.enabled = true;
-            _sphereColliderR.enabled = true;
+            _ColliderL.enabled = true;
+            _ColliderR.enabled = true;
 
             _isInitialized = true;
         }
@@ -90,71 +110,131 @@ namespace Rhinox.XR.Grapple
             if (!_isInitialized)
                 return;
 
-            var palmBoneE = _boneManager.GetBoneFromHandById(Hand.Right, XRHandJointID.Palm);
-
-
-            //float total = 0f;
-            //var thumbTip = _boneManager.GetBoneFromHandById(Hand.Right, XRHandJointID.ThumbTip);
-            ////Debug.Log($"Thumb: {Vector3.SqrMagnitude(palmBoneE.BonePosition - thumbTip.BonePosition)}");
-            //total += Vector3.SqrMagnitude(palmBoneE.BonePosition - thumbTip.BonePosition);
-            //var indexTip = _boneManager.GetBoneFromHandById(Hand.Right, XRHandJointID.IndexTip);
-            ////Debug.Log($"Index: {Vector3.SqrMagnitude(palmBoneE.BonePosition - indexTip.BonePosition)}");
-            //total += Vector3.SqrMagnitude(palmBoneE.BonePosition - indexTip.BonePosition);
-            //var middleTip = _boneManager.GetBoneFromHandById(Hand.Right, XRHandJointID.MiddleTip);
-            ////Debug.Log($"Middle: {Vector3.SqrMagnitude(palmBoneE.BonePosition - middleTip.BonePosition)}");
-            //total += Vector3.SqrMagnitude(palmBoneE.BonePosition - middleTip.BonePosition);
-            //var ringTip = _boneManager.GetBoneFromHandById(Hand.Right, XRHandJointID.RingTip);
-            ////Debug.Log($"Ring: {Vector3.SqrMagnitude(palmBoneE.BonePosition - ringTip.BonePosition)}");
-            //total += Vector3.SqrMagnitude(palmBoneE.BonePosition - ringTip.BonePosition);
-            //var littleTip = _boneManager.GetBoneFromHandById(Hand.Right, XRHandJointID.LittleTip);
-            ////Debug.Log($"Pinky: {Vector3.SqrMagnitude(palmBoneE.BonePosition - littleTip.BonePosition)}");
-            //total += Vector3.SqrMagnitude(palmBoneE.BonePosition - littleTip.BonePosition);
-
-            //Debug.Log($"total: {total}");
-
             //if the left socket AND the right socket are both not enabled no need to update.
             if (!_enabledL && !_enabledR)
                 return;
 
+            #region LeftHandLogic
             if (_enabledL)
             {
                 var palmBone = _boneManager.GetBoneFromHandById(Hand.Left, XRHandJointID.Palm);
                 _colliderObjL.transform.position = palmBone.BonePosition;
                 _colliderObjL.transform.rotation = palmBone.BoneRotation;
 
-                if (_potentialGrabItemL != null && IsTryingToGrab(palmBone, Hand.Left))
+                //Grabbing logic
+                _currentHandStateL = GetCurrentHandState(palmBone, Hand.Left);
+
+
+                //if (_previousHandStateL == HandState.Neutral)
+                //    _currentHandStateL = IsTryingToGrab(palmBone, Hand.Left) ? HandState.Grabbing : _currentHandStateL;
+
+                if (_potentialGrabItemL != null && _grabbedItemL == null
+                    && _currentHandStateL == HandState.Grabbing && _previousHandStateL != HandState.Grabbing)
                 {
                     _potentialGrabItemL.transform.parent = _colliderObjL.transform;
                     _grabbedItemL = _potentialGrabItemL;
-                    _potentialGrabItemL = null;
+                    //_currentHandStateL = HandState.Holding;
+
+                    Rigidbody rigidCmp = _grabbedItemL.GetComponent<Rigidbody>();
+                    if (rigidCmp != null)
+                    {
+                        rigidCmp.useGravity = false;
+                        rigidCmp.isKinematic = true;
+                        rigidCmp.velocity = Vector3.zero;
+                    }
                 }
-                else if (_grabbedItemL != null && IsTryingToDrop(palmBone, Hand.Left))
+                //Dropping logic
+                else
                 {
-                    _grabbedItemL.transform.parent = null;
-                    _grabbedItemL = null;
+                    //if (_previousHandStateL == HandState.Holding)
+                    //    _currentHandStateL = IsTryingToDrop(palmBone, Hand.Left) ? HandState.Dropping : _currentHandStateL;
+
+                    if (_grabbedItemL != null && _currentHandStateL == HandState.Dropping &&
+                        _previousHandStateL != HandState.Dropping)
+                    {
+                        if (_grabbedItemL != _grabbedItemR)
+                        {
+                            _grabbedItemL.transform.parent = null;
+                            Rigidbody rigidCmp = _grabbedItemL.GetComponent<Rigidbody>();
+                            if (rigidCmp != null)
+                            {
+                                rigidCmp.useGravity = true;
+                                rigidCmp.isKinematic = false;
+                            }
+                        }
+
+                        //_currentHandStateL = HandState.Neutral;
+                        _grabbedItemL = null;
+                    }
                 }
 
-            }
+                //if (_currentHandStateL is HandState.Grabbing or HandState.Dropping)
+                //    _currentHandStateL = HandState.Neutral;
 
+                _previousHandStateL = _currentHandStateL;
+            }
+            #endregion
+
+            #region RightHandLogic
             if (_enabledR)
             {
                 var palmBone = _boneManager.GetBoneFromHandById(Hand.Right, XRHandJointID.Palm);
                 _colliderObjR.transform.position = palmBone.BonePosition;
                 _colliderObjR.transform.rotation = palmBone.BoneRotation;
 
-                if (_potentialGrabItemR != null && IsTryingToGrab(palmBone, Hand.Right))
+                _currentHandStateR = GetCurrentHandState(palmBone, Hand.Right);
+
+
+                //Grabbing logic
+                //if (_previousHandStateR == HandState.Neutral)
+                //    _currentHandStateR = IsTryingToGrab(palmBone, Hand.Right) ? HandState.Grabbing : _currentHandStateR;
+
+                if (_potentialGrabItemR != null && _grabbedItemR == null
+                    && _currentHandStateR == HandState.Grabbing && _previousHandStateR != HandState.Grabbing)
                 {
                     _potentialGrabItemR.transform.parent = _colliderObjR.transform;
                     _grabbedItemR = _potentialGrabItemR;
-                    _potentialGrabItemR = null;
-                }
-                else if (_grabbedItemR != null && IsTryingToDrop(palmBone, Hand.Right))
-                {
-                    _grabbedItemR.transform.parent = null;
-                    _grabbedItemR = null;
-                }
-            }
+                    //_currentHandStateR = HandState.Holding;
 
+                    Rigidbody rigidCmp = _grabbedItemR.GetComponent<Rigidbody>();
+                    if (rigidCmp != null)
+                    {
+                        rigidCmp.useGravity = false;
+                        rigidCmp.isKinematic = true;
+                        rigidCmp.velocity = Vector3.zero;
+                    }
+                }
+                //Dropping logic
+                else
+                {
+                    //if (_previousHandStateR == HandState.Holding)
+                    //    _currentHandStateR = IsTryingToDrop(palmBone, Hand.Right) ? HandState.Dropping : _currentHandStateR;
+
+                    if (_grabbedItemR != null && _currentHandStateR == HandState.Dropping &&
+                        _previousHandStateR != HandState.Dropping)
+                    {
+                        if (_grabbedItemL != _grabbedItemR)
+                        {
+                            _grabbedItemR.transform.parent = null;
+                            Rigidbody rigidCmp = _grabbedItemR.GetComponent<Rigidbody>();
+                            if (rigidCmp != null)
+                            {
+                                rigidCmp.useGravity = true;
+                                rigidCmp.isKinematic = false;
+                            }
+                        }
+
+                        //_currentHandStateR = HandState.Neutral;
+                        _grabbedItemR = null;
+                    }
+                }
+
+                //if (_currentHandStateR is HandState.Grabbing or HandState.Dropping)
+                //    _currentHandStateR = HandState.Neutral;
+
+                _previousHandStateR = _currentHandStateR;
+            }
+            #endregion
         }
 
         public void OnHandTriggerEnter(GameObject triggerObj, GameObject otherObj, Hand hand)
@@ -187,8 +267,32 @@ namespace Rhinox.XR.Grapple
                 default:
                     break;
             }
-            //Debug.Log($"\"{hand}\" Left \"{otherObj}\"");
-            //Debug.Log("EVENT \\o/");
+        }
+
+        HandState GetCurrentHandState(RhinoxBone palmBone, Hand hand)
+        {
+            if (hand == Hand.Both)
+                return HandState.Neutral;
+
+            float total = 0f;
+            var thumbTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.ThumbTip);
+            total += Vector3.SqrMagnitude(palmBone.BonePosition - thumbTip.BonePosition);
+            var indexTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.IndexTip);
+            total += Vector3.SqrMagnitude(palmBone.BonePosition - indexTip.BonePosition);
+            var middleTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.MiddleTip);
+            total += Vector3.SqrMagnitude(palmBone.BonePosition - middleTip.BonePosition);
+            var ringTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.RingTip);
+            total += Vector3.SqrMagnitude(palmBone.BonePosition - ringTip.BonePosition);
+            var littleTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.LittleTip);
+            total += Vector3.SqrMagnitude(palmBone.BonePosition - littleTip.BonePosition);
+
+
+            if (total <= GRABBING_THRESHOLD)
+                return HandState.Grabbing;
+            else if (total >= DROPPING_THRESHOLD)
+                return HandState.Dropping;
+            else
+                return HandState.Neutral;
         }
 
         bool IsTryingToGrab(RhinoxBone palmBone, Hand hand)
@@ -196,31 +300,8 @@ namespace Rhinox.XR.Grapple
             if (hand == Hand.Both)
                 return false;
 
-            if (hand == Hand.Left && _grabbedItemL != null)
-                return false;
 
-            if (hand == Hand.Right && _grabbedItemR != null)
-                return false;
-
-            //var thumbTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.ThumbTip);
-            //if (Vector3.SqrMagnitude(palmBone.BonePosition - thumbTip.BonePosition) > GRABBING_THRESHOLD)
-            //    return false;
-
-            //var indexTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.IndexTip);
-            //if (Vector3.SqrMagnitude(palmBone.BonePosition - indexTip.BonePosition) > GRABBING_THRESHOLD)
-            //    return false;
-
-            //var middleTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.MiddleTip);
-            //if (Vector3.SqrMagnitude(palmBone.BonePosition - middleTip.BonePosition) > GRABBING_THRESHOLD)
-            //    return false;
-
-            //var ringTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.RingTip);
-            //if (Vector3.SqrMagnitude(palmBone.BonePosition - ringTip.BonePosition) > GRABBING_THRESHOLD)
-            //    return false;
-
-            //var littleTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.LittleTip);
-            //if (Vector3.SqrMagnitude(palmBone.BonePosition - littleTip.BonePosition) > GRABBING_THRESHOLD)
-            //    return false;
+            //maybe add and if statement after each total+= for early return?
 
             float total = 0f;
             var thumbTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.ThumbTip);
@@ -245,31 +326,9 @@ namespace Rhinox.XR.Grapple
             if (hand == Hand.Both)
                 return false;
 
-            if (hand == Hand.Left && _grabbedItemL == null)
-                return false;
 
-            if (hand == Hand.Right && _grabbedItemR == null)
-                return false;
+            //maybe add and if statement after each total+= for early return?
 
-            //var thumbTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.ThumbTip);
-            //if (Vector3.SqrMagnitude(palmBone.BonePosition - thumbTip.BonePosition) > DROPPING_THRESHOLD)
-            //    return false;
-
-            //var indexTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.IndexTip);
-            //if (Vector3.SqrMagnitude(palmBone.BonePosition - indexTip.BonePosition) > DROPPING_THRESHOLD)
-            //    return false;
-
-            //var middleTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.MiddleTip);
-            //if (Vector3.SqrMagnitude(palmBone.BonePosition - middleTip.BonePosition) > DROPPING_THRESHOLD)
-            //    return false;
-
-            //var ringTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.RingTip);
-            //if (Vector3.SqrMagnitude(palmBone.BonePosition - ringTip.BonePosition) > DROPPING_THRESHOLD)
-            //    return false;
-
-            //var littleTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.LittleTip);
-            //if (Vector3.SqrMagnitude(palmBone.BonePosition - littleTip.BonePosition) > DROPPING_THRESHOLD)
-            //    return false;
             float total = 0f;
             var thumbTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.ThumbTip);
             total += Vector3.SqrMagnitude(palmBone.BonePosition - thumbTip.BonePosition);
@@ -282,7 +341,8 @@ namespace Rhinox.XR.Grapple
             var littleTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.LittleTip);
             total += Vector3.SqrMagnitude(palmBone.BonePosition - littleTip.BonePosition);
 
-            if (total < DROPPING_THRESHOLD)
+            //if (total < DROPPING_THRESHOLD)
+            if (total < GRABBING_THRESHOLD)
                 return false;
 
             return true;
@@ -294,17 +354,17 @@ namespace Rhinox.XR.Grapple
             {
                 case Hand.Left:
                     _enabledL = newState;
-                    _sphereColliderL.enabled = newState;
+                    _ColliderL.enabled = newState;
                     break;
                 case Hand.Right:
                     _enabledR = newState;
-                    _sphereColliderR.enabled = newState;
+                    _ColliderR.enabled = newState;
                     break;
                 case Hand.Both:
                     _enabledL = newState;
-                    _sphereColliderL.enabled = newState;
+                    _ColliderL.enabled = newState;
                     _enabledR = newState;
-                    _sphereColliderR.enabled = newState;
+                    _ColliderR.enabled = newState;
                     break;
             }
         }
