@@ -139,6 +139,13 @@ namespace Rhinox.XR.Grapple
                     }
 
                     _potentialGrabItemL.transform.parent = _colliderObjL.transform;
+
+                    var grabbingBehavior = _potentialGrabItemL.GetComponent<GrabbingBehavior>();
+                    if (grabbingBehavior.GrabbingType == GrabbingBehavior.GrabbingBehaviorType.Sockatable)
+                    {
+                        _potentialGrabItemL.transform.position = _colliderObjL.transform.position;
+                    }
+
                     _grabbedItemL = _potentialGrabItemL;
                     //_currentHandStateL = HandState.Holding;
 
@@ -205,8 +212,13 @@ namespace Rhinox.XR.Grapple
                     }
 
                     _potentialGrabItemR.transform.parent = _colliderObjR.transform;
+                    var grabbingBehavior = _potentialGrabItemR.GetComponent<GrabbingBehavior>();
+                    if (grabbingBehavior.GrabbingType == GrabbingBehavior.GrabbingBehaviorType.Sockatable)
+                    {
+                        _potentialGrabItemR.transform.position = _colliderObjR.transform.position;
+                    }
+
                     _grabbedItemR = _potentialGrabItemR;
-                    //_currentHandStateR = HandState.Holding;
 
                     Rigidbody rigidCmp = _grabbedItemR.GetComponent<Rigidbody>();
                     if (rigidCmp != null)
@@ -251,6 +263,10 @@ namespace Rhinox.XR.Grapple
 
         public void OnHandTriggerEnter(GameObject triggerObj, GameObject otherObj, Hand hand)
         {
+            var grabbingBehavior = otherObj.GetComponent<GrabbingBehavior>();
+            if (grabbingBehavior == null || grabbingBehavior.GrabbingType == GrabbingBehavior.GrabbingBehaviorType.NotGrabbable)
+                return;
+
             switch (hand)
             {
                 case Hand.Left:
