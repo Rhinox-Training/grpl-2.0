@@ -24,10 +24,10 @@ namespace Rhinox.XR.Grapple
         private GameObject _colliderObjL;
         private GameObject _colliderObjR;
 
-        private SphereCollider _ColliderL;
-        //private BoxCollider _ColliderL;
-        private SphereCollider _ColliderR;
+        //private SphereCollider _ColliderL;
+        private BoxCollider _ColliderL;
         //private SphereCollider _ColliderR;
+        private BoxCollider _ColliderR;
 
         private bool _enabledL = true;
         private bool _enabledR = true;
@@ -66,13 +66,14 @@ namespace Rhinox.XR.Grapple
                 colliderEventsL.ExitEvent.AddListener(OnHandTriggerExit);
                 colliderEventsL.Hand = Hand.Left;
 
-                _ColliderL = _colliderObjL.AddComponent<SphereCollider>();
+                _ColliderL = _colliderObjL.AddComponent<BoxCollider>();
                 _ColliderL.isTrigger = true;
                 _ColliderL.enabled = false;
                 //_ColliderL.center = new(0, -0.04f, 0.04f);//hardcoded values gathered from lot's of eyeballing and testing
-                _ColliderL.center = new(0, -0.03f, 0.015f);//hardcoded values gathered from lot's of eyeballing and testing
+                //_ColliderL.center = new(0, -0.03f, 0.015f);//hardcoded values gathered from lot's of eyeballing and testing
+                _ColliderL.center = new(0f, -0.03f, 0.0225f);//hardcoded values gathered from lot's of eyeballing and testing
                 //_ColliderL.radius = 0.05f;
-                _ColliderL.radius = 0.04f;
+                _ColliderL.size = new(0.06f, 0.035f, 0.07f);
 
                 _colliderObjR = new GameObject("Collider Obj RIGHT");
                 var colliderEventsR = _colliderObjR.AddComponent<PhysicsEventHandler>();
@@ -81,11 +82,12 @@ namespace Rhinox.XR.Grapple
                 colliderEventsR.Hand = Hand.Right;
 
                 _colliderObjR.transform.parent = parentObject.transform;
-                _ColliderR = _colliderObjR.AddComponent<SphereCollider>();
+                _ColliderR = _colliderObjR.AddComponent<BoxCollider>();
                 _ColliderR.enabled = false;
                 _ColliderR.isTrigger = true;
-                _ColliderR.center = new(0, -0.03f, 0.015f); //hardcoded values gathered from lot's of eyeballing and testing
-                _ColliderR.radius = 0.04f;
+                _ColliderR.center = new(0f, -0.03f, 0.0225f); //hardcoded values gathered from lot's of eyeballing and testing
+                //_ColliderR.radius = 0.04f;
+                _ColliderR.size = new(0.06f, 0.035f, 0.07f);
             }
         }
 
@@ -131,6 +133,11 @@ namespace Rhinox.XR.Grapple
                 if (_potentialGrabItemL != null && _grabbedItemL == null
                     && _currentHandStateL == HandState.Grabbing && _previousHandStateL != HandState.Grabbing)
                 {
+                    if (_potentialGrabItemL == _grabbedItemR)
+                    {
+                        _grabbedItemR = null;
+                    }
+
                     _potentialGrabItemL.transform.parent = _colliderObjL.transform;
                     _grabbedItemL = _potentialGrabItemL;
                     //_currentHandStateL = HandState.Holding;
@@ -192,6 +199,11 @@ namespace Rhinox.XR.Grapple
                 if (_potentialGrabItemR != null && _grabbedItemR == null
                     && _currentHandStateR == HandState.Grabbing && _previousHandStateR != HandState.Grabbing)
                 {
+                    if (_potentialGrabItemR == _grabbedItemL)
+                    {
+                        _grabbedItemL = null;
+                    }
+
                     _potentialGrabItemR.transform.parent = _colliderObjR.transform;
                     _grabbedItemR = _potentialGrabItemR;
                     //_currentHandStateR = HandState.Holding;
@@ -285,7 +297,6 @@ namespace Rhinox.XR.Grapple
             total += Vector3.SqrMagnitude(palmBone.BonePosition - ringTip.BonePosition);
             var littleTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.LittleTip);
             total += Vector3.SqrMagnitude(palmBone.BonePosition - littleTip.BonePosition);
-
 
             if (total <= GRABBING_THRESHOLD)
                 return HandState.Grabbing;
