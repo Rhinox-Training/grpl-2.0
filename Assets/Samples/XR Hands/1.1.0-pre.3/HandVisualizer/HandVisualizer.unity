@@ -479,14 +479,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2839de4b6f174444935da38fe4db858, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GestureImportFilePath: C:/Users/TEST SSD/Desktop/Fork/grpl-2.0/Gestures/RecordedGesturesRight.json
+  ImportFilePath: C:/Users/TEST SSD/Desktop/Fork/grpl-2.0/Gestures/RecordedGestures.json
+  OverwriteGesturesOnImport: 0
+  ExportFilePath: C:/Users/TEST SSD/Desktop/Fork/grpl-2.0/Gestures
+  ExportFileName: RecordedGestures
   SavedGestureName: New Gesture
-  FilePath: 
-  Folder: Gestures
-  FileName: RecordedGestures
-  AppendFileNameWithHand: 1
+  HandToRecord: 1
   RecognitionThreshold: 0.01
-  Gestures: []
+  Gestures:
+  - Name: asdfasdfasdf
+    JointData: []
+    OnRecognized:
+      m_PersistentCalls:
+        m_Calls: []
+    OnUnrecognized:
+      m_PersistentCalls:
+        m_Calls: []
 --- !u!1 &1517268251
 GameObject:
   m_ObjectHideFlags: 0

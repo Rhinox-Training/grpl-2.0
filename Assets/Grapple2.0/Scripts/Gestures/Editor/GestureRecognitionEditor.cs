@@ -10,19 +10,26 @@ namespace Rhinox.XR.Grapple
         #region Serialized properties
 
         private SerializedProperty _importPath;
+        private SerializedProperty _overwriteOnImport;
         private SerializedProperty _exportPath;
         private SerializedProperty _exportFileName;
         private SerializedProperty _newGestureName;
         private SerializedProperty _handToRecord;
+        private SerializedProperty _recognitionThreshold;
+        private SerializedProperty _gestures;
         #endregion
 
         private void OnEnable()
         {
             _importPath = serializedObject.FindProperty("ImportFilePath");
+            _overwriteOnImport = serializedObject.FindProperty("OverwriteGesturesOnImport");
             _exportPath = serializedObject.FindProperty("ExportFilePath");
             _exportFileName = serializedObject.FindProperty("ExportFileName");
             _newGestureName = serializedObject.FindProperty("SavedGestureName");
             _handToRecord = serializedObject.FindProperty("HandToRecord");
+            _recognitionThreshold = serializedObject.FindProperty("RecognitionThreshold");
+            _gestures = serializedObject.FindProperty("Gestures");
+            _gestures = serializedObject.FindProperty("Gestures");
         }
 
         public override void OnInspectorGUI()
@@ -33,9 +40,11 @@ namespace Rhinox.XR.Grapple
             //--------------------------
             // Import
             //--------------------------
-
+            GUILayout.Space(10);
             GUILayout.Label("Gesture import settings", EditorStyles.boldLabel);
             GUILayout.Space(10);
+            _overwriteOnImport.boolValue =
+                EditorGUILayout.Toggle("Overwrite gestures on import", _overwriteOnImport.boolValue);
             if (GUILayout.Button("Import gesture file"))
             {
                 var chosenFilePath = EditorUtility.OpenFilePanel("Choose target folder", 
@@ -46,15 +55,17 @@ namespace Rhinox.XR.Grapple
                 serializedObject.ApplyModifiedProperties();
             }
 
+
             EditorGUILayout.LabelField("Current import directory:", EditorStyles.largeLabel);
             GUILayout.Label(_importPath.stringValue);
             
-            GUILayout.Space(10);
+            GUILayout.Space(20);
 
             //--------------------------
             // Export
             //--------------------------
             GUILayout.Label("Gesture export settings", EditorStyles.boldLabel);
+            GUILayout.Space(10);
             if (GUILayout.Button("Choose target folder"))
             {
                 var chosenFolder = EditorUtility.OpenFolderPanel("Choose target folder",
@@ -79,21 +90,39 @@ namespace Rhinox.XR.Grapple
             }
             EditorGUILayout.EndHorizontal();
             
-            GUILayout.Space(10);
+            GUILayout.Space(20);
 
             //--------------------------
             // Recording
             //--------------------------
             GUILayout.Label("Gesture recording settings", EditorStyles.boldLabel);
+            GUILayout.Space(10);
+
             _newGestureName.stringValue = EditorGUILayout.TextField("New gesture name", _newGestureName.stringValue);
             EditorGUILayout.PropertyField(_handToRecord);
 
-            GUILayout.Space(10);
+            GUILayout.Space(20);
 
             //--------------------------
             // Recognition
             //--------------------------
             GUILayout.Label("Gesture recognition settings", EditorStyles.boldLabel);
+            GUILayout.Space(10);
+            _recognitionThreshold.floatValue = EditorGUILayout.FloatField("Recognition threshold", _recognitionThreshold.floatValue);
+
+            //--------------------------
+            // Gestures
+            //--------------------------
+            GUILayout.Space(20);
+            var warningStyle = new GUIStyle()
+            {
+                normal =
+                {
+                    textColor = Color.yellow
+                }
+            };
+            GUILayout.Label("!!!  Warning: each gesture should contain 26 joints  !!!", warningStyle);
+            EditorGUILayout.PropertyField(_gestures,new GUIContent("Current Gestures"));
 
             serializedObject.ApplyModifiedProperties();
         }
