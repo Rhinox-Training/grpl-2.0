@@ -14,7 +14,6 @@ namespace Rhinox.XR.Grapple
         {
             Neutral,
             Grabbing,
-            //Holding,
             Dropping
         }
 
@@ -69,9 +68,9 @@ namespace Rhinox.XR.Grapple
                 _ColliderL = _colliderObjL.AddComponent<BoxCollider>();
                 _ColliderL.isTrigger = true;
                 _ColliderL.enabled = false;
-                //_ColliderL.center = new(0, -0.04f, 0.04f);//hardcoded values gathered from lot's of eyeballing and testing
-                //_ColliderL.center = new(0, -0.03f, 0.015f);//hardcoded values gathered from lot's of eyeballing and testing
-                _ColliderL.center = new(0f, -0.03f, 0.0225f);//hardcoded values gathered from lot's of eyeballing and testing
+                //_ColliderL.center = new(0, -0.04f, 0.04f);//values gathered from lot's of eyeballing and testing
+                //_ColliderL.center = new(0, -0.03f, 0.015f);//values gathered from lot's of eyeballing and testing
+                _ColliderL.center = new(0f, -0.03f, 0.0225f);//values gathered from lot's of eyeballing and testing
                 //_ColliderL.radius = 0.05f;
                 _ColliderL.size = new(0.06f, 0.035f, 0.07f);
 
@@ -85,7 +84,7 @@ namespace Rhinox.XR.Grapple
                 _ColliderR = _colliderObjR.AddComponent<BoxCollider>();
                 _ColliderR.enabled = false;
                 _ColliderR.isTrigger = true;
-                _ColliderR.center = new(0f, -0.03f, 0.0225f); //hardcoded values gathered from lot's of eyeballing and testing
+                _ColliderR.center = new(0f, -0.03f, 0.0225f); //values gathered from lot's of eyeballing and testing
                 //_ColliderR.radius = 0.04f;
                 _ColliderR.size = new(0.06f, 0.035f, 0.07f);
             }
@@ -126,10 +125,6 @@ namespace Rhinox.XR.Grapple
                 //Grabbing logic
                 _currentHandStateL = GetCurrentHandState(palmBone, Hand.Left);
 
-
-                //if (_previousHandStateL == HandState.Neutral)
-                //    _currentHandStateL = IsTryingToGrab(palmBone, Hand.Left) ? HandState.Grabbing : _currentHandStateL;
-
                 if (_potentialGrabItemL != null && _grabbedItemL == null
                     && _currentHandStateL == HandState.Grabbing && _previousHandStateL != HandState.Grabbing)
                 {
@@ -147,7 +142,6 @@ namespace Rhinox.XR.Grapple
                     }
 
                     _grabbedItemL = _potentialGrabItemL;
-                    //_currentHandStateL = HandState.Holding;
 
                     Rigidbody rigidCmp = _grabbedItemL.GetComponent<Rigidbody>();
                     if (rigidCmp != null)
@@ -160,9 +154,6 @@ namespace Rhinox.XR.Grapple
                 //Dropping logic
                 else
                 {
-                    //if (_previousHandStateL == HandState.Holding)
-                    //    _currentHandStateL = IsTryingToDrop(palmBone, Hand.Left) ? HandState.Dropping : _currentHandStateL;
-
                     if (_grabbedItemL != null && _currentHandStateL == HandState.Dropping &&
                         _previousHandStateL != HandState.Dropping)
                     {
@@ -177,13 +168,9 @@ namespace Rhinox.XR.Grapple
                             }
                         }
 
-                        //_currentHandStateL = HandState.Neutral;
                         _grabbedItemL = null;
                     }
                 }
-
-                //if (_currentHandStateL is HandState.Grabbing or HandState.Dropping)
-                //    _currentHandStateL = HandState.Neutral;
 
                 _previousHandStateL = _currentHandStateL;
             }
@@ -198,11 +185,7 @@ namespace Rhinox.XR.Grapple
 
                 _currentHandStateR = GetCurrentHandState(palmBone, Hand.Right);
 
-
-                //Grabbing logic
-                //if (_previousHandStateR == HandState.Neutral)
-                //    _currentHandStateR = IsTryingToGrab(palmBone, Hand.Right) ? HandState.Grabbing : _currentHandStateR;
-
+                //Grabbing logics
                 if (_potentialGrabItemR != null && _grabbedItemR == null
                     && _currentHandStateR == HandState.Grabbing && _previousHandStateR != HandState.Grabbing)
                 {
@@ -231,9 +214,6 @@ namespace Rhinox.XR.Grapple
                 //Dropping logic
                 else
                 {
-                    //if (_previousHandStateR == HandState.Holding)
-                    //    _currentHandStateR = IsTryingToDrop(palmBone, Hand.Right) ? HandState.Dropping : _currentHandStateR;
-
                     if (_grabbedItemR != null && _currentHandStateR == HandState.Dropping &&
                         _previousHandStateR != HandState.Dropping)
                     {
@@ -248,14 +228,9 @@ namespace Rhinox.XR.Grapple
                             }
                         }
 
-                        //_currentHandStateR = HandState.Neutral;
                         _grabbedItemR = null;
                     }
                 }
-
-                //if (_currentHandStateR is HandState.Grabbing or HandState.Dropping)
-                //    _currentHandStateR = HandState.Neutral;
-
                 _previousHandStateR = _currentHandStateR;
             }
             #endregion
@@ -320,59 +295,6 @@ namespace Rhinox.XR.Grapple
                 return HandState.Dropping;
             else
                 return HandState.Neutral;
-        }
-
-        bool IsTryingToGrab(RhinoxBone palmBone, Hand hand)
-        {
-            if (hand == Hand.Both)
-                return false;
-
-
-            //maybe add and if statement after each total+= for early return?
-
-            float total = 0f;
-            var thumbTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.ThumbTip);
-            total += Vector3.SqrMagnitude(palmBone.BonePosition - thumbTip.BonePosition);
-            var indexTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.IndexTip);
-            total += Vector3.SqrMagnitude(palmBone.BonePosition - indexTip.BonePosition);
-            var middleTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.MiddleTip);
-            total += Vector3.SqrMagnitude(palmBone.BonePosition - middleTip.BonePosition);
-            var ringTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.RingTip);
-            total += Vector3.SqrMagnitude(palmBone.BonePosition - ringTip.BonePosition);
-            var littleTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.LittleTip);
-            total += Vector3.SqrMagnitude(palmBone.BonePosition - littleTip.BonePosition);
-
-            if (total > GRABBING_THRESHOLD)
-                return false;
-
-            return true;
-        }
-
-        bool IsTryingToDrop(RhinoxBone palmBone, Hand hand)
-        {
-            if (hand == Hand.Both)
-                return false;
-
-
-            //maybe add and if statement after each total+= for early return?
-
-            float total = 0f;
-            var thumbTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.ThumbTip);
-            total += Vector3.SqrMagnitude(palmBone.BonePosition - thumbTip.BonePosition);
-            var indexTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.IndexTip);
-            total += Vector3.SqrMagnitude(palmBone.BonePosition - indexTip.BonePosition);
-            var middleTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.MiddleTip);
-            total += Vector3.SqrMagnitude(palmBone.BonePosition - middleTip.BonePosition);
-            var ringTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.RingTip);
-            total += Vector3.SqrMagnitude(palmBone.BonePosition - ringTip.BonePosition);
-            var littleTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.LittleTip);
-            total += Vector3.SqrMagnitude(palmBone.BonePosition - littleTip.BonePosition);
-
-            //if (total < DROPPING_THRESHOLD)
-            if (total < GRABBING_THRESHOLD)
-                return false;
-
-            return true;
         }
 
         public void SetEnabled(bool newState, Hand handedness)
