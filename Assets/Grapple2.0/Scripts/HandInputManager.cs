@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.XR.CoreUtils;
 using UnityEngine;
 
 
 namespace Rhinox.XR.Grapple
 {
-    public sealed class HandInputManager : MonoBehaviour
+    [RequireComponent(typeof(GestureRecognizer))]
+    public class HandInputManager : MonoBehaviour
     {
         private BoneManager _boneManager = null;
 
@@ -14,6 +16,9 @@ namespace Rhinox.XR.Grapple
         [Header("Physics")]
         public PhysicServices SelectedPhysicsService = PhysicServices.None;
 
+        private GestureRecognizer _gestureRecognizer = null;
+        
+        
         void Start()
         {
             _boneManager = gameObject.AddComponent<BoneManager>();
@@ -52,6 +57,10 @@ namespace Rhinox.XR.Grapple
             }
 
             _physicsService.Update();
+            
+            _gestureRecognizer = GetComponent<GestureRecognizer>();
+            _gestureRecognizer.Initialize(_boneManager);
+
         }
     }
 }
