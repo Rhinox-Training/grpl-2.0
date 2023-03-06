@@ -6,7 +6,7 @@ using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.XR;
 using UnityEngine.XR.Hands;
 
-namespace Rhinox.XR.Grapple
+namespace Rhinox.XR.Grapple.It
 {
     public sealed class PhysicsSocketService : IPhysicsService
     {

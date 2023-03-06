@@ -4,7 +4,7 @@ using Unity.XR.CoreUtils;
 using UnityEngine;
 
 
-namespace Rhinox.XR.Grapple
+namespace Rhinox.XR.Grapple.It
 {
     [RequireComponent(typeof(GestureRecognizer))]
     public class HandInputManager : MonoBehaviour
