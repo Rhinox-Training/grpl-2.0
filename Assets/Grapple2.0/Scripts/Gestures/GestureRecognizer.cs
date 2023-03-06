@@ -6,24 +6,26 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
-using UnityEngine.InputSystem;
 
 namespace Rhinox.XR.Grapple
 {
     [Serializable]
     public struct RhinoxGesture
     {
-        [JsonProperty(PropertyName = "Ghesture name")]
+        [JsonProperty(PropertyName = "Gesture name")]
         public string Name;
 
         [JsonProperty(PropertyName = "Joint distances")]
         public List<float> JointData;
 
-        [JsonProperty (PropertyName = "Uses wrist rotation")]
-        public bool UseWristRotation;
+        [JsonProperty (PropertyName = "Uses joint forward")]
+        public bool UseJointForward;
 
+        [JsonProperty(PropertyName = "Forward joint")]
+        public XRHandJointID CheckJoint;
+        
         [JsonProperty (PropertyName = "Wrist rotation")]
-        public Quaternion WristRotation;
+        public Vector3 JointForward;
         
         [JsonIgnore]
         public UnityEvent<Handedness> OnRecognized;
@@ -93,7 +95,8 @@ namespace Rhinox.XR.Grapple
         
         public string SavedGestureName = "New Gesture";
         public Handedness HandToRecord = Handedness.Left;
-        public bool UseWristRotation = false;
+        public bool UseJointForward = false;
+        public XRHandJointID ForwardJoint;
         #endregion
  
         #region Recognizer fields
@@ -137,14 +140,12 @@ namespace Rhinox.XR.Grapple
             if(!_isInitialized)
                 return;
             
-            Debug.Log(_boneManager.GetBone(XRHandJointID.Wrist,Handedness.Left).BoneRotation.eulerAngles);
-            
             if(Input.GetKeyDown(KeyCode.Space))
                 SaveGesture(HandToRecord);
             
             RecognizeGesture(Handedness.Left);
             RecognizeGesture(Handedness.Right);
-
+    
         }
         
         private void SaveGesture(Handedness handedness)
@@ -155,7 +156,7 @@ namespace Rhinox.XR.Grapple
             var newGesture = new RhinoxGesture
             {
                 Name = SavedGestureName,
-                UseWristRotation = UseWristRotation
+                UseJointForward = UseJointForward
             };
             var gestureDistances = new List<float>();
             var joints = _boneManager.GetBonesFromHand(handedness);
@@ -166,12 +167,22 @@ namespace Rhinox.XR.Grapple
                 return;
             }
 
-            if (UseWristRotation)
-                newGesture.WristRotation = wristJoint.BoneRotation;
+            if (UseJointForward)
+            {
+                newGesture.CheckJoint = ForwardJoint;
+                var joint = _boneManager.GetBone(ForwardJoint, HandToRecord);
+
+                if (joint == null)
+                {
+                    Debug.LogError($"Can't find joint {ForwardJoint} on {HandToRecord} hand");
+                    return;
+                }
+                newGesture.JointForward = joint.Forward;
+            }
+            
             
             foreach (var joint in joints)
             {
-                //Save the vector from the wrist to the current joint
                 var currentDist = Vector3.Distance(joint.BonePosition, wristJoint.BonePosition);
                 gestureDistances.Add(currentDist);
             }
@@ -205,9 +216,15 @@ namespace Rhinox.XR.Grapple
             {
                 float sumDistance = 0;
                 var isDiscarded = false;
-                if (gesture.UseWristRotation)
+
+                if (gesture.UseJointForward)
                 {
-                    if(!UnityTypeExtensions.Approximately(wristJoint.BoneRotation,gesture.WristRotation,RecognitionThreshold))
+                    //Get the correct forward of the current hand
+                    var bone = _boneManager.GetBone(gesture.CheckJoint, handedness);
+                    if(bone == null)
+                        continue;
+                    
+                    if (!UnityTypeExtensions.Approximately(bone.Forward, gesture.JointForward,0.5f))
                         continue;
                 }
                 

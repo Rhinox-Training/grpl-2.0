@@ -18,6 +18,7 @@ namespace Rhinox.XR.Grapple
         private SerializedProperty _recognitionThreshold;
         private SerializedProperty _gestures;
         private SerializedProperty _useJointForward;
+        private SerializedProperty _forwardJoint;
         #endregion
 
         private void OnEnable()
@@ -30,7 +31,8 @@ namespace Rhinox.XR.Grapple
             _handToRecord = serializedObject.FindProperty("HandToRecord");
             _recognitionThreshold = serializedObject.FindProperty("RecognitionThreshold");
             _gestures = serializedObject.FindProperty("Gestures");
-            _useJointForward = serializedObject.FindProperty("UseWristRotation");
+            _useJointForward = serializedObject.FindProperty("UseJointForward");
+            _forwardJoint = serializedObject.FindProperty("ForwardJoint");
         }
 
         public override void OnInspectorGUI()
@@ -102,7 +104,8 @@ namespace Rhinox.XR.Grapple
             _newGestureName.stringValue = EditorGUILayout.TextField("New gesture name", _newGestureName.stringValue);
             EditorGUILayout.PropertyField(_handToRecord);
             _useJointForward.boolValue =
-                EditorGUILayout.Toggle("Use wrist rotation", _useJointForward.boolValue);
+                EditorGUILayout.Toggle("Use joint forward", _useJointForward.boolValue);
+            EditorGUILayout.PropertyField(_forwardJoint);
             GUILayout.Space(20);
 
             //--------------------------
