@@ -1,0 +1,16 @@
+{
+    "name": "com.rhinox.open.grplit",
+    "rootNamespace": "",
+    "references": [
+        "GUID:74574ea3c3c76d643b6f8b5e0201a31a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
