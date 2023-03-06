@@ -1,0 +1,18 @@
+{
+    "name": "com.rhinox.open.grpl.editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:74574ea3c3c76d643b6f8b5e0201a31a"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
