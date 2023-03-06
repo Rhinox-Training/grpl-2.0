@@ -1554,44 +1554,11 @@ MonoBehaviour:
   OverwriteGesturesOnImport: 1
   ExportFilePath: C:/Users/TEST SSD/Desktop/Fork/grpl-2.0/Gestures
   ExportFileName: RecordedGestures
-  SavedGestureName: New Gesture
+  SavedGestureName: Thumbs up
   HandToRecord: 1
+  UseWristRotation: 1
   RecognitionThreshold: 0.02
-  Gestures:
-  - Name: asdfasdfasdf
-    JointData:
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    OnRecognized:
-      m_PersistentCalls:
-        m_Calls: []
-    OnUnrecognized:
-      m_PersistentCalls:
-        m_Calls: []
+  Gestures: []
   OnGestureRecognized:
     m_PersistentCalls:
       m_Calls: []

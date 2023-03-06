@@ -1,9 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
-using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.XR.Hands;
 using UnityEngine.XR.Management;
@@ -24,6 +21,8 @@ namespace Rhinox.XR.Grapple
         public Vector3 BonePosition;
         public Quaternion BoneRotation;
 
+        public Vector3 Forward;
+        
         public RhinoxBone(XRHandJointID boneId)
         {
             BoneId = boneId;
@@ -89,6 +88,9 @@ namespace Rhinox.XR.Grapple
         private void Update()
         {
             TryEnsureInitialized();
+
+            _subsystem.leftHand.GetJoint(XRHandJointID.ThumbTip).TryGetPose(out var pose);
+            Debug.Log(pose.forward);
         }
 
         private void UpdateRootPose(Handedness hand)
@@ -100,6 +102,7 @@ namespace Rhinox.XR.Grapple
                         var rootPose = _subsystem.leftHand.rootPose;// GetJoint(XRHandJointID.Wrist).TryGetPose();
                         _leftHandBones[0].BonePosition = rootPose.position;
                         _leftHandBones[0].BoneRotation = rootPose.rotation;
+                        _leftHandBones[0].Forward = rootPose.forward;
                         break;
                     }
                 case Handedness.Right:
@@ -107,7 +110,9 @@ namespace Rhinox.XR.Grapple
                         var rootPose = _subsystem.rightHand.rootPose;// GetJoint(XRHandJointID.Wrist).TryGetPose();
                         _rightHandBones[0].BonePosition = rootPose.position;
                         _rightHandBones[0].BoneRotation = rootPose.rotation;
+                        _rightHandBones[0].Forward = rootPose.forward;
                         break;
+
                     }
                 case Handedness.Invalid:
                     break;
@@ -131,6 +136,7 @@ namespace Rhinox.XR.Grapple
 
                             currentBone.BonePosition = pose.position;
                             currentBone.BoneRotation = pose.rotation;
+                            currentBone.Forward = pose.forward;
                         }
                         break;
                     }
@@ -144,9 +150,11 @@ namespace Rhinox.XR.Grapple
                             var currentBone = _rightHandBones[(int)jointId - 1];
 
                             _subsystem.rightHand.GetJoint(jointId).TryGetPose(out var pose);
-
+                            
                             currentBone.BonePosition = pose.position;
                             currentBone.BoneRotation = pose.rotation;
+                            currentBone.Forward = pose.forward;
+
                         }
                         break;
                     }

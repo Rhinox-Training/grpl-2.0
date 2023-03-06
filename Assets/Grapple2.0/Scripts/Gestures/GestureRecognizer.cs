@@ -6,21 +6,38 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+using UnityEngine.InputSystem;
 
 namespace Rhinox.XR.Grapple
 {
     [Serializable]
     public struct RhinoxGesture
     {
+        [JsonProperty(PropertyName = "Ghesture name")]
         public string Name;
+
+        [JsonProperty(PropertyName = "Joint distances")]
         public List<float> JointData;
+
+        [JsonProperty (PropertyName = "Uses wrist rotation")]
+        public bool UseWristRotation;
+
+        [JsonProperty (PropertyName = "Wrist rotation")]
+        public Quaternion WristRotation;
+        
+        [JsonIgnore]
         public UnityEvent<Handedness> OnRecognized;
+
+        [JsonIgnore]
         public UnityEvent<Handedness> OnUnrecognized;
 
         /// <remarks>Does not compare the name or events!</remarks>
         public override bool Equals(object obj)
         {
             if (obj == null)
+                return false;
+
+            if (obj.GetType() != typeof(RhinoxGesture))
                 return false;
             
             var otherGesture = (RhinoxGesture)obj;
@@ -76,6 +93,7 @@ namespace Rhinox.XR.Grapple
         
         public string SavedGestureName = "New Gesture";
         public Handedness HandToRecord = Handedness.Left;
+        public bool UseWristRotation = false;
         #endregion
  
         #region Recognizer fields
@@ -119,6 +137,8 @@ namespace Rhinox.XR.Grapple
             if(!_isInitialized)
                 return;
             
+            Debug.Log(_boneManager.GetBone(XRHandJointID.Wrist,Handedness.Left).BoneRotation.eulerAngles);
+            
             if(Input.GetKeyDown(KeyCode.Space))
                 SaveGesture(HandToRecord);
             
@@ -126,7 +146,7 @@ namespace Rhinox.XR.Grapple
             RecognizeGesture(Handedness.Right);
 
         }
-
+        
         private void SaveGesture(Handedness handedness)
         {
             if (!_isInitialized)
@@ -134,7 +154,8 @@ namespace Rhinox.XR.Grapple
             
             var newGesture = new RhinoxGesture
             {
-                Name = SavedGestureName
+                Name = SavedGestureName,
+                UseWristRotation = UseWristRotation
             };
             var gestureDistances = new List<float>();
             var joints = _boneManager.GetBonesFromHand(handedness);
@@ -144,6 +165,9 @@ namespace Rhinox.XR.Grapple
                 Debug.LogError($"GestureRecognizer.cs - SaveGesture({handedness}), no wrist joint found.");
                 return;
             }
+
+            if (UseWristRotation)
+                newGesture.WristRotation = wristJoint.BoneRotation;
             
             foreach (var joint in joints)
             {
@@ -160,12 +184,10 @@ namespace Rhinox.XR.Grapple
                  Debug.LogWarning(
                      $"GestureRecognizer.cs - SaveGesture({handedness}), list with {handedness} gestures already contains {duplicateGestures.Count()} gestures with the same name, adding duplicate.");
                  newGesture.Name = SavedGestureName + "_Dupe";
-             
-             Gestures.Add(newGesture);
-                
-            }
-        }
+             }
 
+             Gestures.Add(newGesture);
+        }
         
         private void RecognizeGesture(Handedness handedness)
         {
@@ -183,6 +205,12 @@ namespace Rhinox.XR.Grapple
             {
                 float sumDistance = 0;
                 var isDiscarded = false;
+                if (gesture.UseWristRotation)
+                {
+                    if(!UnityTypeExtensions.Approximately(wristJoint.BoneRotation,gesture.WristRotation,RecognitionThreshold))
+                        continue;
+                }
+                
                 for (var i = 0; i < joints.Count; i++)
                 {
                     var currentDist = Vector3.Distance(wristJoint.BonePosition, joints[i].BonePosition);
@@ -293,8 +321,7 @@ namespace Rhinox.XR.Grapple
             else
                 Gestures = json;
 
-
-
+            Gestures ??= new List<RhinoxGesture>();
         }
         
     }

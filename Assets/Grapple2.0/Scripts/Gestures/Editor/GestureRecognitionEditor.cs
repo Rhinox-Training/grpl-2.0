@@ -17,6 +17,7 @@ namespace Rhinox.XR.Grapple
         private SerializedProperty _handToRecord;
         private SerializedProperty _recognitionThreshold;
         private SerializedProperty _gestures;
+        private SerializedProperty _useJointForward;
         #endregion
 
         private void OnEnable()
@@ -29,7 +30,7 @@ namespace Rhinox.XR.Grapple
             _handToRecord = serializedObject.FindProperty("HandToRecord");
             _recognitionThreshold = serializedObject.FindProperty("RecognitionThreshold");
             _gestures = serializedObject.FindProperty("Gestures");
-            _gestures = serializedObject.FindProperty("Gestures");
+            _useJointForward = serializedObject.FindProperty("UseWristRotation");
         }
 
         public override void OnInspectorGUI()
@@ -40,9 +41,9 @@ namespace Rhinox.XR.Grapple
             //--------------------------
             // Import
             //--------------------------
-            GUILayout.Space(10);
+            GUILayout.Space(5);
             GUILayout.Label("Gesture import settings", EditorStyles.boldLabel);
-            GUILayout.Space(10);
+            GUILayout.Space(5);
             _overwriteOnImport.boolValue =
                 EditorGUILayout.Toggle("Overwrite gestures on import", _overwriteOnImport.boolValue);
             if (GUILayout.Button("Import gesture file"))
@@ -65,7 +66,7 @@ namespace Rhinox.XR.Grapple
             // Export
             //--------------------------
             GUILayout.Label("Gesture export settings", EditorStyles.boldLabel);
-            GUILayout.Space(10);
+            GUILayout.Space(5);
             if (GUILayout.Button("Choose target folder"))
             {
                 var chosenFolder = EditorUtility.OpenFolderPanel("Choose target folder",
@@ -96,11 +97,12 @@ namespace Rhinox.XR.Grapple
             // Recording
             //--------------------------
             GUILayout.Label("Gesture recording settings", EditorStyles.boldLabel);
-            GUILayout.Space(10);
+            GUILayout.Space(5);
 
             _newGestureName.stringValue = EditorGUILayout.TextField("New gesture name", _newGestureName.stringValue);
             EditorGUILayout.PropertyField(_handToRecord);
-
+            _useJointForward.boolValue =
+                EditorGUILayout.Toggle("Use wrist rotation", _useJointForward.boolValue);
             GUILayout.Space(20);
 
             //--------------------------
