@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.XR.CoreUtils;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.XR.Hands;
 using UnityEngine.XR.Management;
@@ -23,6 +21,8 @@ namespace Rhinox.XR.Grapple
         public Vector3 BonePosition;
         public Quaternion BoneRotation;
 
+        public Vector3 Forward;
+        
         public RhinoxBone(XRHandJointID boneId)
         {
             BoneId = boneId;
@@ -33,10 +33,10 @@ namespace Rhinox.XR.Grapple
     {
         #region XRHands fields
 
-        XRHandSubsystem _subsystem;
+        private XRHandSubsystem _subsystem;
 
         #endregion
-
+        
 
         private List<RhinoxBone> _leftHandBones = new List<RhinoxBone>();
         private List<RhinoxBone> _rightHandBones = new List<RhinoxBone>();
@@ -53,6 +53,7 @@ namespace Rhinox.XR.Grapple
         {
             if (_subsystem != null)
                 return;
+            
             //Load the subsystem if possible
             _subsystem = XRGeneralSettings.Instance?.Manager?.activeLoader?.GetLoadedSubsystem<XRHandSubsystem>();
 
@@ -72,19 +73,15 @@ namespace Rhinox.XR.Grapple
 
             if ((updateSuccessFlags & XRHandSubsystem.UpdateSuccessFlags.LeftHandRootPose) != XRHandSubsystem.UpdateSuccessFlags.None)
                 UpdateRootPose(Handedness.Left);
-            //m_LeftHandGameObjects.UpdateRootPose(subsystem.leftHand);
 
             if ((updateSuccessFlags & XRHandSubsystem.UpdateSuccessFlags.LeftHandJoints) != XRHandSubsystem.UpdateSuccessFlags.None)
                 UpdateJoints(Handedness.Left);
-            //m_LeftHandGameObjects.UpdateJoints(m_Origin, m_Subsystem.leftHand);
 
             if ((updateSuccessFlags & XRHandSubsystem.UpdateSuccessFlags.RightHandRootPose) != XRHandSubsystem.UpdateSuccessFlags.None)
                 UpdateRootPose(Handedness.Right);
-            //m_RightHandGameObjects.UpdateRootPose(subsystem.rightHand);
 
             if ((updateSuccessFlags & XRHandSubsystem.UpdateSuccessFlags.RightHandJoints) != XRHandSubsystem.UpdateSuccessFlags.None)
                 UpdateJoints(Handedness.Right);
-            //m_RightHandGameObjects.UpdateJoints(m_Origin, m_Subsystem.rightHand);
 
         }
 
@@ -92,8 +89,8 @@ namespace Rhinox.XR.Grapple
         {
             TryEnsureInitialized();
 
-            Debug.Log(_rightHandBones.LastOrDefault().BonePosition);
-
+            _subsystem.leftHand.GetJoint(XRHandJointID.ThumbTip).TryGetPose(out var pose);
+            Debug.Log(pose.forward);
         }
 
         private void UpdateRootPose(Handedness hand)
@@ -105,6 +102,7 @@ namespace Rhinox.XR.Grapple
                         var rootPose = _subsystem.leftHand.rootPose;// GetJoint(XRHandJointID.Wrist).TryGetPose();
                         _leftHandBones[0].BonePosition = rootPose.position;
                         _leftHandBones[0].BoneRotation = rootPose.rotation;
+                        _leftHandBones[0].Forward = rootPose.forward;
                         break;
                     }
                 case Handedness.Right:
@@ -112,7 +110,9 @@ namespace Rhinox.XR.Grapple
                         var rootPose = _subsystem.rightHand.rootPose;// GetJoint(XRHandJointID.Wrist).TryGetPose();
                         _rightHandBones[0].BonePosition = rootPose.position;
                         _rightHandBones[0].BoneRotation = rootPose.rotation;
+                        _rightHandBones[0].Forward = rootPose.forward;
                         break;
+
                     }
                 case Handedness.Invalid:
                     break;
@@ -136,6 +136,7 @@ namespace Rhinox.XR.Grapple
 
                             currentBone.BonePosition = pose.position;
                             currentBone.BoneRotation = pose.rotation;
+                            currentBone.Forward = pose.forward;
                         }
                         break;
                     }
@@ -149,9 +150,11 @@ namespace Rhinox.XR.Grapple
                             var currentBone = _rightHandBones[(int)jointId - 1];
 
                             _subsystem.rightHand.GetJoint(jointId).TryGetPose(out var pose);
-
+                            
                             currentBone.BonePosition = pose.position;
                             currentBone.BoneRotation = pose.rotation;
+                            currentBone.Forward = pose.forward;
+
                         }
                         break;
                     }
@@ -196,6 +199,32 @@ namespace Rhinox.XR.Grapple
 
             return new List<RhinoxBone>();
         }
+
+        public List<RhinoxBone> GetBonesFromHand(Handedness hand)
+        {
+            switch (hand)
+            {
+
+                case Handedness.Left:
+                    return _leftHandBones;
+                case Handedness.Right:
+                    return _rightHandBones;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(hand), hand, null);
+            }
+        }
+
+        [CanBeNull]
+        public RhinoxBone GetBone(XRHandJointID jointID,Handedness handedness)
+        {
+            if (handedness == Handedness.Left)
+                return _leftHandBones.Find(x => x.BoneId == jointID);
+            if (handedness == Handedness.Right)
+                return _rightHandBones.Find(x => x.BoneId == jointID);
+
+            return null;
+        }
+        
     }
 
 }

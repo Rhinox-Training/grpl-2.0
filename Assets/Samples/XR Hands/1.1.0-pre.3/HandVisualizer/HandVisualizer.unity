@@ -153,6 +153,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 944581975}
   m_RootOrder: 0
@@ -342,6 +343,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 944581975}
   m_RootOrder: 1
@@ -358,6 +360,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e9813c68d7d6f44282ace8bd2d1fd46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_UseOptimizedControls: 1
   m_Origin: {fileID: 1085439596}
   m_LeftHandMesh: {fileID: 919132149155446097, guid: bf7151579c38e2a44be94ba8773876c1, type: 3}
   m_RightHandMesh: {fileID: 919132149155446097, guid: 56186ccf27ad7864681108ed88349071, type: 3}
@@ -393,6 +396,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 215855081}
   - {fileID: 935940901}
@@ -409,6 +413,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1085439597}
   - component: {fileID: 1085439596}
+  - component: {fileID: 1085439599}
+  - component: {fileID: 1085439598}
   m_Layer: 0
   m_Name: XR Origin
   m_TagString: Untagged
@@ -443,11 +449,52 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 944581975}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1085439598
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1085439595}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5542bb0dda26e994ca289baab453f344, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1085439599
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1085439595}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2839de4b6f174444935da38fe4db858, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ImportFilePath: C:/Users/TEST SSD/Desktop/Fork/grpl-2.0/Gestures/RecordedGestures.json
+  OverwriteGesturesOnImport: 0
+  ExportFilePath: C:/Users/TEST SSD/Desktop/Fork/grpl-2.0/Gestures
+  ExportFileName: RecordedGestures
+  SavedGestureName: New Gesture
+  HandToRecord: 1
+  RecognitionThreshold: 0.01
+  Gestures:
+  - Name: asdfasdfasdf
+    JointData: []
+    OnRecognized:
+      m_PersistentCalls:
+        m_Calls: []
+    OnUnrecognized:
+      m_PersistentCalls:
+        m_Calls: []
 --- !u!1 &1517268251
 GameObject:
   m_ObjectHideFlags: 0
@@ -537,6 +584,7 @@ Transform:
   m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
