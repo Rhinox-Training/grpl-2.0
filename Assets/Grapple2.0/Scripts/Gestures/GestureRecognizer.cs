@@ -325,6 +325,12 @@ namespace Rhinox.XR.Grapple
             {
                 Debug.LogError($"GestureRecognizer.cs - {nameof(ReadGesturesFromJson)}, could not find directory:  \"{ImportFilePath}\"!");
             }
+
+            if (!File.Exists(ImportFilePath))
+            {
+                Gestures = new List<RhinoxGesture>();
+                return;
+            }
             
             var reader = new StreamReader(ImportFilePath);
             var fileContent = reader.ReadToEnd();
