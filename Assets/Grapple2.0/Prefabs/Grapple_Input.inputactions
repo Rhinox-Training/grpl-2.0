@@ -1,0 +1,34 @@
+{
+    "name": "Grapple_Input",
+    "maps": [
+        {
+            "name": "Gesture Controls",
+            "id": "60e2db77-ca8e-4d41-ad36-e9acf7863430",
+            "actions": [
+                {
+                    "name": "Record gesture",
+                    "type": "Button",
+                    "id": "f317c19d-2b6d-4263-9461-f52a6cec84b0",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "0d6e7b8c-310e-446d-b250-c44ed553b0fe",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Record gesture",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

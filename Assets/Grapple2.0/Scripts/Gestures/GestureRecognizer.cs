@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+using UnityEngine.InputSystem;
 
 namespace Rhinox.XR.Grapple
 {
@@ -80,19 +81,26 @@ namespace Rhinox.XR.Grapple
         }
     }
     
+    /// <summary>
+    /// This class implements the behaviour to detect gestures. These gestures can be imported from a json or recording during play mode.
+    /// There is also the possibility to export the gestures in a (new) json file.
+    /// </summary>
     public class GestureRecognizer : MonoBehaviour
     {
         #region Gesture import fields
 
+        public bool ImportOnPlay = true;
+        
         public string ImportFilePath = "";
         public bool OverwriteGesturesOnImport;
         #endregion
         
         #region Gesture Saving fields
-        
+        public bool ExportOnDestroy = false;
         public string ExportFilePath = "";
         public string ExportFileName = "RecordedGestures";
-        
+
+        public InputActionReference RecordActionReference;
         public string SavedGestureName = "New Gesture";
         public Handedness HandToRecord = Handedness.Left;
         public bool UseJointForward = false;
@@ -127,28 +135,40 @@ namespace Rhinox.XR.Grapple
         
         private void Awake()
         {
-            ReadGesturesFromJson();
+            if(ImportOnPlay)
+                ReadGesturesFromJson();
         }
 
         private void OnDestroy()
         {
-            WriteGesturesToJson();
+            if(ExportOnDestroy)
+                WriteGesturesToJson();
+        }
+
+        private void OnEnable()
+        {
+            if(RecordActionReference == null)
+                Debug.LogWarning("GestureRecognizer.cs, Record action reference not set!");
+            
+            UnityTypeExtensions.Subscribe(RecordActionReference,SaveGesture);
+        }
+
+        private void OnDisable()
+        {
+            UnityTypeExtensions.Unsubscribe(RecordActionReference, SaveGesture);
         }
 
         private void Update()
         {
             if(!_isInitialized)
                 return;
-            
-            if(Input.GetKeyDown(KeyCode.Space))
-                SaveGesture(HandToRecord);
-            
+
             RecognizeGesture(Handedness.Left);
             RecognizeGesture(Handedness.Right);
     
         }
         
-        private void SaveGesture(Handedness handedness)
+        private void SaveGesture(InputAction.CallbackContext ctx)
         {
             if (!_isInitialized)
                 return;
@@ -159,11 +179,11 @@ namespace Rhinox.XR.Grapple
                 UseJointForward = UseJointForward
             };
             var gestureDistances = new List<float>();
-            var joints = _boneManager.GetBonesFromHand(handedness);
-            var wristJoint = _boneManager.GetBone(XRHandJointID.Wrist, handedness);
+            var joints = _boneManager.GetBonesFromHand(HandToRecord);
+            var wristJoint = _boneManager.GetBone(XRHandJointID.Wrist, HandToRecord);
             if (wristJoint == null)
             {
-                Debug.LogError($"GestureRecognizer.cs - SaveGesture({handedness}), no wrist joint found.");
+                Debug.LogError($"GestureRecognizer.cs - SaveGesture({HandToRecord}), no wrist joint found.");
                 return;
             }
 
@@ -193,7 +213,7 @@ namespace Rhinox.XR.Grapple
              if (duplicateGestures.Count > 0)
              {
                  Debug.LogWarning(
-                     $"GestureRecognizer.cs - SaveGesture({handedness}), list with {handedness} gestures already contains {duplicateGestures.Count()} gestures with the same name, adding duplicate.");
+                     $"GestureRecognizer.cs - SaveGesture({HandToRecord}), list with {HandToRecord} gestures already contains {duplicateGestures.Count()} gestures with the same name, adding duplicate.");
                  newGesture.Name = SavedGestureName + "_Dupe";
              }
 
@@ -238,7 +258,7 @@ namespace Rhinox.XR.Grapple
                         isDiscarded = true;
                         break;
                     }
-
+                    
                     sumDistance += distance;
                 }
 
@@ -316,23 +336,30 @@ namespace Rhinox.XR.Grapple
 
         private void ReadGesturesFromJson()
         {
-            if(ImportFilePath.Length==0)
-                return;
-            
-            var pathIndex = ImportFilePath.LastIndexOf('/');
+            ReadGesturesFromJson(ImportFilePath);
+        }
 
-            if (!Directory.Exists(ImportFilePath.Substring(0,pathIndex)))
+        public void ReadGesturesFromJson(string path)
+        {
+            if (path.Length == 0)
+                return;
+
+            var pathIndex = path.LastIndexOf('/');
+
+            if (!Directory.Exists(path.Substring(0, pathIndex)))
             {
-                Debug.LogError($"GestureRecognizer.cs - {nameof(ReadGesturesFromJson)}, could not find directory:  \"{ImportFilePath}\"!");
+                Debug.LogError(
+                    $"GestureRecognizer.cs - {nameof(ReadGesturesFromJson)}, could not find directory:  \"{path}\"!");
             }
 
-            if (!File.Exists(ImportFilePath))
+            if (!File.Exists(path))
             {
-                Gestures = new List<RhinoxGesture>();
+                Gestures ??= new List<RhinoxGesture>();
+                Debug.Log($"ReadGesturesFromJson(),File with path {path} could not be found, returning.");
                 return;
             }
-            
-            var reader = new StreamReader(ImportFilePath);
+
+            var reader = new StreamReader(path);
             var fileContent = reader.ReadToEnd();
             var json = JsonConvert.DeserializeObject<List<RhinoxGesture>>(fileContent);
 
@@ -346,6 +373,6 @@ namespace Rhinox.XR.Grapple
 
             Gestures ??= new List<RhinoxGesture>();
         }
-        
+
     }
 }
