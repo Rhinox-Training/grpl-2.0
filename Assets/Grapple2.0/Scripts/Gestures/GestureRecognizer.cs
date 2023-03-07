@@ -363,6 +363,10 @@ namespace Rhinox.XR.Grapple
             Debug.Log($"Wrote gestures to {finalPath}");
         }
 
+        /// <summary>
+        /// Reds the gestures from the json file at "ImportFilePath".
+        /// <remarks>See <see cref="ReadGesturesFromJson(string)"/></remarks>
+        /// </summary>
         private void ReadGesturesFromJson()
         {
             ReadGesturesFromJson(ImportFilePath);
