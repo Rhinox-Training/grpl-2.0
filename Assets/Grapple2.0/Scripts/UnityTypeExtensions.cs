@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public static class UnityTypeExtensions
 {
@@ -18,5 +20,44 @@ public static class UnityTypeExtensions
     {
         return f1 > f2 - acceptableRange && f1 < f2 + acceptableRange;
     }
-    
+
+    public static void Subscribe(InputActionReference reference,
+        Action<InputAction.CallbackContext> performed = null,
+        Action<InputAction.CallbackContext> canceled = null)
+    {
+        if(reference == null)
+            return;
+        
+        reference.asset.Enable();
+        
+        var action = GetInputAction(reference);
+        if (action != null)
+        {
+            if (performed != null)
+                action.performed += performed;
+            if (canceled != null)
+                action.canceled += canceled;
+        }
+    }
+
+    public static void Unsubscribe(InputActionReference reference,
+        Action<InputAction.CallbackContext> performed = null,
+        Action<InputAction.CallbackContext> canceled = null)
+    {
+        var action = GetInputAction(reference);
+        if (action != null)
+        {
+            if (performed != null)
+                action.performed -= performed;
+            if (canceled != null)
+                action.canceled -= canceled;
+        }
+    }
+
+    private static InputAction GetInputAction(InputActionReference actionReference)
+    {
+#pragma warning disable IDE0031 // Use null propagation -- Do not use for UnityEngine.Object types
+        return actionReference != null ? actionReference.action : null;
+#pragma warning restore IDE0031
+    }
 }
