@@ -4,12 +4,15 @@ using UnityEngine.Events;
 using UnityEngine.XR.Hands;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Newtonsoft.Json;
 using UnityEngine.InputSystem;
 
 namespace Rhinox.XR.Grapple
 {
+    /// <summary>
+    /// This struct represents a gesture in grapple. <br />
+    /// It contains all data related to one gesture, like the name, joint distances and joint forward.
+    /// </summary>
     [Serializable]
     public struct RhinoxGesture
     {
@@ -109,7 +112,8 @@ namespace Rhinox.XR.Grapple
  
         #region Recognizer fields
 
-        public float RecognitionThreshold = 0.02f;
+        public float GestureDistanceThreshold = 0.02f;
+        public float GestureForwardThreshold = 0.5f;
         public List<RhinoxGesture> Gestures = new List<RhinoxGesture>();
 
         private RhinoxGesture? _currentLeftGesture;
@@ -127,6 +131,10 @@ namespace Rhinox.XR.Grapple
 
         private bool _isInitialized;
 
+        /// <summary>
+        /// As the bone manager is an integral part of gesture recognition, this should always be called when creating this component! 
+        /// </summary>
+        /// <param name="boneManager"></param>
         public void Initialize(BoneManager boneManager)
         {
             _boneManager = boneManager;
@@ -163,11 +171,17 @@ namespace Rhinox.XR.Grapple
             if(!_isInitialized)
                 return;
 
+            //Check for gesture recognition
             RecognizeGesture(Handedness.Left);
             RecognizeGesture(Handedness.Right);
     
         }
         
+        /// <summary>
+        /// Saves the current pose of the "HandToRecord" hand as a new gesture under the name "SavedGestureName". <br />
+        /// This also includes the option to record the forward of the joint "ForwardJoint", for more restricted recognition. 
+        /// </summary>
+        /// <param name="ctx">See <see cref="InputAction.CallbackContext"/></param>
         private void SaveGesture(InputAction.CallbackContext ctx)
         {
             if (!_isInitialized)
@@ -180,6 +194,8 @@ namespace Rhinox.XR.Grapple
             };
             var gestureDistances = new List<float>();
             var joints = _boneManager.GetBonesFromHand(HandToRecord);
+            
+            //Get the root (wrist joint)
             var wristJoint = _boneManager.GetBone(XRHandJointID.Wrist, HandToRecord);
             if (wristJoint == null)
             {
@@ -187,6 +203,9 @@ namespace Rhinox.XR.Grapple
                 return;
             }
 
+            // Saving the joint forward allows for more detailed recognition
+            // Possible applications could be making a distinction between a thumbs up and a thumbs down
+            // Remark: is very sensitive
             if (UseJointForward)
             {
                 newGesture.CheckJoint = ForwardJoint;
@@ -200,7 +219,7 @@ namespace Rhinox.XR.Grapple
                 newGesture.JointForward = joint.Forward;
             }
             
-            
+            //Save the distances from each joint to the root
             foreach (var joint in joints)
             {
                 var currentDist = Vector3.Distance(joint.BonePosition, wristJoint.BonePosition);
@@ -209,17 +228,23 @@ namespace Rhinox.XR.Grapple
 
             newGesture.JointData = gestureDistances;
           
+            //Handle duplicate gesture names (at least a bit)
              var duplicateGestures = Gestures.FindAll(x => x.Name == SavedGestureName);
              if (duplicateGestures.Count > 0)
              {
                  Debug.LogWarning(
-                     $"GestureRecognizer.cs - SaveGesture({HandToRecord}), list with {HandToRecord} gestures already contains {duplicateGestures.Count()} gestures with the same name, adding duplicate.");
+                     $"GestureRecognizer.cs - SaveGesture({HandToRecord}), list with {HandToRecord} gestures already contains {duplicateGestures.Count} gestures with the same name, adding duplicate.");
                  newGesture.Name = SavedGestureName + "_Dupe";
              }
 
              Gestures.Add(newGesture);
         }
         
+        /// <summary>
+        /// Checks if the given hand "handedness" is currently representing a gesture. <br /> If a gesture is recognized, it is set as the current gesture and the corresponding events are invoked.
+        /// <remarks>Use the "RecognitionDistanceThreshold" and "RecognitionForwardThreshold" to change the harshness of the recognition. </remarks>
+        /// </summary>
+        /// <param name="handedness"></param>
         private void RecognizeGesture(Handedness handedness)
         {
             var currentGesture = new RhinoxGesture();
@@ -244,7 +269,7 @@ namespace Rhinox.XR.Grapple
                     if(bone == null)
                         continue;
                     
-                    if (!UnityTypeExtensions.Approximately(bone.Forward, gesture.JointForward,0.5f))
+                    if (!UnityTypeExtensions.Approximately(bone.Forward, gesture.JointForward,GestureForwardThreshold))
                         continue;
                 }
                 
@@ -253,7 +278,7 @@ namespace Rhinox.XR.Grapple
                     var currentDist = Vector3.Distance(wristJoint.BonePosition, joints[i].BonePosition);
                     var distance = currentDist - gesture.JointData[i];
                     
-                    if (-RecognitionThreshold > distance || distance > RecognitionThreshold)
+                    if (-GestureDistanceThreshold > distance || distance > GestureDistanceThreshold)
                     {
                         isDiscarded = true;
                         break;
@@ -299,6 +324,10 @@ namespace Rhinox.XR.Grapple
             
         }
 
+        /// <summary>
+        /// Writes all current gestures to a .json file at directory "ExportFilePath" with name "ExportFileName".json.
+        /// <remarks>If the ExportFilePath directory is not valid, the application data path is used.</remarks>
+        /// </summary>
         private void WriteGesturesToJson()
         {
             string finalPath;
@@ -339,6 +368,12 @@ namespace Rhinox.XR.Grapple
             ReadGesturesFromJson(ImportFilePath);
         }
 
+        /// <summary>
+        /// Imports the gestures from the given json file at path "path".
+        /// <remarks>If the directory or file is not valid, an empty list is added.</remarks>
+        /// <remarks>Specify whether to overwrite the current gesture using "OverwriteGesturesOnImport"</remarks>
+        /// </summary>
+        /// <param name="path"></param>
         public void ReadGesturesFromJson(string path)
         {
             if (path.Length == 0)
