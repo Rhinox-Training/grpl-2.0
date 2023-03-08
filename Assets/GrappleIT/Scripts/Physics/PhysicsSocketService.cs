@@ -61,9 +61,9 @@ namespace Rhinox.XR.Grapple.It
 
                 _SocketObjL = new GameObject("Socket Left");
                 _SocketObjL.transform.parent = _colliderObjL.transform;
-                //_SocketObjL.transform.SetLocalPositionAndRotation(new(0f, -0.0425f, 0.0335f), Quaternion.Euler(-10f, 35f, 90f));
-                _SocketObjL.transform.SetLocalPositionAndRotation(new(0f, -0.0425f, 0.0335f), Quaternion.Euler(10f, 145f, 90f));
-                //_SocketObjL.transform.SetLocalPositionAndRotation(new(0f, -0.0425f, 0.0335f), Quaternion.Euler(-10f, 145f, 90f));
+                //_SocketObjL.transform.SetLocalPositionAndRotation(new(0f, -0.0425f, 0.0335f), Quaternion.Euler(10f, 145f, 90f));
+                _SocketObjL.transform.SetLocalPositionAndRotation(new(0f, -0.0425f, 0.0335f), Quaternion.Euler(15f, 340f, 270f));
+                //Vector3(15f,340f,270f)
 
                 var colliderEventsL = _colliderObjL.AddComponent<PhysicsEventHandler>();
                 colliderEventsL.EnterEvent.AddListener(OnHandTriggerEnter);
@@ -81,7 +81,9 @@ namespace Rhinox.XR.Grapple.It
 
                 _SocketObjR = new GameObject("Socket Right");
                 _SocketObjR.transform.parent = _colliderObjR.transform;
-                _SocketObjR.transform.SetLocalPositionAndRotation(new(0f, -0.0425f, 0.0335f), Quaternion.Euler(-10f, 35f, 90f));
+                //_SocketObjR.transform.SetLocalPositionAndRotation(new(0f, -0.0425f, 0.0335f), Quaternion.Euler(-10f, 35f, 90f));
+                _SocketObjR.transform.SetLocalPositionAndRotation(new(0f, -0.0425f, 0.0335f), Quaternion.Euler(6f, 10f, 83f));
+                //Vector3(5,0,80)
 
                 var colliderEventsR = _colliderObjR.AddComponent<PhysicsEventHandler>();
                 colliderEventsR.EnterEvent.AddListener(OnHandTriggerEnter);
