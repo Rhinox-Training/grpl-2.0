@@ -45,7 +45,8 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0",
-    "jillejr.newtonsoft.json-for-unity.converters": "1.5.0"
+    "jillejr.newtonsoft.json-for-unity.converters": "1.5.0",
+    "com.rhinox.open.utilities": "1.2.1"
   },
   "scopedRegistries": [
     {
@@ -53,7 +54,8 @@
       "url": "https://package.openupm.com",
       "scopes": [
         "com.openupm",
-        "jillejr.newtonsoft.json-for-unity.converters"
+        "jillejr.newtonsoft.json-for-unity.converters",
+        "com.rhinox.open"
       ]
     }
   ]

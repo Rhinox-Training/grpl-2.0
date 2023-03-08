@@ -137,7 +137,7 @@ namespace Rhinox.XR.Grapple
             if(!_isInitialized)
                 return;
             
-            Debug.Log(_boneManager.GetBone(XRHandJointID.Wrist,Handedness.Left).BoneRotation.eulerAngles);
+            //Debug.Log(_boneManager.GetBone(XRHandJointID.Wrist,Handedness.Left).BoneRotation.eulerAngles);
             
             if(Input.GetKeyDown(KeyCode.Space))
                 SaveGesture(HandToRecord);
@@ -294,7 +294,7 @@ namespace Rhinox.XR.Grapple
             var writer = new StreamWriter(finalPath,false);
             writer.Write(json);
             writer.Close();
-            Debug.Log($"Wrote gestures to {finalPath}");
+            //Debug.Log($"Wrote gestures to {finalPath}");
         }
 
         private void ReadGesturesFromJson()

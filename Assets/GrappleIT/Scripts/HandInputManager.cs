@@ -16,9 +16,14 @@ namespace Rhinox.XR.Grapple.It
         [Header("Physics")]
         public PhysicServices SelectedPhysicsService = PhysicServices.None;
 
+
+        private Vector3 HandSocketPositionalOffset = Vector3.zero;
+        private Quaternion HandSocketRotationalOffset = Quaternion.identity;
+
+
         private GestureRecognizer _gestureRecognizer = null;
-        
-        
+
+
         void Start()
         {
             _boneManager = gameObject.AddComponent<BoneManager>();
@@ -32,7 +37,7 @@ namespace Rhinox.XR.Grapple.It
             {
                 case PhysicServices.Socketing:
                     {
-                        var newService = new PhysicsSocketService(_boneManager, gameObject);
+                        var newService = new PhysicsSocketService(_boneManager, gameObject, HandSocketPositionalOffset, HandSocketRotationalOffset);
                         _physicsService = newService;
                         //newService.Initialize();
                         //if (!newService.GetIsInitialised())
@@ -57,7 +62,7 @@ namespace Rhinox.XR.Grapple.It
             }
 
             _physicsService.Update();
-            
+
             _gestureRecognizer = GetComponent<GestureRecognizer>();
             _gestureRecognizer.Initialize(_boneManager);
 

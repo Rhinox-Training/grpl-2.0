@@ -22,11 +22,11 @@ namespace Rhinox.XR.Grapple.It
 
         private GameObject _colliderObjL;
         private GameObject _colliderObjR;
-
-        //private SphereCollider _ColliderL;
         private BoxCollider _ColliderL;
-        //private SphereCollider _ColliderR;
         private BoxCollider _ColliderR;
+
+        private GameObject _SocketObjL;
+        private GameObject _SocketObjR;
 
         private bool _enabledL = true;
         private bool _enabledR = true;
@@ -36,30 +36,35 @@ namespace Rhinox.XR.Grapple.It
         private HandState _currentHandStateR = HandState.Neutral;
         private HandState _previousHandStateR = HandState.Neutral;
 
-        //private bool _isInGrabPoseL = false;
-        //private bool _wasInGrabPoseL = false;
-        //private bool _isInGrabPoseR = false;
-        //private bool _wasInGrabPoseR = false;
-        //private bool _isHoldingR = false;
-
         private const float GRABBING_THRESHOLD = 0.05f;
         private const float DROPPING_THRESHOLD = 0.065f;//prev: 0.072
 
+
         private GameObject _potentialGrabItemL = null;
         private GameObject _potentialGrabItemR = null;
-
         private GameObject _grabbedItemL = null;
         private GameObject _grabbedItemR = null;
 
+        private Vector3 HandSocketPositionalOffset = Vector3.zero;
+        private Quaternion HandSocketRotationalOffset = Quaternion.identity;
 
-        public PhysicsSocketService(BoneManager boneManager, GameObject parentObject)
+        public PhysicsSocketService(BoneManager boneManager, GameObject parentObject, Vector3 positionalOffset, Quaternion rotationalOffset)
         {
             _boneManager = boneManager;
+            HandSocketPositionalOffset = positionalOffset;
+            HandSocketRotationalOffset = rotationalOffset;
 
             if (parentObject != null)
             {
                 _colliderObjL = new GameObject("Collider Obj LEFT");
                 _colliderObjL.transform.parent = parentObject.transform;
+
+                _SocketObjL = new GameObject("Socket Left");
+                _SocketObjL.transform.parent = _colliderObjL.transform;
+                //_SocketObjL.transform.SetLocalPositionAndRotation(new(0f, -0.0425f, 0.0335f), Quaternion.Euler(-10f, 35f, 90f));
+                _SocketObjL.transform.SetLocalPositionAndRotation(new(0f, -0.0425f, 0.0335f), Quaternion.Euler(10f, 145f, 90f));
+                //_SocketObjL.transform.SetLocalPositionAndRotation(new(0f, -0.0425f, 0.0335f), Quaternion.Euler(-10f, 145f, 90f));
+
                 var colliderEventsL = _colliderObjL.AddComponent<PhysicsEventHandler>();
                 colliderEventsL.EnterEvent.AddListener(OnHandTriggerEnter);
                 colliderEventsL.ExitEvent.AddListener(OnHandTriggerExit);
@@ -68,24 +73,25 @@ namespace Rhinox.XR.Grapple.It
                 _ColliderL = _colliderObjL.AddComponent<BoxCollider>();
                 _ColliderL.isTrigger = true;
                 _ColliderL.enabled = false;
-                //_ColliderL.center = new(0, -0.04f, 0.04f);//values gathered from lot's of eyeballing and testing
-                //_ColliderL.center = new(0, -0.03f, 0.015f);//values gathered from lot's of eyeballing and testing
-                _ColliderL.center = new(0f, -0.03f, 0.0225f);//values gathered from lot's of eyeballing and testing
-                //_ColliderL.radius = 0.05f;
+                _ColliderL.center = new(0f, -0.03f, 0.0225f);
                 _ColliderL.size = new(0.06f, 0.035f, 0.07f);
 
                 _colliderObjR = new GameObject("Collider Obj RIGHT");
+                _colliderObjR.transform.parent = parentObject.transform;
+
+                _SocketObjR = new GameObject("Socket Right");
+                _SocketObjR.transform.parent = _colliderObjR.transform;
+                _SocketObjR.transform.SetLocalPositionAndRotation(new(0f, -0.0425f, 0.0335f), Quaternion.Euler(-10f, 35f, 90f));
+
                 var colliderEventsR = _colliderObjR.AddComponent<PhysicsEventHandler>();
                 colliderEventsR.EnterEvent.AddListener(OnHandTriggerEnter);
                 colliderEventsR.ExitEvent.AddListener(OnHandTriggerExit);
                 colliderEventsR.Hand = Hand.Right;
 
-                _colliderObjR.transform.parent = parentObject.transform;
                 _ColliderR = _colliderObjR.AddComponent<BoxCollider>();
                 _ColliderR.enabled = false;
                 _ColliderR.isTrigger = true;
-                _ColliderR.center = new(0f, -0.03f, 0.0225f); //values gathered from lot's of eyeballing and testing
-                //_ColliderR.radius = 0.04f;
+                _ColliderR.center = new(0f, -0.03f, 0.0225f);
                 _ColliderR.size = new(0.06f, 0.035f, 0.07f);
             }
         }
@@ -130,26 +136,13 @@ namespace Rhinox.XR.Grapple.It
                 {
                     if (_potentialGrabItemL == _grabbedItemR)
                     {
+                        _grabbedItemR.GetComponent<GRPLBaseInteractable>().Dropped();
                         _grabbedItemR = null;
                     }
 
-                    _potentialGrabItemL.transform.parent = _colliderObjL.transform;
-
-                    var grabbingBehavior = _potentialGrabItemL.GetComponent<GrabbingBehavior>();
-                    if (grabbingBehavior.GrabbingType == GrabbingBehavior.GrabbingBehaviorType.Sockatable)
-                    {
-                        _potentialGrabItemL.transform.position = _colliderObjL.transform.position;
-                    }
+                    _potentialGrabItemL.GetComponent<GRPLBaseInteractable>().Grabbed(_SocketObjL, HandSocketPositionalOffset, HandSocketRotationalOffset);
 
                     _grabbedItemL = _potentialGrabItemL;
-
-                    Rigidbody rigidCmp = _grabbedItemL.GetComponent<Rigidbody>();
-                    if (rigidCmp != null)
-                    {
-                        rigidCmp.useGravity = false;
-                        rigidCmp.isKinematic = true;
-                        rigidCmp.velocity = Vector3.zero;
-                    }
                 }
                 //Dropping logic
                 else
@@ -159,13 +152,7 @@ namespace Rhinox.XR.Grapple.It
                     {
                         if (_grabbedItemL != _grabbedItemR)
                         {
-                            _grabbedItemL.transform.parent = null;
-                            Rigidbody rigidCmp = _grabbedItemL.GetComponent<Rigidbody>();
-                            if (rigidCmp != null)
-                            {
-                                rigidCmp.useGravity = true;
-                                rigidCmp.isKinematic = false;
-                            }
+                            _grabbedItemL.GetComponent<GRPLBaseInteractable>().Dropped();
                         }
 
                         _grabbedItemL = null;
@@ -191,25 +178,14 @@ namespace Rhinox.XR.Grapple.It
                 {
                     if (_potentialGrabItemR == _grabbedItemL)
                     {
+                        _grabbedItemL.GetComponent<GRPLBaseInteractable>().Dropped();
                         _grabbedItemL = null;
                     }
 
-                    _potentialGrabItemR.transform.parent = _colliderObjR.transform;
-                    var grabbingBehavior = _potentialGrabItemR.GetComponent<GrabbingBehavior>();
-                    if (grabbingBehavior.GrabbingType == GrabbingBehavior.GrabbingBehaviorType.Sockatable)
-                    {
-                        _potentialGrabItemR.transform.position = _colliderObjR.transform.position;
-                    }
+                    _potentialGrabItemR.GetComponent<GRPLBaseInteractable>().Grabbed(_SocketObjR, HandSocketPositionalOffset, HandSocketRotationalOffset);
 
                     _grabbedItemR = _potentialGrabItemR;
 
-                    Rigidbody rigidCmp = _grabbedItemR.GetComponent<Rigidbody>();
-                    if (rigidCmp != null)
-                    {
-                        rigidCmp.useGravity = false;
-                        rigidCmp.isKinematic = true;
-                        rigidCmp.velocity = Vector3.zero;
-                    }
                 }
                 //Dropping logic
                 else
@@ -219,13 +195,7 @@ namespace Rhinox.XR.Grapple.It
                     {
                         if (_grabbedItemL != _grabbedItemR)
                         {
-                            _grabbedItemR.transform.parent = null;
-                            Rigidbody rigidCmp = _grabbedItemR.GetComponent<Rigidbody>();
-                            if (rigidCmp != null)
-                            {
-                                rigidCmp.useGravity = true;
-                                rigidCmp.isKinematic = false;
-                            }
+                            _grabbedItemR.GetComponent<GRPLBaseInteractable>().Dropped();
                         }
 
                         _grabbedItemR = null;
@@ -238,8 +208,8 @@ namespace Rhinox.XR.Grapple.It
 
         public void OnHandTriggerEnter(GameObject triggerObj, GameObject otherObj, Hand hand)
         {
-            var grabbingBehavior = otherObj.GetComponent<GrabbingBehavior>();
-            if (grabbingBehavior == null || grabbingBehavior.GrabbingType == GrabbingBehavior.GrabbingBehaviorType.NotGrabbable)
+            var grplInteractableCmp = otherObj.GetComponent<GRPLBaseInteractable>();
+            if (grplInteractableCmp == null)
                 return;
 
             switch (hand)
