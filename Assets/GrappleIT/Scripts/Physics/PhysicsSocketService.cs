@@ -1,9 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem.LowLevel;
-using UnityEngine.XR;
 using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple.It
@@ -45,7 +40,7 @@ namespace Rhinox.XR.Grapple.It
         private GameObject _grabbedItemL = null;
         private GameObject _grabbedItemR = null;
 
-        public PhysicsSocketService(BoneManager boneManager, GameObject parentObject)
+        public PhysicsSocketService(JointManager jointManager, GameObject parentObject)
         {
             _jointManager = jointManager;
 
@@ -125,9 +120,9 @@ namespace Rhinox.XR.Grapple.It
             if (_enabledL)
             {
                 //updating the obj with the is-in-grabbing reach collider and caching the palmbone.
-                var palmBone = _boneManager.GetBoneFromHandById(Hand.Left, XRHandJointID.Palm);
-                _colliderObjL.transform.position = palmBone.BonePosition;
-                _colliderObjL.transform.rotation = palmBone.BoneRotation;
+                var palmBone = _jointManager.GetJointFromHandById(Hand.Left, XRHandJointID.Palm);
+                _colliderObjL.transform.position = palmBone.JointPosition;
+                _colliderObjL.transform.rotation = palmBone.JointRotation;
                 ///
                 ///Grabbing logic
                 ///
@@ -253,7 +248,7 @@ namespace Rhinox.XR.Grapple.It
         }
 
         //checks if hand is doing a grabbing, dropping or neutral motion
-        HandState GetCurrentHandState(RhinoxBone palmBone, Hand hand)
+        HandState GetCurrentHandState(RhinoxJoint palmJoint, Hand hand)
         {
             if (hand == Hand.Both)
                 return HandState.Neutral;
