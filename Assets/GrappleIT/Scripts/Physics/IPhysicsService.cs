@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Rhinox.XR.Grapple
+namespace Rhinox.XR.Grapple.It
 {
     public enum PhysicServices
     {

@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using Unity.XR.CoreUtils;
 using UnityEngine;
 
-
-namespace Rhinox.XR.Grapple
+namespace Rhinox.XR.Grapple.It
 {
     [RequireComponent(typeof(GestureRecognizer))]
     public class HandInputManager : MonoBehaviour
     {
-        private JointManager _jointManager = null;
+        private BoneManager _boneManager = null;
 
         private IPhysicsService _physicsService = new NullPhysicsService();
 
@@ -17,14 +16,13 @@ namespace Rhinox.XR.Grapple
         public PhysicServices SelectedPhysicsService = PhysicServices.None;
 
         private GestureRecognizer _gestureRecognizer = null;
-        
-        
+
         void Start()
         {
-            _jointManager = gameObject.AddComponent<JointManager>();
-            if (_jointManager == null)
+            _boneManager = gameObject.AddComponent<BoneManager>();
+            if (_boneManager == null)
             {
-                Debug.LogError($"{nameof(HandInputManager)} Failed to add {nameof(JointManager)}");
+                Debug.LogError($"{nameof(HandInputManager)} Failed to add {nameof(BoneManager)}");
                 return;
             }
 
@@ -32,19 +30,9 @@ namespace Rhinox.XR.Grapple
             {
                 case PhysicServices.Socketing:
                     {
-                        var newService = new PhysicsSocketService(_jointManager, gameObject);
-                        _physicsService = newService;
-                        //newService.Initialize();
-                        //if (!newService.GetIsInitialised())
-                        //    _physicsService = null;
-                        //else
+                        _physicsService = new PhysicsSocketService(_boneManager, gameObject);
                         break;
                     }
-                case PhysicServices.KinematicProxy:
-                {
-                    _physicsService = new KinematicPoxyPhysicsService(_jointManager);
-                    break;
-                }
             }
 
             if (_physicsService.GetType() == typeof(NullPhysicsService))
@@ -62,10 +50,9 @@ namespace Rhinox.XR.Grapple
             }
 
             _physicsService.Update();
-            
-            _gestureRecognizer = GetComponent<GestureRecognizer>();
-            _gestureRecognizer.Initialize(_jointManager);
 
+            _gestureRecognizer = GetComponent<GestureRecognizer>();
+            _gestureRecognizer.Initialize(_boneManager);
         }
     }
 }
