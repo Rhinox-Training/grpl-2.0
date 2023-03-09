@@ -64,12 +64,12 @@ public class KinematicPoxyPhysicsService : IPhysicsService
         Update();
     }
 
-    public void SetEnabled(bool newState, Hand handedness)
+    public void SetHandEnabled(bool newState, Hand handedness)
     {
         throw new System.NotImplementedException();
     }
 
-    public bool GetIsEnabled(Hand handedness)
+    public bool GetIsHandEnabled(Hand handedness)
     {
         throw new System.NotImplementedException();
     }

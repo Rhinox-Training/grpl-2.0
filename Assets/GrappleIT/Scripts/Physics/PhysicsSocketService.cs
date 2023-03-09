@@ -96,6 +96,9 @@ namespace Rhinox.XR.Grapple.It
             if (!_jointManager.IsInitialised)
                 return;
 
+            _jointManager.TrackingAcquired += TrackingAcquired;
+            _jointManager.TrackingLost += TrackingLost;
+
             _ColliderL.enabled = true;
             _ColliderR.enabled = true;
 
@@ -120,7 +123,7 @@ namespace Rhinox.XR.Grapple.It
             if (_enabledL)
             {
                 //updating the obj with the is-in-grabbing reach collider and caching the palmbone.
-                var palmBone = _jointManager.GetJointFromHandById(Hand.Left, XRHandJointID.Palm);
+                _jointManager.TryGetJointFromHandById(XRHandJointID.Palm, Hand.Left, out var palmBone);
                 _colliderObjL.transform.position = palmBone.JointPosition;
                 _colliderObjL.transform.rotation = palmBone.JointRotation;
                 ///
@@ -166,7 +169,7 @@ namespace Rhinox.XR.Grapple.It
             #region RightHandLogic
             if (_enabledR)
             {
-                var palmBone = _jointManager.GetJointFromHandById(Hand.Right, XRHandJointID.Palm);
+                _jointManager.TryGetJointFromHandById(XRHandJointID.Palm, Hand.Right, out var palmBone);
                 _colliderObjR.transform.position = palmBone.JointPosition;
                 _colliderObjR.transform.rotation = palmBone.JointRotation;
 
@@ -211,6 +214,7 @@ namespace Rhinox.XR.Grapple.It
             #endregion
         }
 
+        #region Hand Trigger Logic
         public void OnHandTriggerEnter(GameObject triggerObj, GameObject otherObj, Hand hand)
         {
             var grplInteractableCmp = otherObj.GetComponent<GRPLBaseInteractable>();
@@ -246,6 +250,12 @@ namespace Rhinox.XR.Grapple.It
                     break;
             }
         }
+        #endregion
+
+        #region State Logic
+        private void TrackingAcquired(Hand hand) => SetHandEnabled(true, hand);
+
+        private void TrackingLost(Hand hand) => SetHandEnabled(false, hand);
 
         //checks if hand is doing a grabbing, dropping or neutral motion
         HandState GetCurrentHandState(RhinoxJoint palmJoint, Hand hand)
@@ -254,15 +264,15 @@ namespace Rhinox.XR.Grapple.It
                 return HandState.Neutral;
 
             float total = 0f;
-            var thumbTip = _jointManager.GetJointFromHandById(hand, XRHandJointID.ThumbTip);
+            _jointManager.TryGetJointFromHandById(XRHandJointID.ThumbTip, hand, out var thumbTip);
             total += Vector3.SqrMagnitude(palmJoint.JointPosition - thumbTip.JointPosition);
-            var indexTip = _jointManager.GetJointFromHandById(hand, XRHandJointID.IndexTip);
+            _jointManager.TryGetJointFromHandById(XRHandJointID.IndexTip, hand, out var indexTip);
             total += Vector3.SqrMagnitude(palmJoint.JointPosition - indexTip.JointPosition);
-            var middleTip = _jointManager.GetJointFromHandById(hand, XRHandJointID.MiddleTip);
+            _jointManager.TryGetJointFromHandById(XRHandJointID.MiddleTip, hand, out var middleTip);
             total += Vector3.SqrMagnitude(palmJoint.JointPosition - middleTip.JointPosition);
-            var ringTip = _jointManager.GetJointFromHandById(hand, XRHandJointID.RingTip);
+            _jointManager.TryGetJointFromHandById(XRHandJointID.RingTip, hand, out var ringTip);
             total += Vector3.SqrMagnitude(palmJoint.JointPosition - ringTip.JointPosition);
-            var littleTip = _jointManager.GetJointFromHandById(hand, XRHandJointID.LittleTip);
+            _jointManager.TryGetJointFromHandById(XRHandJointID.LittleTip, hand, out var littleTip);
             total += Vector3.SqrMagnitude(palmJoint.JointPosition - littleTip.JointPosition);
 
             if (total <= GRABBING_THRESHOLD)
@@ -273,7 +283,7 @@ namespace Rhinox.XR.Grapple.It
                 return HandState.Neutral;
         }
 
-        public void SetEnabled(bool newState, Hand handedness)
+        public void SetHandEnabled(bool newState, Hand handedness)
         {
             switch (handedness)
             {
@@ -294,7 +304,7 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
-        public bool GetIsEnabled(Hand handedness)
+        public bool GetIsHandEnabled(Hand handedness)
         {
             switch (handedness)
             {
@@ -308,5 +318,6 @@ namespace Rhinox.XR.Grapple.It
                     return false;
             }
         }
+        #endregion
     }
 }

@@ -9,14 +9,14 @@ public class GestureRecognitionScreen : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _leftScreen;
 
-    [SerializeField] 
+    [SerializeField]
     private TextMeshProUGUI _rightScreen;
 
     [SerializeField] private GestureRecognizer _recognizer;
 
     private void OnValidate()
     {
-        Assert.AreNotEqual(null,_leftScreen,$"{nameof(GestureRecognitionScreen)}, left screen not set");
+        Assert.AreNotEqual(null, _leftScreen, $"{nameof(GestureRecognitionScreen)}, left screen not set");
         Assert.AreNotEqual(null, _rightScreen, $"{nameof(GestureRecognitionScreen)}, right screen not set");
         Assert.AreNotEqual(null, _recognizer, $"{nameof(GestureRecognitionScreen)}, gesture recognizer not set");
     }
@@ -27,28 +27,28 @@ public class GestureRecognitionScreen : MonoBehaviour
         _recognizer.OnGestureUnrecognized.AddListener(RemoveScreenText);
     }
 
-    private void SetScreenText(Handedness hand, string gesture)
+    private void SetScreenText(Hand hand, string gesture)
     {
         switch (hand)
         {
-            case Handedness.Left:
+            case Hand.Left:
                 _leftScreen.text = gesture;
                 break;
-            case Handedness.Right:
+            case Hand.Right:
                 _rightScreen.text = gesture;
                 break;
         }
     }
 
-    private void RemoveScreenText(Handedness hand, string gesture)
+    private void RemoveScreenText(Hand hand, string gesture)
     {
         switch (hand)
         {
-            case Handedness.Left:
+            case Hand.Left:
                 if (_leftScreen.text == gesture)
                     _leftScreen.text = "None";
                 break;
-            case Handedness.Right:
+            case Hand.Right:
                 if (_rightScreen.text == gesture)
                     _rightScreen.text = "None";
                 break;
