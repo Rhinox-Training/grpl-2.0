@@ -127,17 +127,17 @@ namespace Rhinox.XR.Grapple
 
         #endregion
         
-        private BoneManager _boneManager;
+        private JointManager _jointManager;
 
         private bool _isInitialized;
 
         /// <summary>
         /// As the bone manager is an integral part of gesture recognition, this should always be called when creating this component! 
         /// </summary>
-        /// <param name="boneManager"></param>
-        public void Initialize(BoneManager boneManager)
+        /// <param name="jointManager"></param>
+        public void Initialize(JointManager jointManager)
         {
-            _boneManager = boneManager;
+            _jointManager = jointManager;
             _isInitialized = true;
         }
         
@@ -193,10 +193,10 @@ namespace Rhinox.XR.Grapple
                 UseJointForward = UseJointForward
             };
             var gestureDistances = new List<float>();
-            var joints = _boneManager.GetBonesFromHand(HandToRecord);
+            var joints = _jointManager.GetJointsFromHand(HandToRecord);
             
             //Get the root (wrist joint)
-            var wristJoint = _boneManager.GetBone(XRHandJointID.Wrist, HandToRecord);
+            var wristJoint = _jointManager.GetJoint(XRHandJointID.Wrist, HandToRecord);
             if (wristJoint == null)
             {
                 Debug.LogError($"GestureRecognizer.cs - SaveGesture({HandToRecord}), no wrist joint found.");
@@ -209,7 +209,7 @@ namespace Rhinox.XR.Grapple
             if (UseJointForward)
             {
                 newGesture.CheckJoint = ForwardJoint;
-                var joint = _boneManager.GetBone(ForwardJoint, HandToRecord);
+                var joint = _jointManager.GetJoint(ForwardJoint, HandToRecord);
 
                 if (joint == null)
                 {
@@ -222,7 +222,7 @@ namespace Rhinox.XR.Grapple
             //Save the distances from each joint to the root
             foreach (var joint in joints)
             {
-                var currentDist = Vector3.Distance(joint.BonePosition, wristJoint.BonePosition);
+                var currentDist = Vector3.Distance(joint.JointPosition, wristJoint.JointPosition);
                 gestureDistances.Add(currentDist);
             }
 
@@ -249,8 +249,8 @@ namespace Rhinox.XR.Grapple
         {
             var currentGesture = new RhinoxGesture();
             var currentMin = Mathf.Infinity;
-            var joints = _boneManager.GetBonesFromHand(handedness);
-            var wristJoint = _boneManager.GetBone(XRHandJointID.Wrist, handedness);
+            var joints = _jointManager.GetJointsFromHand(handedness);
+            var wristJoint = _jointManager.GetJoint(XRHandJointID.Wrist, handedness);
             if (wristJoint == null)
             {
                 Debug.LogError($"GestureRecognizer.cs - SaveGesture({handedness}), no wrist joint found.");
@@ -265,7 +265,7 @@ namespace Rhinox.XR.Grapple
                 if (gesture.UseJointForward)
                 {
                     //Get the correct forward of the current hand
-                    var bone = _boneManager.GetBone(gesture.CheckJoint, handedness);
+                    var bone = _jointManager.GetJoint(gesture.CheckJoint, handedness);
                     if(bone == null)
                         continue;
                     
@@ -275,7 +275,7 @@ namespace Rhinox.XR.Grapple
                 
                 for (var i = 0; i < joints.Count; i++)
                 {
-                    var currentDist = Vector3.Distance(wristJoint.BonePosition, joints[i].BonePosition);
+                    var currentDist = Vector3.Distance(wristJoint.JointPosition, joints[i].JointPosition);
                     var distance = currentDist - gesture.JointData[i];
                     
                     if (-GestureDistanceThreshold > distance || distance > GestureDistanceThreshold)

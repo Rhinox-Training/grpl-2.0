@@ -1,6 +1,8 @@
 using System;
+using Rhinox.XR.Grapple;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.XR.Hands;
 
 public static class UnityTypeExtensions
 {
@@ -19,6 +21,16 @@ public static class UnityTypeExtensions
     public static bool Approximately(float f1, float f2, float acceptableRange)
     {
         return f1 > f2 - acceptableRange && f1 < f2 + acceptableRange;
+    }
+
+    public static Hand ToRhinoxHand(this Handedness hand)
+    {
+        return hand switch
+        {
+            Handedness.Left => Hand.Left,
+            Handedness.Right => Hand.Right,
+            _ => Hand.Invalid
+        };
     }
 
     public static void Subscribe(InputActionReference reference,

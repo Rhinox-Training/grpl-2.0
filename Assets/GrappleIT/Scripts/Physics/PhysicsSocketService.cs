@@ -18,7 +18,7 @@ namespace Rhinox.XR.Grapple
         }
 
         private bool _isInitialized = false;
-        private BoneManager _boneManager;
+        private JointManager _jointManager;
 
         private GameObject _colliderObjL;
         private GameObject _colliderObjR;
@@ -52,9 +52,9 @@ namespace Rhinox.XR.Grapple
         private GameObject _grabbedItemR = null;
 
 
-        public PhysicsSocketService(BoneManager boneManager, GameObject parentObject)
+        public PhysicsSocketService(JointManager jointManager, GameObject parentObject)
         {
-            _boneManager = boneManager;
+            _jointManager = jointManager;
 
             if (parentObject != null)
             {
@@ -92,7 +92,7 @@ namespace Rhinox.XR.Grapple
 
         public void TryInitialize()
         {
-            if (!_boneManager.IsInitialised)
+            if (!_jointManager.IsInitialised)
                 return;
 
             _ColliderL.enabled = true;
@@ -118,9 +118,9 @@ namespace Rhinox.XR.Grapple
             #region LeftHandLogic
             if (_enabledL)
             {
-                var palmBone = _boneManager.GetBoneFromHandById(Hand.Left, XRHandJointID.Palm);
-                _colliderObjL.transform.position = palmBone.BonePosition;
-                _colliderObjL.transform.rotation = palmBone.BoneRotation;
+                var palmBone = _jointManager.GetJointFromHandById(Hand.Left, XRHandJointID.Palm);
+                _colliderObjL.transform.position = palmBone.JointPosition;
+                _colliderObjL.transform.rotation = palmBone.JointRotation;
 
                 //Grabbing logic
                 _currentHandStateL = GetCurrentHandState(palmBone, Hand.Left);
@@ -179,9 +179,9 @@ namespace Rhinox.XR.Grapple
             #region RightHandLogic
             if (_enabledR)
             {
-                var palmBone = _boneManager.GetBoneFromHandById(Hand.Right, XRHandJointID.Palm);
-                _colliderObjR.transform.position = palmBone.BonePosition;
-                _colliderObjR.transform.rotation = palmBone.BoneRotation;
+                var palmBone = _jointManager.GetJointFromHandById(Hand.Right, XRHandJointID.Palm);
+                _colliderObjR.transform.position = palmBone.JointPosition;
+                _colliderObjR.transform.rotation = palmBone.JointRotation;
 
                 _currentHandStateR = GetCurrentHandState(palmBone, Hand.Right);
 
@@ -272,22 +272,22 @@ namespace Rhinox.XR.Grapple
             }
         }
 
-        HandState GetCurrentHandState(RhinoxBone palmBone, Hand hand)
+        HandState GetCurrentHandState(RhinoxJoint palmJoint, Hand hand)
         {
             if (hand == Hand.Both)
                 return HandState.Neutral;
 
             float total = 0f;
-            var thumbTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.ThumbTip);
-            total += Vector3.SqrMagnitude(palmBone.BonePosition - thumbTip.BonePosition);
-            var indexTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.IndexTip);
-            total += Vector3.SqrMagnitude(palmBone.BonePosition - indexTip.BonePosition);
-            var middleTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.MiddleTip);
-            total += Vector3.SqrMagnitude(palmBone.BonePosition - middleTip.BonePosition);
-            var ringTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.RingTip);
-            total += Vector3.SqrMagnitude(palmBone.BonePosition - ringTip.BonePosition);
-            var littleTip = _boneManager.GetBoneFromHandById(hand, XRHandJointID.LittleTip);
-            total += Vector3.SqrMagnitude(palmBone.BonePosition - littleTip.BonePosition);
+            var thumbTip = _jointManager.GetJointFromHandById(hand, XRHandJointID.ThumbTip);
+            total += Vector3.SqrMagnitude(palmJoint.JointPosition - thumbTip.JointPosition);
+            var indexTip = _jointManager.GetJointFromHandById(hand, XRHandJointID.IndexTip);
+            total += Vector3.SqrMagnitude(palmJoint.JointPosition - indexTip.JointPosition);
+            var middleTip = _jointManager.GetJointFromHandById(hand, XRHandJointID.MiddleTip);
+            total += Vector3.SqrMagnitude(palmJoint.JointPosition - middleTip.JointPosition);
+            var ringTip = _jointManager.GetJointFromHandById(hand, XRHandJointID.RingTip);
+            total += Vector3.SqrMagnitude(palmJoint.JointPosition - ringTip.JointPosition);
+            var littleTip = _jointManager.GetJointFromHandById(hand, XRHandJointID.LittleTip);
+            total += Vector3.SqrMagnitude(palmJoint.JointPosition - littleTip.JointPosition);
 
             if (total <= GRABBING_THRESHOLD)
                 return HandState.Grabbing;

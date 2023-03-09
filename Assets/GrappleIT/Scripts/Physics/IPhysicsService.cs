@@ -6,7 +6,8 @@ namespace Rhinox.XR.Grapple
     public enum PhysicServices
     {
         None,
-        Socketing
+        Socketing,
+        KinematicProxy
     }
 
     public interface IPhysicsService

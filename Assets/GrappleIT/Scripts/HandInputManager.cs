@@ -9,7 +9,7 @@ namespace Rhinox.XR.Grapple
     [RequireComponent(typeof(GestureRecognizer))]
     public class HandInputManager : MonoBehaviour
     {
-        private BoneManager _boneManager = null;
+        private JointManager _jointManager = null;
 
         private IPhysicsService _physicsService = new NullPhysicsService();
 
@@ -21,10 +21,10 @@ namespace Rhinox.XR.Grapple
         
         void Start()
         {
-            _boneManager = gameObject.AddComponent<BoneManager>();
-            if (_boneManager == null)
+            _jointManager = gameObject.AddComponent<JointManager>();
+            if (_jointManager == null)
             {
-                Debug.LogError($"{nameof(HandInputManager)} Failed to add {nameof(BoneManager)}");
+                Debug.LogError($"{nameof(HandInputManager)} Failed to add {nameof(JointManager)}");
                 return;
             }
 
@@ -32,7 +32,7 @@ namespace Rhinox.XR.Grapple
             {
                 case PhysicServices.Socketing:
                     {
-                        var newService = new PhysicsSocketService(_boneManager, gameObject);
+                        var newService = new PhysicsSocketService(_jointManager, gameObject);
                         _physicsService = newService;
                         //newService.Initialize();
                         //if (!newService.GetIsInitialised())
@@ -40,6 +40,11 @@ namespace Rhinox.XR.Grapple
                         //else
                         break;
                     }
+                case PhysicServices.KinematicProxy:
+                {
+                    _physicsService = new KinematicPoxyPhysicsService(_jointManager);
+                    break;
+                }
             }
 
             if (_physicsService.GetType() == typeof(NullPhysicsService))
@@ -59,7 +64,7 @@ namespace Rhinox.XR.Grapple
             _physicsService.Update();
             
             _gestureRecognizer = GetComponent<GestureRecognizer>();
-            _gestureRecognizer.Initialize(_boneManager);
+            _gestureRecognizer.Initialize(_jointManager);
 
         }
     }
