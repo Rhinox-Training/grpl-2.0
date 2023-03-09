@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.XR.Hands;
 using UnityEngine.XR.Management;
@@ -18,7 +17,7 @@ namespace Rhinox.XR.Grapple
 
     public sealed class RhinoxJoint
     {
-        public XRHandJointID JointID = XRHandJointID.Invalid;
+        public readonly XRHandJointID JointID;
 
         public Vector3 JointPosition = Vector3.zero;
         public Quaternion JointRotation = Quaternion.identity;
@@ -34,9 +33,11 @@ namespace Rhinox.XR.Grapple
 
     public class RhinoxJointCapsule
     {
-        public XRHandJointID JointID;
         public Rigidbody JointRigidbody;
         public CapsuleCollider JointCollider;
+
+        public RhinoxJoint StartJoint;
+        public RhinoxJoint EndJoint;
     }
     
     
@@ -52,7 +53,7 @@ namespace Rhinox.XR.Grapple
         private List<RhinoxJoint> _leftHandJoints = new List<RhinoxJoint>();
         private List<RhinoxJoint> _rightHandJoints = new List<RhinoxJoint>();
 
-        private List<RhinoxJointCapsule> _leftHandColliders = new List<RhinoxJointCapsule>();
+        private List<RhinoxJointCapsule> _leftHandCapsules = new List<RhinoxJointCapsule>();
         private List<RhinoxJointCapsule> _rightHandColliders = new List<RhinoxJointCapsule>();
 
         private GameObject _leftHandCollidersParent;
@@ -82,7 +83,7 @@ namespace Rhinox.XR.Grapple
 
         private void OnTrackingAcquired(XRHand hand)
         {
-            InitializeJointColliders(hand.handedness.ToRhinoxHand());
+            InitializeJointCapsules(hand.handedness.ToRhinoxHand());
         }
 
         private void OnUpdatedHands(XRHandSubsystem subsystem, XRHandSubsystem.UpdateSuccessFlags updateSuccessFlags,
@@ -195,8 +196,8 @@ namespace Rhinox.XR.Grapple
                     break;
                 
             }
-
-            InitializeJointColliders(hand.ToRhinoxHand());
+            
+            UpdateCapsuleColliders(hand.ToRhinoxHand());
         }
 
         private void InitializeHandJoints()
@@ -225,10 +226,9 @@ namespace Rhinox.XR.Grapple
             IsInitialised = true;
         }
 
-        private void InitializeJointColliders(Hand handedness)
+        private void InitializeJointCapsules(Hand handedness)
         {
             //Check the parent object. If it doesn't exist, create it.
-            GameObject parent;
             switch (handedness)
             {
                 case Hand.Left:
@@ -258,83 +258,128 @@ namespace Rhinox.XR.Grapple
             }
             
             //Initialize capsule list
-            List<RhinoxJointCapsule> currentList;
+            List<RhinoxJointCapsule> currentList = null;
             switch (handedness)
             {
                 case Hand.Left:
-                    if (_leftHandColliders == null || _leftHandColliders.Count != _leftHandJoints.Count)
-                        _leftHandColliders = new List<RhinoxJointCapsule>(new RhinoxJointCapsule[_leftHandJoints.Count]);
-                    currentList = _leftHandColliders;
+                    if (_leftHandCapsules == null || _leftHandCapsules.Count != _leftHandJoints.Count)
+                        _leftHandCapsules = new List<RhinoxJointCapsule>(new RhinoxJointCapsule[_leftHandJoints.Count]);
+                    currentList = _leftHandCapsules;
                     break;
                 case Hand.Right:
                     return;
-                    if (_rightHandColliders == null || _rightHandColliders.Count != _rightHandJoints.Count - 1)
-                        _rightHandColliders = new List<RhinoxJointCapsule>(new RhinoxJointCapsule[_rightHandJoints.Count]);
-                    currentList = _rightHandColliders;
-                    break;
-                default:
-                    return;
+                    // if (_rightHandColliders == null || _rightHandColliders.Count != _rightHandJoints.Count - 1)
+                    //     _rightHandColliders = new List<RhinoxJointCapsule>(new RhinoxJointCapsule[_rightHandJoints.Count]);
+                    // currentList = _rightHandColliders;
+                    // break;
             }
             
             
             //------------------------------------
             //    !! LEFT HAND FOR NOW!!
             //------------------------------------
-
+            if(currentList != null)
+             return;
+            
             //Loop over the capsules and process them
             for (var index = currentList.Count - 1; index > 0; index--)
             {
                 var joint = GetJoint((XRHandJointID)index + 1, handedness);
-                var jointCapsule = _leftHandColliders[index] ?? (_leftHandColliders[index] = new RhinoxJointCapsule());
-                jointCapsule.JointID = joint.JointID;
+                var jointCapsule = _leftHandCapsules[index] ?? (_leftHandCapsules[index] = new RhinoxJointCapsule());
+                jointCapsule.StartJoint = joint;
 
-                // if (jointCapsule.JointRigidbody == null)
-                // {
-                //     jointCapsule.JointRigidbody = new GameObject(joint.JointID.ToString() + "_CapsuleRigidbody").AddComponent<Rigidbody>();
-                //     jointCapsule.JointRigidbody.mass = 1.0f;
-                //     jointCapsule.JointRigidbody.isKinematic = true;
-                //     jointCapsule.JointRigidbody.useGravity = false;
-                //     jointCapsule.JointRigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
-                // }
-                //
-                // var rbGo = jointCapsule.JointRigidbody.gameObject;
-                // rbGo.transform.SetParent(_leftHandCollidersParent.transform, false);
-                // rbGo.transform.position = joint.JointPosition;
-                // rbGo.transform.rotation = joint.JointRotation;
+                if (jointCapsule.JointRigidbody == null)
+                {
+                    jointCapsule.JointRigidbody = new GameObject(joint.JointID.ToString()+ "_Rigidbody").AddComponent<Rigidbody>();
+                    jointCapsule.JointRigidbody.mass = 1.0f;
+                    jointCapsule.JointRigidbody.isKinematic = true;
+                    jointCapsule.JointRigidbody.useGravity = false;
+                    jointCapsule.JointRigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+                }
+                
+                var rbGo = jointCapsule.JointRigidbody.gameObject;
+                rbGo.transform.SetParent(_leftHandCollidersParent.transform, false);
+                rbGo.transform.position = joint.JointPosition;
+                rbGo.transform.rotation = joint.JointRotation;
 
                 if (jointCapsule.JointCollider == null)
                 {
-                    jointCapsule.JointCollider =
-                        new GameObject(joint.JointID.ToString() + "_CapsuleCollider")
+                    jointCapsule.JointCollider = new GameObject(joint.JointID.ToString() + "_CapsuleCollider")
                             .AddComponent<CapsuleCollider>();
-                    jointCapsule.JointCollider.isTrigger = true;
+                    jointCapsule.JointCollider.isTrigger = false;
                 }
 
                 //Get the transform of the connected joints
                 var p0 = _leftHandJoints[index].JointPosition;
-                var p1 = !joint.JointID.ToString().Contains("Metacarpal") ? _leftHandJoints[index-1].JointPosition : _leftHandJoints[0].JointPosition;
-                
+                var endJoint = !joint.JointID.ToString().Contains("Metacarpal") ? _leftHandJoints[index-1] : _leftHandJoints[0];
+                var p1 = endJoint.JointPosition;
                 var delta = p1 - p0;
                 var colliderLength = delta.magnitude;
                 var rot = Quaternion.FromToRotation(Vector3.right, delta);
-
-                jointCapsule.JointCollider.radius = joint.JointRadius;
+                jointCapsule.JointCollider.radius = 0.01f;
                 jointCapsule.JointCollider.height = colliderLength;
                 jointCapsule.JointCollider.direction = 0;
                 jointCapsule.JointCollider.center = Vector3.right * colliderLength * 0.5f;
                 
                 
-                var colliderGO = jointCapsule.JointCollider.gameObject;
-                colliderGO.transform.SetParent(_leftHandCollidersParent.transform,false);
-                colliderGO.transform.localPosition = p0;
-                colliderGO.transform.localRotation = rot;
+                var colliderGo = jointCapsule.JointCollider.gameObject;
+                colliderGo.transform.SetParent(rbGo.transform,false);
+                colliderGo.transform.rotation = rot;
+
+                jointCapsule.EndJoint = endJoint;
             }
             
-
-            
-            
         }
-        
+
+        private void FixedUpdate()
+        {
+            if (_leftHandCollidersParent.activeSelf)
+            {
+                for (var i = 1; i < _leftHandCapsules.Count; i++)
+                {
+                    var capsule = _leftHandCapsules[i];
+                    var joint = _leftHandJoints[i];
+                    var rigidBodyGo = capsule.JointRigidbody.gameObject;
+                    if (rigidBodyGo.activeSelf)
+                    {
+                        capsule.JointRigidbody.MovePosition(joint.JointPosition);
+                        capsule.JointRigidbody.MoveRotation(joint.JointRotation);
+                    }
+                    else
+                    {
+                        rigidBodyGo.SetActive(true);
+                        capsule.JointRigidbody.position = joint.JointPosition;
+                        capsule.JointRigidbody.rotation = joint.JointRotation;
+                    }
+                }
+            }
+        }
+
+        private void UpdateCapsuleColliders(Hand handedness)
+        {
+            switch (handedness)
+            {
+                case Hand.Left:
+                    break;
+                case Hand.Right:
+                    break;
+                default:
+                    return;
+            }
+
+            foreach (var capsule in _leftHandCapsules)
+            {
+                if(capsule == null)
+                    continue;
+                //Get the transform of the connected joints
+                var p0 = capsule.StartJoint.JointPosition;
+                var p1 = capsule.EndJoint.JointPosition;
+                var delta = p1 - p0;
+                var colliderLength = delta.magnitude;
+                var rot = Quaternion.FromToRotation(Vector3.right, delta);
+                capsule.JointCollider.gameObject.transform.rotation = rot;
+            }
+        }
         public List<RhinoxJoint> GetJointsFromHand(Hand hand)
         {
             switch (hand)
