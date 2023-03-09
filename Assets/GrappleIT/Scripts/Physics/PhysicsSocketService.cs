@@ -37,7 +37,7 @@ namespace Rhinox.XR.Grapple.It
         private HandState _previousHandStateR = HandState.Neutral;
 
         private const float GRABBING_THRESHOLD = 0.05f;
-        private const float DROPPING_THRESHOLD = 0.065f;//prev: 0.072
+        private const float DROPPING_THRESHOLD = 0.062f;//prev: 0.065
 
 
         private GameObject _potentialGrabItemL = null;
@@ -59,7 +59,7 @@ namespace Rhinox.XR.Grapple.It
 
                 _SocketObjL = new GameObject("Socket Left");
                 _SocketObjL.transform.parent = _colliderObjL.transform;
-                _SocketObjL.transform.SetLocalPositionAndRotation(new(0f, -0.0425f, 0.0335f), Quaternion.Euler(15f, 340f, 270f));
+                _SocketObjL.transform.SetLocalPositionAndRotation(new(0f, -0.03f, 0.025f), Quaternion.Euler(0f, 0f, 270f));
 
                 var colliderEventsL = _colliderObjL.AddComponent<PhysicsEventHandler>();
                 colliderEventsL.EnterEvent.AddListener(OnHandTriggerEnter);
@@ -79,7 +79,8 @@ namespace Rhinox.XR.Grapple.It
 
                 _SocketObjR = new GameObject("Socket Right");
                 _SocketObjR.transform.parent = _colliderObjR.transform;
-                _SocketObjR.transform.SetLocalPositionAndRotation(new(0f, -0.0425f, 0.0335f), Quaternion.Euler(6f, 10f, 83f));
+                //_SocketObjR.transform.localScale = new(-1f, 1f, 1f);//flipping X axis
+                _SocketObjR.transform.SetLocalPositionAndRotation(new(0f, -0.03f, 0.025f), Quaternion.Euler(0f, 0f, 90f));
 
                 var colliderEventsR = _colliderObjR.AddComponent<PhysicsEventHandler>();
                 colliderEventsR.EnterEvent.AddListener(OnHandTriggerEnter);
@@ -142,7 +143,7 @@ namespace Rhinox.XR.Grapple.It
                         _grabbedItemR = null;
                     }
 
-                    _potentialGrabItemL.GetComponent<GRPLBaseInteractable>().Grabbed(_SocketObjL);
+                    _potentialGrabItemL.GetComponent<GRPLBaseInteractable>().Grabbed(_SocketObjL, Hand.Left);
 
                     _grabbedItemL = _potentialGrabItemL;
                 }
@@ -189,7 +190,7 @@ namespace Rhinox.XR.Grapple.It
                         _grabbedItemL = null;
                     }
 
-                    _potentialGrabItemR.GetComponent<GRPLBaseInteractable>().Grabbed(_SocketObjR);
+                    _potentialGrabItemR.GetComponent<GRPLBaseInteractable>().Grabbed(_SocketObjR, Hand.Right);
 
                     _grabbedItemR = _potentialGrabItemR;
 

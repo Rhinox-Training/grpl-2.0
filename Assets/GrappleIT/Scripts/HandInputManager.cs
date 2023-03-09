@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Unity.XR.CoreUtils;
 using UnityEngine;
 
-
 namespace Rhinox.XR.Grapple.It
 {
     [RequireComponent(typeof(GestureRecognizer))]
@@ -16,13 +15,7 @@ namespace Rhinox.XR.Grapple.It
         [Header("Physics")]
         public PhysicServices SelectedPhysicsService = PhysicServices.None;
 
-
-        private Vector3 HandSocketPositionalOffset = Vector3.zero;
-        private Quaternion HandSocketRotationalOffset = Quaternion.identity;
-
-
         private GestureRecognizer _gestureRecognizer = null;
-
 
         void Start()
         {
@@ -37,12 +30,7 @@ namespace Rhinox.XR.Grapple.It
             {
                 case PhysicServices.Socketing:
                     {
-                        var newService = new PhysicsSocketService(_boneManager, gameObject, HandSocketPositionalOffset, HandSocketRotationalOffset);
-                        _physicsService = newService;
-                        //newService.Initialize();
-                        //if (!newService.GetIsInitialised())
-                        //    _physicsService = null;
-                        //else
+                        _physicsService = new PhysicsSocketService(_boneManager, gameObject);
                         break;
                     }
             }
@@ -65,7 +53,6 @@ namespace Rhinox.XR.Grapple.It
 
             _gestureRecognizer = GetComponent<GestureRecognizer>();
             _gestureRecognizer.Initialize(_boneManager);
-
         }
     }
 }

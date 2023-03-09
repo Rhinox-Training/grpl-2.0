@@ -14,10 +14,6 @@ namespace Rhinox.XR.Grapple.It
 
         protected bool _isValid = true;
 
-        public virtual void OnValidate()
-        {
-        }
-
         public virtual void Start()
         {
             if (TryGetComponent(out _rigidBody))
@@ -30,7 +26,8 @@ namespace Rhinox.XR.Grapple.It
                 _isValid = false;
         }
 
-        public virtual void Grabbed(GameObject parent)
+        //save and change the rigidbody settings so it can properly move along with the hand it is now attached to
+        public virtual void Grabbed(GameObject parent, Hand hand)
         {
             if (!_isValid)
                 return;
@@ -45,6 +42,7 @@ namespace Rhinox.XR.Grapple.It
             gameObject.transform.parent = parent.transform;
         }
 
+        //reinstate the changed rigidbody settings
         public virtual void Dropped()
         {
             if (!_isValid)

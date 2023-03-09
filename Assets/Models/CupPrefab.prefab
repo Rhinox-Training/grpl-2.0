@@ -155,7 +155,7 @@ GameObject:
   - component: {fileID: 302915265}
   - component: {fileID: 302915264}
   m_Layer: 0
-  m_Name: New Prefab
+  m_Name: CupPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
