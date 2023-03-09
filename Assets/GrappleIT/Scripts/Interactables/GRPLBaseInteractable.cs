@@ -7,7 +7,6 @@ namespace Rhinox.XR.Grapple.It
     public class GRPLBaseInteractable : MonoBehaviour
     {
         protected Transform _previousParentTransform = null;
-
         protected Rigidbody _rigidBody = null;
 
         protected bool _wasKinematic;
@@ -15,22 +14,8 @@ namespace Rhinox.XR.Grapple.It
 
         protected bool _isValid = true;
 
-        //protected void StartInteractable()
-        //{
-        //    if (TryGetComponent(out _rigidBody))
-        //    {
-        //        _wasKinematic = _rigidBody.isKinematic;
-        //        _hadGravity = _rigidBody.useGravity;
-        //        _previousParentTransform = transform.parent;
-        //    }
-        //    else
-        //        _isValid = false;
-        //}
-
         public virtual void OnValidate()
         {
-            //trygetcomponent
-            //gameObject.GetComponentInChildren<>
         }
 
         public virtual void Start()
@@ -45,7 +30,7 @@ namespace Rhinox.XR.Grapple.It
                 _isValid = false;
         }
 
-        public virtual void Grabbed(GameObject parent, Vector3 positionalOffset, Quaternion rotationalOffset)
+        public virtual void Grabbed(GameObject parent)
         {
             if (!_isValid)
                 return;
