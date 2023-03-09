@@ -360,7 +360,7 @@ namespace Rhinox.XR.Grapple
             var writer = new StreamWriter(finalPath,false);
             writer.Write(json);
             writer.Close();
-            Debug.Log($"Wrote gestures to {finalPath}");
+            //Debug.Log($"Wrote gestures to {finalPath}");
         }
 
         /// <summary>

@@ -33,6 +33,7 @@ MonoBehaviour:
     - com.openupm
     - com.rhinox.open.lightspeed
     - jillejr.newtonsoft.json-for-unity.converters
+    - com.rhinox.open
     m_IsDefault: 0
     m_Capabilities: 0
     m_ConfigSource: 4

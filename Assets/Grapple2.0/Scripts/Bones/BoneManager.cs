@@ -15,7 +15,7 @@ namespace Rhinox.XR.Grapple
         Both
     }
 
-    public sealed class RhinoxBone
+    public class RhinoxBone
     {
         public XRHandJointID BoneId { get; private set; } = XRHandJointID.Invalid;
 
@@ -23,21 +23,21 @@ namespace Rhinox.XR.Grapple
         public Quaternion BoneRotation = Quaternion.identity;
 
         public Vector3 Forward;
-        
+
         public RhinoxBone(XRHandJointID boneId)
         {
             BoneId = boneId;
         }
     }
 
-    public sealed class BoneManager : MonoBehaviour
+    public class BoneManager : MonoBehaviour
     {
         #region XRHands fields
 
         private XRHandSubsystem _subsystem;
 
         #endregion
-        
+
 
         private List<RhinoxBone> _leftHandBones = new List<RhinoxBone>();
         private List<RhinoxBone> _rightHandBones = new List<RhinoxBone>();
@@ -54,7 +54,7 @@ namespace Rhinox.XR.Grapple
         {
             if (_subsystem != null)
                 return;
-            
+
             //Load the subsystem if possible
             _subsystem = XRGeneralSettings.Instance?.Manager?.activeLoader?.GetLoadedSubsystem<XRHandSubsystem>();
 
@@ -148,7 +148,7 @@ namespace Rhinox.XR.Grapple
                             var currentBone = _rightHandBones[(int)jointId - 1];
 
                             _subsystem.rightHand.GetJoint(jointId).TryGetPose(out var pose);
-                            
+
                             currentBone.BonePosition = pose.position;
                             currentBone.BoneRotation = pose.rotation;
                             currentBone.Forward = pose.forward;
@@ -186,7 +186,7 @@ namespace Rhinox.XR.Grapple
 
             IsInitialised = true;
         }
-
+        //TODO: change to a boolean return and list Out
         public List<RhinoxBone> GetBonesFromHand(Hand hand)
         {
             switch (hand)
@@ -199,12 +199,11 @@ namespace Rhinox.XR.Grapple
 
             return new List<RhinoxBone>();
         }
-
+        //TODO: change to a boolean return and list Out
         public List<RhinoxBone> GetBonesFromHand(Handedness hand)
         {
             switch (hand)
             {
-
                 case Handedness.Left:
                     return _leftHandBones;
                 case Handedness.Right:
@@ -214,8 +213,8 @@ namespace Rhinox.XR.Grapple
             }
         }
 
-        [CanBeNull]
-        public RhinoxBone GetBone(XRHandJointID jointID,Handedness handedness)
+        //TODO: MAKE NAME THE SAME SO IT IS AN OVERLOAD
+        public RhinoxBone GetBone(XRHandJointID jointID, Handedness handedness)
         {
             if (handedness == Handedness.Left)
                 return _leftHandBones.Find(x => x.BoneId == jointID);
@@ -225,6 +224,7 @@ namespace Rhinox.XR.Grapple
             return null;
         }
 
+        //TODO: MAKE NAME THE SAME SO IT IS AN OVERLOAD
         public RhinoxBone GetBoneFromHandById(Hand hand, XRHandJointID boneId)
         {
             switch (hand)

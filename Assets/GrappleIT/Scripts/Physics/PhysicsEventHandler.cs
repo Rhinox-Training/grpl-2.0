@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.XR.Hands;
 
-namespace Rhinox.XR.Grapple
+namespace Rhinox.XR.Grapple.It
 {
     public class PhysicsEventHandler : MonoBehaviour
     {
