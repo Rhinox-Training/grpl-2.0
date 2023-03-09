@@ -31,6 +31,7 @@ MonoBehaviour:
     m_Url: https://package.openupm.com
     m_Scopes:
     - com.openupm
+    - com.rhinox.open.lightspeed
     - jillejr.newtonsoft.json-for-unity.converters
     - com.rhinox.open
     m_IsDefault: 0

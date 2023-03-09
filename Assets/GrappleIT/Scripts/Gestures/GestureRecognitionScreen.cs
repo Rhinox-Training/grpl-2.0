@@ -1,4 +1,3 @@
-using System;
 using Rhinox.XR.Grapple;
 using TMPro;
 using UnityEngine;

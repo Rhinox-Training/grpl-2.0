@@ -1538,6 +1538,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5542bb0dda26e994ca289baab453f344, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SelectedPhysicsService: 1
 --- !u!114 &1830188011
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1550,15 +1551,315 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2839de4b6f174444935da38fe4db858, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ImportOnPlay: 0
   ImportFilePath: C:/Users/TEST SSD/Desktop/Fork/grpl-2.0/Gestures/RecordedGestures.json
-  OverwriteGesturesOnImport: 1
+  OverwriteGesturesOnImport: 0
+  ExportOnDestroy: 0
   ExportFilePath: C:/Users/TEST SSD/Desktop/Fork/grpl-2.0/Gestures
   ExportFileName: RecordedGestures
+  RecordActionReference: {fileID: -256493050157588337, guid: 3728c71f5f80ba44bbf940c3599fecc9, type: 3}
   SavedGestureName: Thumbs up
   HandToRecord: 1
-  UseWristRotation: 1
+  UseJointForward: 0
+  ForwardJoint: 6
   RecognitionThreshold: 0.02
-  Gestures: []
+  Gestures:
+  - Name: Thumbs up
+    JointData:
+    - 0
+    - 0
+    - 0.039530847
+    - 0.060002856
+    - 0.09087112
+    - 0.11659977
+    - 0.026317393
+    - 0.058491245
+    - 0.08087348
+    - 0.061993808
+    - 0.042949535
+    - 0.01723359
+    - 0.052223947
+    - 0.075900026
+    - 0.05686512
+    - 0.03219027
+    - 0.023001995
+    - 0.049224082
+    - 0.07153997
+    - 0.05252083
+    - 0.026580127
+    - 0.03134621
+    - 0.052894875
+    - 0.06721136
+    - 0.054457672
+    - 0.033459038
+    UseJointForward: 1
+    CheckJoint: 6
+    JointForward: {x: -0.066821486, y: 0.9638193, z: 0.25804496}
+    OnRecognized:
+      m_PersistentCalls:
+        m_Calls: []
+    OnUnrecognized:
+      m_PersistentCalls:
+        m_Calls: []
+  - Name: Thumbs down
+    JointData:
+    - 0
+    - 0
+    - 0.039088946
+    - 0.063626654
+    - 0.09591885
+    - 0.1222062
+    - 0.026007801
+    - 0.05849124
+    - 0.08660411
+    - 0.07288706
+    - 0.05160085
+    - 0.016865341
+    - 0.05222395
+    - 0.07954724
+    - 0.06582224
+    - 0.043195713
+    - 0.023002015
+    - 0.049224053
+    - 0.07362341
+    - 0.060557675
+    - 0.036295854
+    - 0.03134627
+    - 0.052894887
+    - 0.06919291
+    - 0.058048442
+    - 0.036190797
+    UseJointForward: 1
+    CheckJoint: 6
+    JointForward: {x: -0.13277584, y: -0.98960984, z: 0.0551669}
+    OnRecognized:
+      m_PersistentCalls:
+        m_Calls: []
+    OnUnrecognized:
+      m_PersistentCalls:
+        m_Calls: []
+  - Name: Thumbs left
+    JointData:
+    - 0
+    - 0
+    - 0.039318778
+    - 0.060354434
+    - 0.091208436
+    - 0.116980866
+    - 0.026169376
+    - 0.05849126
+    - 0.08634659
+    - 0.07344395
+    - 0.05213067
+    - 0.01704902
+    - 0.052223977
+    - 0.080399625
+    - 0.0651926
+    - 0.040614225
+    - 0.023002047
+    - 0.04922409
+    - 0.07149562
+    - 0.05667051
+    - 0.030676236
+    - 0.031346284
+    - 0.052894965
+    - 0.06477623
+    - 0.053962328
+    - 0.033030886
+    UseJointForward: 1
+    CheckJoint: 6
+    JointForward: {x: -0.9798325, y: -0.065662146, z: -0.18872574}
+    OnRecognized:
+      m_PersistentCalls:
+        m_Calls: []
+    OnUnrecognized:
+      m_PersistentCalls:
+        m_Calls: []
+  - Name: Thumbs right
+    JointData:
+    - 0
+    - 0
+    - 0.039077953
+    - 0.059987854
+    - 0.091127954
+    - 0.11678084
+    - 0.026000075
+    - 0.058491252
+    - 0.083136976
+    - 0.06971069
+    - 0.0490553
+    - 0.01685698
+    - 0.052223932
+    - 0.07791732
+    - 0.06329318
+    - 0.03938002
+    - 0.023002066
+    - 0.049224116
+    - 0.0700032
+    - 0.054871947
+    - 0.028872056
+    - 0.03134628
+    - 0.052894916
+    - 0.06441652
+    - 0.05290082
+    - 0.032221332
+    UseJointForward: 1
+    CheckJoint: 6
+    JointForward: {x: 0.9611192, y: -0.276085, z: 0.0051947236}
+    OnRecognized:
+      m_PersistentCalls:
+        m_Calls: []
+    OnUnrecognized:
+      m_PersistentCalls:
+        m_Calls: []
+  - Name: Rocker
+    JointData:
+    - 0
+    - 0
+    - 0.038604803
+    - 0.057531726
+    - 0.08725072
+    - 0.113206916
+    - 0.025664093
+    - 0.058491252
+    - 0.09621003
+    - 0.12109204
+    - 0.14452054
+    - 0.01652957
+    - 0.05222388
+    - 0.083399296
+    - 0.07392394
+    - 0.057692263
+    - 0.023002097
+    - 0.049224053
+    - 0.08044957
+    - 0.07177621
+    - 0.054367483
+    - 0.031346288
+    - 0.05289488
+    - 0.08435235
+    - 0.105536595
+    - 0.12853707
+    UseJointForward: 0
+    CheckJoint: 0
+    JointForward: {x: 0, y: 0, z: 0}
+    OnRecognized:
+      m_PersistentCalls:
+        m_Calls: []
+    OnUnrecognized:
+      m_PersistentCalls:
+        m_Calls: []
+  - Name: Pintje
+    JointData:
+    - 0
+    - 0
+    - 0.038009323
+    - 0.06046918
+    - 0.08190298
+    - 0.09123047
+    - 0.02523571
+    - 0.058491312
+    - 0.08673003
+    - 0.07346155
+    - 0.052040197
+    - 0.016204692
+    - 0.05222401
+    - 0.08297919
+    - 0.07026836
+    - 0.047921445
+    - 0.023002064
+    - 0.049224067
+    - 0.082476236
+    - 0.075178325
+    - 0.054490607
+    - 0.031346288
+    - 0.05289493
+    - 0.084023476
+    - 0.105695926
+    - 0.12884673
+    UseJointForward: 0
+    CheckJoint: 0
+    JointForward: {x: 0, y: 0, z: 0}
+    OnRecognized:
+      m_PersistentCalls:
+        m_Calls: []
+    OnUnrecognized:
+      m_PersistentCalls:
+        m_Calls: []
+  - Name: Peace
+    JointData:
+    - 0
+    - 0
+    - 0.035497546
+    - 0.05871534
+    - 0.08132068
+    - 0.0935652
+    - 0.023375355
+    - 0.058491256
+    - 0.09911598
+    - 0.12538165
+    - 0.14931442
+    - 0.01584021
+    - 0.052224025
+    - 0.09846237
+    - 0.12831052
+    - 0.15526178
+    - 0.023002004
+    - 0.04922412
+    - 0.08728705
+    - 0.08553636
+    - 0.0702924
+    - 0.03134625
+    - 0.052894957
+    - 0.07547993
+    - 0.07097227
+    - 0.054393373
+    UseJointForward: 0
+    CheckJoint: 0
+    JointForward: {x: 0, y: 0, z: 0}
+    OnRecognized:
+      m_PersistentCalls:
+        m_Calls: []
+    OnUnrecognized:
+      m_PersistentCalls:
+        m_Calls: []
+  - Name: Italian nice
+    JointData:
+    - 0
+    - 0
+    - 0.03622451
+    - 0.06149956
+    - 0.09091348
+    - 0.11066016
+    - 0.023922052
+    - 0.05849126
+    - 0.08747614
+    - 0.09862411
+    - 0.11077137
+    - 0.015780166
+    - 0.052223917
+    - 0.09771066
+    - 0.12669523
+    - 0.15392037
+    - 0.023002038
+    - 0.049224116
+    - 0.09056459
+    - 0.119121075
+    - 0.14540793
+    - 0.03134629
+    - 0.052894916
+    - 0.08140818
+    - 0.10279886
+    - 0.1256179
+    UseJointForward: 0
+    CheckJoint: 0
+    JointForward: {x: 0, y: 0, z: 0}
+    OnRecognized:
+      m_PersistentCalls:
+        m_Calls: []
+    OnUnrecognized:
+      m_PersistentCalls:
+        m_Calls: []
   OnGestureRecognized:
     m_PersistentCalls:
       m_Calls: []
