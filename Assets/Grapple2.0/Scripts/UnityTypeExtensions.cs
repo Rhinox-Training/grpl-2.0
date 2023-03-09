@@ -33,6 +33,11 @@ public static class UnityTypeExtensions
         };
     }
 
+    public static Vector3 FromFlippedXVector3f(this Vector3 v)
+    {
+        return new Vector3() { x = -v.x, y = v.y, z = v.z };
+    }
+
     public static void Subscribe(InputActionReference reference,
         Action<InputAction.CallbackContext> performed = null,
         Action<InputAction.CallbackContext> canceled = null)
