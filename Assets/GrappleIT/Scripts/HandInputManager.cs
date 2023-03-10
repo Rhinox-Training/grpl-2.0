@@ -57,9 +57,15 @@ namespace Rhinox.XR.Grapple.It
                 Debug.LogError($"{nameof(HandInputManager)} Failed to add {SelectedPhysicsService} service");
             }
 
+            if (gameObject.TryGetComponent(out _teleporter))
+                _teleporter.Initialize(_jointManager, _gestureRecognizer);
+            else
+            {
+                Debug.LogError($"{nameof(HandInputManager)} Failed to find {nameof(GRPLTeleport)}");
+                return;
+            }
 
-            _teleporter = gameObject.AddComponent<GRPLTeleport>();
-            _teleporter.Initialize(_jointManager, _gestureRecognizer);
+            //_teleporter = gameObject.GetComponent<GRPLTeleport>();//gameObject.AddComponent<GRPLTeleport>();
         }
 
         // Update is called once per frame
