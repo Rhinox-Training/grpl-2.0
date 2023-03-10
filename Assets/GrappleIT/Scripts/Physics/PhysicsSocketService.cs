@@ -3,7 +3,7 @@ using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple.It
 {
-    public sealed class PhysicsSocketService : IPhysicsService
+    public class PhysicsSocketService : IPhysicsService
     {
         enum HandState
         {

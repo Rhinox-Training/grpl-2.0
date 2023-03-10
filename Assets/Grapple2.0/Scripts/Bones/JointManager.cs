@@ -16,7 +16,7 @@ namespace Rhinox.XR.Grapple
         Invalid
     }
 
-    public sealed class RhinoxJoint
+    public class RhinoxJoint
     {
         public XRHandJointID JointID = XRHandJointID.Invalid;
 
@@ -40,7 +40,7 @@ namespace Rhinox.XR.Grapple
     }
 
 
-    public sealed class JointManager : MonoBehaviour
+    public class JointManager : MonoBehaviour
     {
         #region XRHands fields
 

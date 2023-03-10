@@ -19,6 +19,8 @@ namespace Rhinox.XR.Grapple.It
 
         private GestureRecognizer _gestureRecognizer = null;
 
+        private GRPLTeleport _teleporter = null;
+
         void Start()
         {
             _jointManager = gameObject.AddComponent<JointManager>();
@@ -28,6 +30,14 @@ namespace Rhinox.XR.Grapple.It
                 return;
             }
 
+            _gestureRecognizer = GetComponent<GestureRecognizer>();
+            if (_gestureRecognizer == null)
+            {
+                Debug.LogError($"{nameof(HandInputManager)} Failed to find {nameof(GestureRecognizer)}");
+                return;
+            }
+            _gestureRecognizer.Initialize(_jointManager);
+
             switch (SelectedPhysicsService)
             {
                 case PhysicServices.Socketing:
@@ -36,16 +46,20 @@ namespace Rhinox.XR.Grapple.It
                         break;
                     }
                 case PhysicServices.KinematicProxy:
-                {
-                    _physicsService = new KinematicPoxyPhysicsService(_jointManager);
-                }
-                    break;
+                    {
+                        _physicsService = new KinematicPoxyPhysicsService(_jointManager);
+                        break;
+                    }
             }
 
             if (_physicsService.GetType() == typeof(NullPhysicsService))
             {
                 Debug.LogError($"{nameof(HandInputManager)} Failed to add {SelectedPhysicsService} service");
             }
+
+
+            _teleporter = gameObject.AddComponent<GRPLTeleport>();
+            _teleporter.Initialize(_jointManager, _gestureRecognizer);
         }
 
         // Update is called once per frame
@@ -57,9 +71,6 @@ namespace Rhinox.XR.Grapple.It
             }
 
             _physicsService.Update();
-
-            _gestureRecognizer = GetComponent<GestureRecognizer>();
-            _gestureRecognizer.Initialize(_jointManager);
         }
     }
 }

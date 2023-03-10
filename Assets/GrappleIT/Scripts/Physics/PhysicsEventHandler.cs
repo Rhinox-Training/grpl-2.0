@@ -8,7 +8,7 @@ namespace Rhinox.XR.Grapple.It
 {
     public class PhysicsEventHandler : MonoBehaviour
     {
-        public sealed class PhysicsEvent : UnityEvent<GameObject, GameObject, Hand>
+        public class PhysicsEvent : UnityEvent<GameObject, GameObject, Hand>
         { }
 
         public PhysicsEvent EnterEvent { get; private set; } = new PhysicsEvent();

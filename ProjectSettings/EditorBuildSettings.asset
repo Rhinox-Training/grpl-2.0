@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/GlennTestScene.unity
+    path: Assets/Scenes/SC_Socketing.unity
     guid: 9f64f8397e7c82a4889b31f5af7af032
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: ce56db884d71d2241a2a17e1793d7095, type: 2}
