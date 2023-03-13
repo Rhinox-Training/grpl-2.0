@@ -408,7 +408,7 @@ PrefabInstance:
       objectReference: {fileID: -256493050157588337, guid: 3728c71f5f80ba44bbf940c3599fecc9, type: 3}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].Name
-      value: Teleport
+      value: Pointing
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[1].Name
@@ -886,6 +886,28 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2104654933 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2494858725923593373, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
+  m_PrefabInstance: {fileID: 822401033}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2104654934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2104654933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: befb734ffa0ccf840a92a403d1e70f92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PointingVisualStartDelay: 1.5
+  PointingVisualStopDelay: 1.5
+  ChargingTime: 2
+  FadeDuration: 0.5
+  SnapAmount: 0.5
 --- !u!1 &2114071857
 GameObject:
   m_ObjectHideFlags: 0

@@ -19,7 +19,7 @@ namespace Rhinox.XR.Grapple.It
 
         private GestureRecognizer _gestureRecognizer = null;
 
-        private GRPLTeleport _teleporter = null;
+       // private GRPLTeleport _teleporter = null;
 
         void Start()
         {
@@ -57,13 +57,13 @@ namespace Rhinox.XR.Grapple.It
                 Debug.LogError($"{nameof(HandInputManager)} Failed to add {SelectedPhysicsService} service");
             }
 
-            if (gameObject.TryGetComponent(out _teleporter))
-                _teleporter.Initialize(_jointManager, _gestureRecognizer);
-            else
-            {
-                Debug.LogError($"{nameof(HandInputManager)} Failed to find {nameof(GRPLTeleport)}");
-                return;
-            }
+            //if (gameObject.TryGetComponent(out _teleporter))
+            //    _teleporter.Initialize(_jointManager, _gestureRecognizer);
+            //else
+            //{
+            //    Debug.LogError($"{nameof(HandInputManager)} Failed to find {nameof(GRPLTeleport)}");
+            //    return;
+            //}
 
             //_teleporter = gameObject.GetComponent<GRPLTeleport>();//gameObject.AddComponent<GRPLTeleport>();
         }
