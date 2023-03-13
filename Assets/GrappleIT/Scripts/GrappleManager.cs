@@ -28,18 +28,7 @@ namespace Rhinox.XR.Grapple.It
         {
             _jointManager = gameObject.AddComponent<JointManager>();
             _jointManager.HandLayer = HandLayer;
-            if (_jointManager == null)
-            {
-                Debug.LogError($"{nameof(GrappleManager)} Failed to add {nameof(JointManager)}");
-                return;
-            }
-
             _gestureRecognizer = GetComponent<GestureRecognizer>();
-            if (_gestureRecognizer == null)
-            {
-                Debug.LogError($"{nameof(GrappleManager)} Failed to find {nameof(GestureRecognizer)}");
-                return;
-            }
             _gestureRecognizer.Initialize(_jointManager);
 
             switch (SelectedPhysicsService)

@@ -79,6 +79,26 @@ namespace Rhinox.XR.Grapple
             InitializeHandJoints();
         }
 
+        private void OnEnable()
+        {
+            if (_subsystem == null)
+                return;
+
+            _subsystem.updatedHands += OnUpdatedHands;
+            _subsystem.trackingAcquired += OnTrackingAcquired;
+            _subsystem.trackingLost += OnTrackingLost;
+        }
+
+        private void OnDisable()
+        {
+            if (_subsystem == null)
+                return;
+
+            _subsystem.updatedHands -= OnUpdatedHands;
+            _subsystem.trackingAcquired -= OnTrackingAcquired;
+            _subsystem.trackingLost -= OnTrackingLost;
+        }
+
         private void Start()
         {
             // Disable collision between the hand and between the joints
@@ -409,7 +429,7 @@ namespace Rhinox.XR.Grapple
                         $"{nameof(JointManager)} - {nameof(UpdateJoints)}, function called with incorrect hand {hand}. Only left or right supported!");
                     break;
             }
-            
+
             UpdateCapsuleColliders(hand.ToRhinoxHand());
         }
 
@@ -448,8 +468,8 @@ namespace Rhinox.XR.Grapple
                         $"{nameof(JointManager)} - {nameof(FixedUpdateCapsules)}, function called with incorrect hand {hand}. Only left or right supported!");
                     return;
             }
-            
-            if(!parent)
+
+            if (!parent)
                 return;
             
             List<RhinoxJointCapsule> list = new List<RhinoxJointCapsule>();
@@ -505,10 +525,10 @@ namespace Rhinox.XR.Grapple
                 default:
                     return;
             }
-            
+
             foreach (var capsule in capsules)
             {
-                if(capsule == null)
+                if (capsule == null)
                     continue;
                 //Get the transform of the connected joints
                 var p0 = capsule.StartJoint.JointPosition;
