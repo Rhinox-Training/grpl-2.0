@@ -239,6 +239,7 @@ GameObject:
   - component: {fileID: 8313335731158778048}
   - component: {fileID: 7795567779438498811}
   - component: {fileID: 4541144398816685029}
+  - component: {fileID: 6356985968223755894}
   m_Layer: 0
   m_Name: XR Origin
   m_TagString: Untagged
@@ -292,6 +293,39 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SelectedPhysicsService: 1
+  _handLayer: 3
+--- !u!114 &6356985968223755894
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2494858725923593373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2839de4b6f174444935da38fe4db858, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ImportOnPlay: 1
+  ImportFilePath: 
+  OverwriteGesturesOnImport: 0
+  ExportOnDestroy: 0
+  ExportFilePath: 
+  ExportFileName: RecordedGestures
+  RecordActionReference: {fileID: 0}
+  SavedGestureName: New Gesture
+  HandToRecord: 0
+  UseJointForward: 0
+  ForwardJoint: 0
+  GestureDistanceThreshold: 0.02
+  GestureForwardThreshold: 0.5
+  Gestures: []
+  OnGestureRecognized:
+    m_PersistentCalls:
+      m_Calls: []
+  OnGestureUnrecognized:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &6547532396309030125
 GameObject:
   m_ObjectHideFlags: 0
