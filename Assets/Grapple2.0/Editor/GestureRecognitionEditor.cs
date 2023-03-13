@@ -99,16 +99,6 @@ namespace Rhinox.XR.Grapple
             InsertSeparation();
 
             //--------------------------
-            // Recognition
-            //--------------------------
-            GUILayout.Label("Gesture recognition settings", EditorStyles.boldLabel);
-            _recognitionDistanceThreshold.floatValue = EditorGUILayout.FloatField("Recognition distance threshold",
-                _recognitionDistanceThreshold.floatValue);
-            _recognitionForwardThreshold.floatValue = EditorGUILayout.FloatField("Recognition forward threshold",
-                _recognitionForwardThreshold.floatValue);
-            InsertSeparation();
-
-            //--------------------------
             // Gestures
             //--------------------------
            
@@ -235,6 +225,11 @@ namespace Rhinox.XR.Grapple
                 EditorGUILayout.Toggle("Use joint forward", _useJointForward.boolValue);
             if(_useJointForward.boolValue)
                 EditorGUILayout.PropertyField(_forwardJoint);
+
+            _recognitionDistanceThreshold.floatValue = EditorGUILayout.FloatField("Recognition distance threshold",
+                _recognitionDistanceThreshold.floatValue);
+            _recognitionForwardThreshold.floatValue = EditorGUILayout.FloatField("Recognition forward threshold",
+                _recognitionForwardThreshold.floatValue);
         }
 
         
