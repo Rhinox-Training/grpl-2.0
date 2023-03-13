@@ -588,7 +588,7 @@ namespace Rhinox.XR.Grapple
                 InitializeJointCapsules(Hand.Left);
                 _fixedUpdateAfterTrackingLeftFound = false;
             }
-            else
+            else if(IsLeftHandTracked)
                 FixedUpdateCapsules(Hand.Left);
 
             if (_fixedUpdateAfterTrackingRightFound)
@@ -596,7 +596,7 @@ namespace Rhinox.XR.Grapple
                 InitializeJointCapsules(Hand.Right);
                 _fixedUpdateAfterTrackingRightFound = false;
             }
-            else
+            else if(IsRightHandTracked)
                 FixedUpdateCapsules(Hand.Right);
         }
 

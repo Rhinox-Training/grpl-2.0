@@ -31,6 +31,12 @@ namespace Rhinox.XR.Grapple
         [JsonProperty(PropertyName = "Wrist rotation")]
         public Vector3 JointForward;
 
+        [JsonProperty(PropertyName = "Distance threshold")]
+        public float DistanceThreshold;
+
+        [JsonProperty(PropertyName = "Rotation threshold")]
+        public float RotationThreshold;
+        
         [JsonIgnore]
         public UnityEvent<Hand> OnRecognized;
 
@@ -108,12 +114,12 @@ namespace Rhinox.XR.Grapple
         public Hand HandToRecord = Hand.Left;
         public bool UseJointForward = false;
         public XRHandJointID ForwardJoint;
-        #endregion
-
-        #region Recognizer fields
 
         public float GestureDistanceThreshold = 0.02f;
         public float GestureForwardThreshold = 0.5f;
+        #endregion
+
+        #region Recognizer fields
         public List<RhinoxGesture> Gestures = new List<RhinoxGesture>();
 
         private RhinoxGesture? _currentLeftGesture;
@@ -172,8 +178,10 @@ namespace Rhinox.XR.Grapple
                 return;
 
             //Check for gesture recognition
-            RecognizeGesture(Hand.Left);
-            RecognizeGesture(Hand.Right);
+            if(_jointManager.IsLeftHandTracked)
+                RecognizeGesture(Hand.Left);
+            if(_jointManager.IsRightHandTracked)
+                RecognizeGesture(Hand.Right);
 
         }
 
@@ -190,7 +198,9 @@ namespace Rhinox.XR.Grapple
             var newGesture = new RhinoxGesture
             {
                 Name = SavedGestureName,
-                UseJointForward = UseJointForward
+                UseJointForward = UseJointForward,
+                DistanceThreshold = GestureDistanceThreshold,
+                RotationThreshold = GestureForwardThreshold
             };
             var gestureDistances = new List<float>();
             _jointManager.TryGetJointsFromHand(HandToRecord, out var joints);
@@ -268,7 +278,7 @@ namespace Rhinox.XR.Grapple
                     if (!_jointManager.TryGetJointFromHandById(gesture.CheckJoint, handedness, out var bone))
                         continue;
 
-                    if (!UnityTypeExtensions.Approximately(bone.Forward, gesture.JointForward, GestureForwardThreshold))
+                    if (!UnityTypeExtensions.Approximately(bone.Forward, gesture.JointForward, gesture.RotationThreshold))
                         continue;
                 }
 
@@ -277,7 +287,7 @@ namespace Rhinox.XR.Grapple
                     var currentDist = Vector3.Distance(wristJoint.JointPosition, joints[i].JointPosition);
                     var distance = currentDist - gesture.JointData[i];
 
-                    if (-GestureDistanceThreshold > distance || distance > GestureDistanceThreshold)
+                    if (-GestureDistanceThreshold > distance || distance > gesture.DistanceThreshold)
                     {
                         isDiscarded = true;
                         break;
