@@ -1539,7 +1539,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SelectedPhysicsService: 1
-  HandLayer: 3
+  HandLayer: 1
 --- !u!114 &1830188011
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1557,7 +1557,7 @@ MonoBehaviour:
   OverwriteGesturesOnImport: 1
   ExportOnDestroy: 1
   ExportFilePath: C:/Users/TEST SSD/Desktop/Fork/grpl-2.0/Gestures
-  ExportFileName: RecordedGestures
+  ExportFileName: ExportTest
   RecordActionReference: {fileID: -256493050157588337, guid: 3728c71f5f80ba44bbf940c3599fecc9, type: 3}
   SavedGestureName: New Gesture
   HandToRecord: 0
