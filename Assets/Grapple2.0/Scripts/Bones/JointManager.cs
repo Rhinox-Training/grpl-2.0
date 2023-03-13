@@ -41,7 +41,6 @@ namespace Rhinox.XR.Grapple
         public RhinoxJoint EndJoint;
     }
 
-
     public class JointManager : MonoBehaviour
     {
         #region XRHands fields
@@ -61,7 +60,20 @@ namespace Rhinox.XR.Grapple
         public bool AreJointsInitialised { get; private set; } = false;
 
         public bool HandTrackingProviderContainsCapsules = false;
-        
+
+        public bool JointCollisionsEnabled
+        {
+            get => _jointCollisionsEnabled;
+            set
+            {
+                _jointCollisionsEnabled = value;
+                SetHandCollisions(_jointCollisionsEnabled, Hand.Left);
+                SetHandCollisions(_jointCollisionsEnabled, Hand.Right);
+            }
+        }
+
+        private bool _jointCollisionsEnabled = true;
+
         public int HandLayer = -1;
         
         public bool IsLeftHandTracked { get; private set; } = false;
@@ -239,7 +251,6 @@ namespace Rhinox.XR.Grapple
                 {
                     jointCapsule.JointCollider = new GameObject(joint.JointID.ToString() + "_CapsuleCollider")
                             .AddComponent<CapsuleCollider>();
-                    jointCapsule.JointCollider.enabled = false;
                     jointCapsule.JointCollider.isTrigger = false;
                 }
 
@@ -254,7 +265,7 @@ namespace Rhinox.XR.Grapple
                 var rot = Quaternion.FromToRotation(Vector3.right, delta);
                 
                 // Set all the collider data
-                jointCapsule.JointCollider.enabled = false;
+                jointCapsule.JointCollider.enabled = JointCollisionsEnabled;
                 jointCapsule.JointCollider.radius = 0.01f;
                 jointCapsule.JointCollider.height = colliderLength;
                 jointCapsule.JointCollider.direction = 0;
@@ -271,6 +282,25 @@ namespace Rhinox.XR.Grapple
             }
         }
         #endregion
+
+        private void SetHandCollisions(bool state,Hand hand)
+        {
+            switch (hand)
+            {
+                case Hand.Left:
+                    if (_leftHandCollidersParent)
+                        _leftHandCollidersParent.SetActive(state);
+                    break;
+                case Hand.Right:
+                    if (_rightHandCollidersParent)
+                        _rightHandCollidersParent.SetActive(state);
+                    break;
+                default:
+                    Debug.LogError($"{nameof(JointManager)} - {nameof(SetHandCollisions)}, function called with invalid hand value: {hand}");
+                    break;
+            }
+
+        }
         
         #region Event Methods
         private void OnTrackingAcquired(XRHand hand)
@@ -289,7 +319,8 @@ namespace Rhinox.XR.Grapple
                     Debug.LogError($"{nameof(JointManager)} - {nameof(OnTrackingAcquired)}, function called with incorrect hand {hand}. Only left or right supported!");
                     break;
             }
-
+            if(_jointCollisionsEnabled)
+                SetHandCollisions(true,hand.handedness.ToRhinoxHand());
             TrackingAcquired?.Invoke(hand.handedness.ToRhinoxHand());
         }
 
@@ -310,6 +341,8 @@ namespace Rhinox.XR.Grapple
                     break;
             }
 
+            if (_jointCollisionsEnabled)
+                SetHandCollisions(false, hand.handedness.ToRhinoxHand());
             TrackingLost?.Invoke(hand.handedness.ToRhinoxHand());
         }
         #endregion
