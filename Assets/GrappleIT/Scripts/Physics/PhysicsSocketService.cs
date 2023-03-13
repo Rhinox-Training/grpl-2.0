@@ -93,7 +93,7 @@ namespace Rhinox.XR.Grapple.It
 
         public void TryInitialize()
         {
-            if (!_jointManager.IsInitialised)
+            if (!_jointManager.AreJointsInitialised)
                 return;
 
             _jointManager.TrackingAcquired += TrackingAcquired;
