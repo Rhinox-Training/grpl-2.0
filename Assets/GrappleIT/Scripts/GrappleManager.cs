@@ -1,14 +1,9 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.XR.CoreUtils;
 using UnityEngine;
-using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple.It
 {
     [RequireComponent(typeof(GestureRecognizer))]
-    public class HandInputManager : MonoBehaviour
+    public class GrappleManager : MonoBehaviour
     {
         private JointManager _jointManager = null;
 
@@ -26,7 +21,7 @@ namespace Rhinox.XR.Grapple.It
             _jointManager = gameObject.AddComponent<JointManager>();
             if (_jointManager == null)
             {
-                Debug.LogError($"{nameof(HandInputManager)} Failed to add {nameof(JointManager)}");
+                Debug.LogError($"{nameof(GrappleManager)} Failed to add {nameof(JointManager)}");
                 return;
             }
 
@@ -54,7 +49,7 @@ namespace Rhinox.XR.Grapple.It
 
             if (_physicsService.GetType() == typeof(NullPhysicsService))
             {
-                Debug.LogError($"{nameof(HandInputManager)} Failed to add {SelectedPhysicsService} service");
+                Debug.LogError($"{nameof(GrappleManager)} Failed to add {SelectedPhysicsService} service");
             }
 
             //if (gameObject.TryGetComponent(out _teleporter))
