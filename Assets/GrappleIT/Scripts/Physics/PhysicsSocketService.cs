@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.XR.Hands;
 
@@ -5,7 +6,7 @@ namespace Rhinox.XR.Grapple.It
 {
     public class PhysicsSocketService : IPhysicsService
     {
-        enum HandState
+        private enum HandState
         {
             Neutral,
             Grabbing,
@@ -39,6 +40,10 @@ namespace Rhinox.XR.Grapple.It
         private GameObject _potentialGrabItemR = null;
         private GameObject _grabbedItemL = null;
         private GameObject _grabbedItemR = null;
+
+
+        public Action<Hand, GameObject> OnObjectGrabbed;
+        public Action<Hand, GameObject> OnObjectDropped;
 
         public PhysicsSocketService(JointManager jointManager, GameObject parentObject)
         {
@@ -91,9 +96,18 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
+        ~PhysicsSocketService()
+        {
+            if (!_jointManager.AreJointsInitialised && !_isInitialized)
+                return;
+
+            _jointManager.TrackingAcquired -= TrackingAcquired;
+            _jointManager.TrackingLost -= TrackingLost;
+        }
+
         public void TryInitialize()
         {
-            if (!_jointManager.AreJointsInitialised)
+            if (!_jointManager.AreJointsInitialised && !_isInitialized)
                 return;
 
             _jointManager.TrackingAcquired += TrackingAcquired;
@@ -131,38 +145,7 @@ namespace Rhinox.XR.Grapple.It
                 ///
                 _currentHandStateL = GetCurrentHandState(palmBone, Hand.Left);
 
-                if (_potentialGrabItemL != null && _grabbedItemL == null
-                    && _currentHandStateL == HandState.Grabbing && _previousHandStateL != HandState.Grabbing)
-                {
-                    //switch hand if the left potential object is currently grabbed by the right hand
-                    if (_potentialGrabItemL == _grabbedItemR)
-                    {
-                        _grabbedItemR.GetComponent<GRPLBaseInteractable>().Dropped();
-                        _grabbedItemR = null;
-                    }
-
-                    _potentialGrabItemL.GetComponent<GRPLBaseInteractable>().Grabbed(_SocketObjL, Hand.Left);
-
-                    _grabbedItemL = _potentialGrabItemL;
-                }
-                ///
-                ///Dropping logic
-                ///
-                else
-                {
-                    if (_grabbedItemL != null && _currentHandStateL == HandState.Dropping &&
-                        _previousHandStateL != HandState.Dropping)
-                    {
-                        if (_grabbedItemL != _grabbedItemR)
-                        {
-                            _grabbedItemL.GetComponent<GRPLBaseInteractable>().Dropped();
-                        }
-
-                        _grabbedItemL = null;
-                    }
-                }
-
-                _previousHandStateL = _currentHandStateL;
+                TryGrabOrDropItem(_potentialGrabItemL, ref _grabbedItemL, ref _grabbedItemR, _currentHandStateL, ref _previousHandStateL);
             }
             #endregion
 
@@ -212,6 +195,42 @@ namespace Rhinox.XR.Grapple.It
                 _previousHandStateR = _currentHandStateR;
             }
             #endregion
+        }
+
+        private void TryGrabOrDropItem(GameObject potentialGrabItem, ref GameObject grabbedItemCurrentHand, ref GameObject grabbedItemOtherHand, HandState currentHandState, ref HandState previousHandState)
+        {
+            if (potentialGrabItem != null && grabbedItemCurrentHand == null
+                    && currentHandState == HandState.Grabbing && previousHandState != HandState.Grabbing)
+            {
+                //switch hand if the left potential object is currently grabbed by the right hand
+                if (potentialGrabItem == grabbedItemOtherHand)
+                {
+                    grabbedItemOtherHand.GetComponent<GRPLBaseInteractable>().Dropped();
+                    grabbedItemOtherHand = null;
+                }
+
+                potentialGrabItem.GetComponent<GRPLBaseInteractable>().Grabbed(_SocketObjL, Hand.Left);
+
+                grabbedItemCurrentHand = potentialGrabItem;
+            }
+            ///
+            ///Dropping logic
+            ///
+            else
+            {
+                if (grabbedItemCurrentHand != null && currentHandState == HandState.Dropping &&
+                    previousHandState != HandState.Dropping)
+                {
+                    if (grabbedItemCurrentHand != grabbedItemOtherHand)
+                    {
+                        grabbedItemCurrentHand.GetComponent<GRPLBaseInteractable>().Dropped();
+                    }
+
+                    grabbedItemCurrentHand = null;
+                }
+            }
+
+            previousHandState = currentHandState;
         }
 
         #region Hand Trigger Logic
