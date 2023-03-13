@@ -2997,8 +2997,16 @@ PrefabInstance:
       value: XR Origin
       objectReference: {fileID: 0}
     - target: {fileID: 4541144398816685029, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
+      propertyPath: HandLayer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4541144398816685029, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4541144398816685029, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
+      propertyPath: _handLayer
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4541144398816685029, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: HandSocketPositionalOffset.x
@@ -3028,6 +3036,26 @@ PrefabInstance:
       propertyPath: HandSocketRotationalOffset.z
       value: -0.67437977
       objectReference: {fileID: 0}
+    - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
+      propertyPath: HandToRecord
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
+      propertyPath: ExportFileName
+      value: StandardGestures
+      objectReference: {fileID: 0}
+    - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
+      propertyPath: ExportFilePath
+      value: C:/Users/Rhinox/UnityProjects/grpl-2.0/Assets/GrappleIT/Resources
+      objectReference: {fileID: 0}
+    - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
+      propertyPath: ExportOnDestroy
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
+      propertyPath: RecordActionReference
+      value: 
+      objectReference: {fileID: -256493050157588337, guid: 3728c71f5f80ba44bbf940c3599fecc9, type: 3}
     - target: {fileID: 7795567779438498811, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: m_RequestedTrackingOriginMode
       value: 0

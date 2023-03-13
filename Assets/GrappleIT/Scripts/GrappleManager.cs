@@ -1,3 +1,5 @@
+using UnityEditor.SceneManagement;
+using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -12,22 +14,17 @@ namespace Rhinox.XR.Grapple.It
 
         [Header("Physics")]
         public PhysicServices SelectedPhysicsService = PhysicServices.None;
-        [Layer]
-        public int HandLayer = -1;
-        
+        [Layer][SerializeField] private int _handLayer = 2;
+        public int Handlayer => _handLayer;
+
         private GestureRecognizer _gestureRecognizer = null;
 
-       // private GRPLTeleport _teleporter = null;
+        // private GRPLTeleport _teleporter = null;
 
-       private void OnValidate()
-       {
-           Assert.IsTrue(HandLayer is >= 0 and <= 31, "GrappleManager, Hand layer is not valid. Layer value should be between 0 and 31.");
-       }
-
-       void Start()
+        void Start()
         {
             _jointManager = gameObject.AddComponent<JointManager>();
-            _jointManager.HandLayer = HandLayer;
+            _jointManager.HandLayer = _handLayer;
             _gestureRecognizer = GetComponent<GestureRecognizer>();
             _gestureRecognizer.Initialize(_jointManager);
 
@@ -35,7 +32,7 @@ namespace Rhinox.XR.Grapple.It
             {
                 case PhysicServices.Socketing:
                     {
-                        _physicsService = new PhysicsSocketService(_jointManager, gameObject);
+                        _physicsService = new PhysicsSocketService(_jointManager, _gestureRecognizer, gameObject);
                         break;
                     }
                 case PhysicServices.KinematicProxy:
