@@ -154,21 +154,26 @@ namespace Rhinox.XR.Grapple
 
         private void ShowImportSettings(GestureRecognizer script)
         {
-            _importOnPlay.boolValue = EditorGUILayout.Toggle("Import on play", _importOnPlay.boolValue);
             _overwriteOnImport.boolValue =
                 EditorGUILayout.Toggle("Overwrite gestures on import", _overwriteOnImport.boolValue);
-            if (GUILayout.Button("Set gesture file path"))
+            
+            _importOnPlay.boolValue = EditorGUILayout.Toggle("Import on play", _importOnPlay.boolValue);
+            if (_importOnPlay.boolValue)
             {
-                var chosenFilePath = EditorUtility.OpenFilePanel("Choose target folder",
-                    script.ImportFilePath != "" ? script.ImportFilePath : Application.dataPath, "json");
+                if (GUILayout.Button("Set gesture file path"))
+                {
+                    var chosenFilePath = EditorUtility.OpenFilePanel("Choose target folder",
+                        script.ImportFilePath != "" ? script.ImportFilePath : Application.dataPath, "json");
 
-                if (chosenFilePath.Length != 0)
-                    _importPath.stringValue = chosenFilePath;
-                serializedObject.ApplyModifiedProperties();
+                    if (chosenFilePath.Length != 0)
+                        _importPath.stringValue = chosenFilePath;
+                    serializedObject.ApplyModifiedProperties();
+                }
+
+                EditorGUILayout.LabelField("Current import directory:", EditorStyles.largeLabel);
+                EditorGUILayout.LabelField(_importPath.stringValue);
+                EditorGUILayout.Separator();
             }
-
-            EditorGUILayout.LabelField("Current import directory:", EditorStyles.largeLabel);
-            EditorGUILayout.LabelField(_importPath.stringValue);
 
             _importInEditor = EditorGUILayout.Toggle("Import gestures in editor", _importInEditor);
             if (_importInEditor)
@@ -212,6 +217,12 @@ namespace Rhinox.XR.Grapple
             }
 
             EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
+            if (GUILayout.Button("Export Gestures"))
+            {
+                script.WriteGesturesToJson();
+                
+            }
         }
 
         private void ShowRecordingSettings()
