@@ -1,4 +1,3 @@
-using log4net.Util;
 using Rhinox.Lightspeed;
 using System;
 using System.Collections;
