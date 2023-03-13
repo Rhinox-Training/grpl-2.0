@@ -69,11 +69,19 @@ namespace Rhinox.XR.Grapple
         public Action<Hand> TrackingAcquired;
         public Action<Hand> TrackingLost;
 
+        private bool _fixedUpdateAfterTrackingLeftFound = false;
+        private bool _fixedUpdateAfterTrackingRightFound = false;
+
         public JointManager()
         {
             InitializeHandJoints();
         }
 
+        private void Start()
+        {
+            Physics.IgnoreLayerCollision(HandLayer, HandLayer);
+        }
+        
         private void TryEnsureInitialized()
         {
             //Load the subsystem if possible
@@ -89,14 +97,14 @@ namespace Rhinox.XR.Grapple
 
         private void OnTrackingAcquired(XRHand hand)
         {
-            InitializeJointCapsules(hand.handedness.ToRhinoxHand());
-
             switch (hand.handedness)
             {
                 case Handedness.Left:
+                    _fixedUpdateAfterTrackingLeftFound = true;
                     IsLeftHandTracked = true;
                     break;
                 case Handedness.Right:
+                    _fixedUpdateAfterTrackingRightFound = true;
                     IsRightHandTracked = true;
                     break;
                 default:
@@ -245,11 +253,7 @@ namespace Rhinox.XR.Grapple
             
             UpdateCapsuleColliders(hand.ToRhinoxHand());
         }
-
-        private void Start()
-        {
-            Physics.IgnoreLayerCollision(HandLayer,HandLayer);
-        }
+        
 
         private void InitializeHandJoints()
         {
@@ -400,8 +404,21 @@ namespace Rhinox.XR.Grapple
 
         private void FixedUpdate()
         {
-            FixedUpdateCapsules(Hand.Left);
-            FixedUpdateCapsules(Hand.Right);
+            if (_fixedUpdateAfterTrackingLeftFound)
+            {
+                InitializeJointCapsules(Hand.Left);
+                _fixedUpdateAfterTrackingLeftFound = false;
+            }
+            else
+                FixedUpdateCapsules(Hand.Left);
+
+            if (_fixedUpdateAfterTrackingRightFound)
+            {
+                InitializeJointCapsules(Hand.Right);
+                _fixedUpdateAfterTrackingRightFound = false;
+            }
+            else
+                FixedUpdateCapsules(Hand.Right);
         }
 
         private void FixedUpdateCapsules(Hand hand)
@@ -423,7 +440,7 @@ namespace Rhinox.XR.Grapple
             
             if(!parent)
                 return;
-
+            
             List<RhinoxJointCapsule> list = new List<RhinoxJointCapsule>();
             var joints = new List<RhinoxJoint>();
             switch (hand)
@@ -491,6 +508,7 @@ namespace Rhinox.XR.Grapple
                 capsule.JointCollider.enabled = true;
             }
         }
+        
         public bool TryGetJointsFromHand(Hand hand, out List<RhinoxJoint> jointList)
         {
             switch (hand)

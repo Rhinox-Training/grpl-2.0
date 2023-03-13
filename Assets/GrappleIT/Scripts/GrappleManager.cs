@@ -19,7 +19,12 @@ namespace Rhinox.XR.Grapple.It
 
        // private GRPLTeleport _teleporter = null;
 
-        void Start()
+       private void OnValidate()
+       {
+           Assert.IsTrue(HandLayer is >= 0 and <= 31, "GrappleManager, Hand layer is not valid. Layer value should be between 0 and 31.");
+       }
+
+       void Start()
         {
             _jointManager = gameObject.AddComponent<JointManager>();
             _jointManager.HandLayer = HandLayer;
@@ -32,7 +37,7 @@ namespace Rhinox.XR.Grapple.It
             _gestureRecognizer = GetComponent<GestureRecognizer>();
             if (_gestureRecognizer == null)
             {
-                Debug.LogError($"{nameof(HandInputManager)} Failed to find {nameof(GestureRecognizer)}");
+                Debug.LogError($"{nameof(GrappleManager)} Failed to find {nameof(GestureRecognizer)}");
                 return;
             }
             _gestureRecognizer.Initialize(_jointManager);
