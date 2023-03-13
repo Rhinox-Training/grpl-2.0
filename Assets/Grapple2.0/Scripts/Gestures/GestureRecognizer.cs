@@ -149,27 +149,37 @@ namespace Rhinox.XR.Grapple
 
         private void Awake()
         {
+            #if UNITY_EDITOR
             if (ImportOnPlay)
-                ReadGesturesFromJson();
+                ReadGesturesFromJson();   
+            #endif
+            
         }
 
         private void OnDestroy()
         {
+            #if UNITY_EDITOR
             if (ExportOnDestroy)
                 WriteGesturesToJson();
+            #endif
         }
 
         private void OnEnable()
         {
+            #if UNITY_EDITOR
+
             if (RecordActionReference == null)
                 Debug.LogWarning("GestureRecognizer.cs, Record action reference not set!");
 
             UnityTypeExtensions.Subscribe(RecordActionReference, SaveGesture);
+            #endif
         }
 
         private void OnDisable()
         {
+            #if UNITY_EDITOR
             UnityTypeExtensions.Unsubscribe(RecordActionReference, SaveGesture);
+            #endif
         }
 
         private void Update()
@@ -184,7 +194,8 @@ namespace Rhinox.XR.Grapple
                 RecognizeGesture(Hand.Right);
 
         }
-
+        
+        #if UNITY_EDITOR
         /// <summary>
         /// Saves the current pose of the "HandToRecord" hand as a new gesture under the name "SavedGestureName". <br />
         /// This also includes the option to record the forward of the joint "ForwardJoint", for more restricted recognition. 
@@ -249,7 +260,8 @@ namespace Rhinox.XR.Grapple
 
             Gestures.Add(newGesture);
         }
-
+        #endif
+        
         /// <summary>
         /// Checks if the given hand "handedness" is currently representing a gesture. <br /> If a gesture is recognized, it is set as the current gesture and the corresponding events are invoked.
         /// <remarks>Use the "RecognitionDistanceThreshold" and "RecognitionForwardThreshold" to change the harshness of the recognition. </remarks>
@@ -333,6 +345,7 @@ namespace Rhinox.XR.Grapple
 
         }
 
+        #if UNITY_EDITOR
         /// <summary>
         /// Writes all current gestures to a .json file at directory "ExportFilePath" with name "ExportFileName".json.
         /// <remarks>If the ExportFilePath directory is not valid, the application data path is used.</remarks>
@@ -369,9 +382,11 @@ namespace Rhinox.XR.Grapple
             var writer = new StreamWriter(finalPath, false);
             writer.Write(json);
             writer.Close();
-            //Debug.Log($"Wrote gestures to {finalPath}");
+            writer.Close();
         }
+        #endif
 
+        #if UNITY_EDITOR
         /// <summary>
         /// Reds the gestures from the json file at "ImportFilePath".
         /// <remarks>See <see cref="ReadGesturesFromJson(string)"/></remarks>
@@ -420,7 +435,8 @@ namespace Rhinox.XR.Grapple
                 Gestures = json;
 
             Gestures ??= new List<RhinoxGesture>();
+            reader.Close();
         }
-
+        #endif
     }
 }
