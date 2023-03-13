@@ -2,7 +2,6 @@ using Rhinox.XR.Grapple;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.XR.Hands;
 
 public class GestureRecognitionScreen : MonoBehaviour
 {

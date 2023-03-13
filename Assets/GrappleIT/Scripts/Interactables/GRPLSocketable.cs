@@ -1,9 +1,5 @@
 using Rhinox.Lightspeed;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace Rhinox.XR.Grapple.It
 {
@@ -13,8 +9,6 @@ namespace Rhinox.XR.Grapple.It
 
         public void OnValidate()
         {
-            //base.OnValidate();
-
             if (Socket == null)
                 Debug.LogError($"{nameof(GRPLSocketable)} Socket was not set.");
         }
@@ -51,23 +45,6 @@ namespace Rhinox.XR.Grapple.It
             var targetMatrix = parent.GetWorldMatrix() * relativeInverse;
 
             transform.SetPositionAndRotation(Utility.GetMatrixPosition(targetMatrix), Utility.GetMatrixRotation(targetMatrix));
-
-
-
-
-            //var relativeInverse = relativeMatrix.inverse;
-            //var targetMatrix = parent.GetWorldMatrix() * relativeInverse;
-
-            //transform.SetPositionAndRotation(Utility.GetMatrixPosition(targetMatrix), Utility.GetMatrixRotation(targetMatrix));
-
-
-            //if (hand == Hand.Right)
-            //{
-            //    transform.localRotation = new Quaternion(transform.localRotation.x * -1.0f,
-            //                                transform.localRotation.y,
-            //                                transform.localRotation.z,
-            //                                transform.localRotation.w * -1.0f);
-            //}
         }
     }
 }
