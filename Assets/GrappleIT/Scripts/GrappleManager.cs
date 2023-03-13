@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Rhinox.XR.Grapple.It
 {
@@ -11,7 +13,8 @@ namespace Rhinox.XR.Grapple.It
 
         [Header("Physics")]
         public PhysicServices SelectedPhysicsService = PhysicServices.None;
-
+        public int HandLayer = -1;
+        
         private GestureRecognizer _gestureRecognizer = null;
 
        // private GRPLTeleport _teleporter = null;
@@ -19,6 +22,7 @@ namespace Rhinox.XR.Grapple.It
         void Start()
         {
             _jointManager = gameObject.AddComponent<JointManager>();
+            _jointManager.HandLayer = HandLayer;
             if (_jointManager == null)
             {
                 Debug.LogError($"{nameof(GrappleManager)} Failed to add {nameof(JointManager)}");

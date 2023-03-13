@@ -48,8 +48,7 @@ namespace Rhinox.XR.Grapple
         private XRHandSubsystem _subsystem;
 
         #endregion
-
-
+        
         private List<RhinoxJoint> _leftHandJoints = new List<RhinoxJoint>();
         private List<RhinoxJoint> _rightHandJoints = new List<RhinoxJoint>();
 
@@ -60,6 +59,10 @@ namespace Rhinox.XR.Grapple
         private GameObject _rightHandCollidersParent;
         public bool IsInitialised { get; private set; } = false;
 
+        public bool HandTrackingProviderContainsCapsules = false;
+        
+        public int HandLayer = -1;
+        
         public bool IsLeftHandTracked { get; private set; } = false;
         public bool IsRightHandTracked { get; private set; } = false;
 
@@ -243,6 +246,10 @@ namespace Rhinox.XR.Grapple
             UpdateCapsuleColliders(hand.ToRhinoxHand());
         }
 
+        private void Start()
+        {
+            Physics.IgnoreLayerCollision(HandLayer,HandLayer);
+        }
 
         private void InitializeHandJoints()
         {
@@ -272,7 +279,13 @@ namespace Rhinox.XR.Grapple
 
         private void InitializeJointCapsules(Hand handedness)
         {
-            //Check the parent object. If it doesn't exist, create it.
+            if (HandTrackingProviderContainsCapsules)
+            {
+                Debug.LogError("Hand tracking provider has it's own capsules, don't create them manually");
+            }
+            
+            // Check the parent object. If it doesn't exist, create it.
+            // Parent is only null when the capsules are initialized for the first time
             switch (handedness)
             {
                 case Hand.Left:
@@ -301,8 +314,8 @@ namespace Rhinox.XR.Grapple
                     break;
             }
 
-            //Initialize capsule list
-            List<RhinoxJointCapsule> currentList = null; 
+            // Get the correct parent, joints and capsule for the given handedness
+            List<RhinoxJointCapsule> currentList; 
             GameObject parent;
             List<RhinoxJoint> joints;
             switch (handedness)
@@ -328,10 +341,13 @@ namespace Rhinox.XR.Grapple
             //Loop over the capsules and process them
             for (var index = currentList.Count - 1; index > 0; index--)
             {
+                // Get the current joint and get/create its corresponding capsule
+                // The current joint is the start joint of its corresponding capsule
                 TryGetJointFromHandById((XRHandJointID)index + 1, handedness, out var joint);
                 var jointCapsule = currentList[index] ?? (currentList[index] = new RhinoxJointCapsule());
                 jointCapsule.StartJoint = joint;
 
+                // Create the current capsules rigidbody if it does not exist yet
                 if (jointCapsule.JointRigidbody == null)
                 {
                     jointCapsule.JointRigidbody = new GameObject(joint.JointID.ToString()+ "_Rigidbody").AddComponent<Rigidbody>();
@@ -340,26 +356,33 @@ namespace Rhinox.XR.Grapple
                     jointCapsule.JointRigidbody.useGravity = false;
                     jointCapsule.JointRigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
                 }
-                
+                // Get the game object of the rigidbody and the component
+                // Disable the rigidbody to prevent scene explosions
                 var rbGo = jointCapsule.JointRigidbody.gameObject;
                 rbGo.transform.SetParent(parent.transform, false);
+                rbGo.layer = HandLayer;
                 rbGo.transform.position = joint.JointPosition;
                 rbGo.transform.rotation = joint.JointRotation;
 
+                // Create the current capsules collider if it does not exist yet
                 if (jointCapsule.JointCollider == null)
                 {
                     jointCapsule.JointCollider = new GameObject(joint.JointID.ToString() + "_CapsuleCollider")
                             .AddComponent<CapsuleCollider>();
-                    jointCapsule.JointCollider.isTrigger = true;
+                    jointCapsule.JointCollider.enabled = false;
+                    jointCapsule.JointCollider.isTrigger = false;
                 }
 
-                //Get the transform of the connected joints
+                // Get the transform of the connected joints
                 var p0 = joints[index].JointPosition;
                 var p1 = !joint.JointID.ToString().Contains("Metacarpal") ? _leftHandJoints[index - 1].JointPosition : _leftHandJoints[0].JointPosition;
 
                 var delta = p1 - p0;
                 var colliderLength = delta.magnitude;
                 var rot = Quaternion.FromToRotation(Vector3.right, delta);
+                
+                // Set all the collider data
+                jointCapsule.JointCollider.enabled = false;
                 jointCapsule.JointCollider.radius = 0.01f;
                 jointCapsule.JointCollider.height = colliderLength;
                 jointCapsule.JointCollider.direction = 0;
@@ -370,9 +393,9 @@ namespace Rhinox.XR.Grapple
                 colliderGO.transform.SetParent(_leftHandCollidersParent.transform, false);
                 colliderGo.transform.rotation = rot;
 
+                // Set the end joint of the capsule
                 jointCapsule.EndJoint = endJoint;
             }
-            
         }
 
         private void FixedUpdate()
@@ -427,6 +450,8 @@ namespace Rhinox.XR.Grapple
                     {
                         capsule.JointRigidbody.MovePosition(joint.JointPosition);
                         capsule.JointRigidbody.MoveRotation(joint.JointRotation);
+                        capsule.JointCollider.enabled = true;
+
                     }
                     else
                     {
@@ -463,6 +488,7 @@ namespace Rhinox.XR.Grapple
                 var delta = p1 - p0;
                 var rot = Quaternion.FromToRotation(Vector3.right, delta);
                 capsule.JointCollider.gameObject.transform.rotation = rot;
+                capsule.JointCollider.enabled = true;
             }
         }
         public bool TryGetJointsFromHand(Hand hand, out List<RhinoxJoint> jointList)
