@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -13,6 +12,7 @@ namespace Rhinox.XR.Grapple.It
 
         [Header("Physics")]
         public PhysicServices SelectedPhysicsService = PhysicServices.None;
+        [Layer]
         public int HandLayer = -1;
         
         private GestureRecognizer _gestureRecognizer = null;
