@@ -144,6 +144,7 @@ namespace Rhinox.XR.Grapple
         public void Initialize(JointManager jointManager)
         {
             _jointManager = jointManager;
+            _jointManager.TrackingLost += OnTrackingLost;
             _isInitialized = true;
         }
 
@@ -156,6 +157,34 @@ namespace Rhinox.XR.Grapple
             
         }
 
+        private void OnTrackingLost(Hand hand)
+        {
+            switch (hand)
+            {
+                case Hand.Left:
+                    if (_currentLeftGesture != null)
+                    {
+                        _currentLeftGesture.Value.OnUnrecognized.Invoke(hand);
+                        OnGestureUnrecognized.Invoke(hand,_currentLeftGesture.Value.Name);
+                        _lastLeftGesture = _currentLeftGesture;
+                        _currentLeftGesture = null;
+                    }
+                    break;
+                case Hand.Right:
+                    if (_currentRightGesture != null)
+                    {
+                        _currentRightGesture.Value.OnUnrecognized.Invoke(hand);
+                        OnGestureUnrecognized.Invoke(hand, _currentRightGesture.Value.Name);
+                        _lastRightGesture = _currentRightGesture;
+                        _currentRightGesture = null;
+                    }
+                    break;
+                default:
+                    Debug.LogError($"{nameof(GestureRecognizer)} - {nameof(OnTrackingLost)}, function called with unsupported hand value : {hand}");
+                    break;
+            }
+        }
+        
         private void OnDestroy()
         {
             #if UNITY_EDITOR
@@ -269,7 +298,7 @@ namespace Rhinox.XR.Grapple
         /// <param name="handedness"></param>
         private void RecognizeGesture(Hand handedness)
         {
-            var currentGesture = new RhinoxGesture();
+            RhinoxGesture? currentGesture = null;
             var currentMin = Mathf.Infinity;
             _jointManager.TryGetJointsFromHand(handedness, out var joints);
             _jointManager.TryGetJointFromHandById(XRHandJointID.Wrist, handedness, out var wristJoint);
@@ -324,7 +353,7 @@ namespace Rhinox.XR.Grapple
                         _lastLeftGesture?.OnRecognized?.Invoke(handedness);
                         OnGestureUnrecognized?.Invoke(handedness, _lastLeftGesture?.Name);
                         _currentLeftGesture?.OnRecognized?.Invoke(handedness);
-                        OnGestureRecognized?.Invoke(handedness, currentGesture.Name);
+                        if (currentGesture != null) OnGestureRecognized?.Invoke(handedness, currentGesture.Value.Name);
                     }
 
                     _lastLeftGesture = _currentLeftGesture;
@@ -336,7 +365,7 @@ namespace Rhinox.XR.Grapple
                         _lastRightGesture?.OnUnrecognized?.Invoke(handedness);
                         OnGestureUnrecognized?.Invoke(handedness, _lastRightGesture?.Name);
                         _currentRightGesture?.OnRecognized?.Invoke(handedness);
-                        OnGestureRecognized?.Invoke(handedness, currentGesture.Name);
+                        if (currentGesture != null) OnGestureRecognized?.Invoke(handedness, currentGesture.Value.Name);
                     }
 
                     _lastRightGesture = _currentRightGesture;
@@ -350,7 +379,7 @@ namespace Rhinox.XR.Grapple
         /// Writes all current gestures to a .json file at directory "ExportFilePath" with name "ExportFileName".json.
         /// <remarks>If the ExportFilePath directory is not valid, the application data path is used.</remarks>
         /// </summary>
-        private void WriteGesturesToJson()
+        public void WriteGesturesToJson()
         {
             string finalPath;
             if (ExportFilePath.Length > 0)
@@ -381,7 +410,6 @@ namespace Rhinox.XR.Grapple
 
             var writer = new StreamWriter(finalPath, false);
             writer.Write(json);
-            writer.Close();
             writer.Close();
         }
         #endif
