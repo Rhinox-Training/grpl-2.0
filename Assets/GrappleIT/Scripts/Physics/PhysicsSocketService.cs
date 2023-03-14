@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.XR;
 using UnityEngine.XR.Hands;
 
@@ -32,9 +33,9 @@ namespace Rhinox.XR.Grapple.It
 
         private RhinoxGesture _grabGesture;
 
-        public Action<Hand, GameObject> OnObjectGrabbed;
-        public Action<Hand, GameObject> OnObjectDropped;
-
+        public UnityEvent<Hand,GameObject> OnObjectGrabbed = new() ;
+        public UnityEvent<Hand,GameObject> OnObjectDropped = new();
+        
         public PhysicsSocketService(JointManager jointManager, GestureRecognizer gestureRecognizer, GameObject parentObject)
         {
             _jointManager = jointManager;
