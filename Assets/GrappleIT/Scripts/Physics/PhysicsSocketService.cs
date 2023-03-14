@@ -35,7 +35,12 @@ namespace Rhinox.XR.Grapple.It
 
         public UnityEvent<Hand,GameObject> OnObjectGrabbed = new() ;
         public UnityEvent<Hand,GameObject> OnObjectDropped = new();
-        
+
+        public UnityEvent<Hand> OnGrabStarted = new();
+        public UnityEvent<Hand> OnGrabEnded = new();
+
+        public float ColliderActivationDelay = 1.0f;
+
         public PhysicsSocketService(JointManager jointManager, GestureRecognizer gestureRecognizer, GameObject parentObject)
         {
             _jointManager = jointManager;
@@ -97,6 +102,11 @@ namespace Rhinox.XR.Grapple.It
             _jointManager.TrackingAcquired -= TrackingAcquired;
             _jointManager.TrackingLost -= TrackingLost;
 
+            // Add these function ass listeners
+            // This assured that the grabbing of objects and hand colliders don't have weird behaviour
+            OnGrabStarted.RemoveListener(_jointManager.DisableHandCollisions);
+            OnGrabEnded.RemoveListener(_jointManager.EnableHandCollisionsAfterDelay);
+            
             if (_grabGesture != null)
             {
                 _grabGesture.OnRecognized.RemoveAllListeners();
@@ -112,6 +122,14 @@ namespace Rhinox.XR.Grapple.It
             _jointManager.TrackingAcquired += TrackingAcquired;
             _jointManager.TrackingLost += TrackingLost;
 
+
+            // Add these function ass listeners
+            // This assured that the grabbing of objects and hand colliders don't have weird behaviour
+            OnGrabStarted.AddListener(_jointManager.DisableHandCollisions);
+            OnGrabEnded.AddListener(_jointManager.EnableHandCollisionsAfterDelay);
+
+            _jointManager.ColliderActivationDelay = ColliderActivationDelay;
+            
             //getting the grab gesture and linking events
             if (_grabGesture.Name == null)
             {
@@ -224,6 +242,7 @@ namespace Rhinox.XR.Grapple.It
                 {
                     grabbedItemOtherHand.GetComponent<GRPLBaseInteractable>().Dropped();
                     OnObjectDropped.Invoke(hand, grabbedItemOtherHand);
+                    OnGrabEnded.Invoke(hand);
                     grabbedItemOtherHand = null;
                 }
 
@@ -232,6 +251,7 @@ namespace Rhinox.XR.Grapple.It
                 grabbedItemCurrentHand = potentialGrabItem;
 
                 OnObjectGrabbed.Invoke(hand, grabbedItemCurrentHand);
+                OnGrabStarted.Invoke(hand);
             }
         }
 
@@ -244,6 +264,7 @@ namespace Rhinox.XR.Grapple.It
                     grabbedItemCurrentHand.GetComponent<GRPLBaseInteractable>().Dropped();
 
                     OnObjectDropped.Invoke(hand, grabbedItemCurrentHand);
+                    OnGrabEnded.Invoke(hand);
                 }
 
                 grabbedItemCurrentHand = null;
