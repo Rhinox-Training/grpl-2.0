@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.XR.Hands;
@@ -61,6 +62,9 @@ namespace Rhinox.XR.Grapple
 
         public bool HandTrackingProviderContainsCapsules = false;
 
+        public float ColliderActivationDelay = 1.5f;
+        
+        
         public bool JointCollisionsEnabled
         {
             get => _jointCollisionsEnabled;
@@ -293,6 +297,23 @@ namespace Rhinox.XR.Grapple
             SetHandCollisions(false,hand);
         }
 
+        private IEnumerator SetHandCollisionsCoroutine(bool state, Hand hand)
+        {
+            yield return new WaitForSecondsRealtime(ColliderActivationDelay);
+            SetHandCollisions(true, hand);
+
+        }
+
+        public void EnableHandCollisionsAfterDelay(Hand hand)
+        {
+            StartCoroutine(SetHandCollisionsCoroutine(true,hand));
+        }
+
+        public void DisableHandCollisionsAfterDelay(Hand hand)
+        {
+            StartCoroutine(SetHandCollisionsCoroutine(false, hand));
+        }
+        
         public void SetHandCollisions(bool state,Hand hand)
         {
             if(!_jointCollisionsEnabled)

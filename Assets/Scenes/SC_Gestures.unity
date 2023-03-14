@@ -1539,7 +1539,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SelectedPhysicsService: 1
-  HandLayer: 1
+  _handLayer: 3
 --- !u!114 &1830188011
 MonoBehaviour:
   m_ObjectHideFlags: 0
