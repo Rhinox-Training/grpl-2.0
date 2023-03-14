@@ -350,7 +350,7 @@ namespace Rhinox.XR.Grapple
                     _currentLeftGesture = currentGesture;
                     if (_currentLeftGesture != _lastLeftGesture)
                     {
-                        _lastLeftGesture?.OnRecognized?.Invoke(handedness);
+                        _lastLeftGesture?.OnUnrecognized?.Invoke(handedness);
                         OnGestureUnrecognized?.Invoke(handedness, _lastLeftGesture?.Name);
                         _currentLeftGesture?.OnRecognized?.Invoke(handedness);
                         if (currentGesture != null) OnGestureRecognized?.Invoke(handedness, currentGesture.Value.Name);
