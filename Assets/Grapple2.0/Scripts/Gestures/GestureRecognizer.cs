@@ -36,7 +36,7 @@ namespace Rhinox.XR.Grapple
 
         [JsonProperty(PropertyName = "Rotation threshold")]
         public float RotationThreshold;
-        
+
         [JsonIgnore]
         public UnityEvent<Hand> OnRecognized;
 
@@ -150,11 +150,11 @@ namespace Rhinox.XR.Grapple
 
         private void Awake()
         {
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             if (ImportOnPlay)
-                ReadGesturesFromJson();   
-            #endif
-            
+                ReadGesturesFromJson();
+#endif
+
         }
 
         private void OnTrackingLost(Hand hand)
@@ -165,7 +165,7 @@ namespace Rhinox.XR.Grapple
                     if (_currentLeftGesture != null)
                     {
                         _currentLeftGesture.Value.OnUnrecognized.Invoke(hand);
-                        OnGestureUnrecognized.Invoke(hand,_currentLeftGesture.Value.Name);
+                        OnGestureUnrecognized.Invoke(hand, _currentLeftGesture.Value.Name);
                         _lastLeftGesture = _currentLeftGesture;
                         _currentLeftGesture = null;
                     }
@@ -184,31 +184,31 @@ namespace Rhinox.XR.Grapple
                     break;
             }
         }
-        
+
         private void OnDestroy()
         {
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             if (ExportOnDestroy)
                 WriteGesturesToJson();
-            #endif
+#endif
         }
 
         private void OnEnable()
         {
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
 
             if (RecordActionReference == null)
                 Debug.LogWarning("GestureRecognizer.cs, Record action reference not set!");
 
             UnityTypeExtensions.Subscribe(RecordActionReference, SaveGesture);
-            #endif
+#endif
         }
 
         private void OnDisable()
         {
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             UnityTypeExtensions.Unsubscribe(RecordActionReference, SaveGesture);
-            #endif
+#endif
         }
 
         private void Update()
@@ -217,14 +217,14 @@ namespace Rhinox.XR.Grapple
                 return;
 
             //Check for gesture recognition
-            if(_jointManager.IsLeftHandTracked)
+            if (_jointManager.IsLeftHandTracked)
                 RecognizeGesture(Hand.Left);
-            if(_jointManager.IsRightHandTracked)
+            if (_jointManager.IsRightHandTracked)
                 RecognizeGesture(Hand.Right);
 
         }
-        
-        #if UNITY_EDITOR
+
+#if UNITY_EDITOR
         /// <summary>
         /// Saves the current pose of the "HandToRecord" hand as a new gesture under the name "SavedGestureName". <br />
         /// This also includes the option to record the forward of the joint "ForwardJoint", for more restricted recognition. 
@@ -289,8 +289,8 @@ namespace Rhinox.XR.Grapple
 
             Gestures.Add(newGesture);
         }
-        #endif
-        
+#endif
+
         /// <summary>
         /// Checks if the given hand "handedness" is currently representing a gesture. <br /> If a gesture is recognized, it is set as the current gesture and the corresponding events are invoked.
         /// <remarks>Use the "RecognitionDistanceThreshold" and "RecognitionForwardThreshold" to change the harshness of the recognition. </remarks>
@@ -374,7 +374,7 @@ namespace Rhinox.XR.Grapple
 
         }
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         /// <summary>
         /// Writes all current gestures to a .json file at directory "ExportFilePath" with name "ExportFileName".json.
         /// <remarks>If the ExportFilePath directory is not valid, the application data path is used.</remarks>
@@ -412,9 +412,9 @@ namespace Rhinox.XR.Grapple
             writer.Write(json);
             writer.Close();
         }
-        #endif
+#endif
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         /// <summary>
         /// Reds the gestures from the json file at "ImportFilePath".
         /// <remarks>See <see cref="ReadGesturesFromJson(string)"/></remarks>
@@ -465,6 +465,6 @@ namespace Rhinox.XR.Grapple
             Gestures ??= new List<RhinoxGesture>();
             reader.Close();
         }
-        #endif
+#endif
     }
 }

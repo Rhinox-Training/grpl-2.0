@@ -7,13 +7,6 @@ namespace Rhinox.XR.Grapple.It
 {
     public class PhysicsSocketService : IPhysicsService
     {
-        private enum HandState
-        {
-            Neutral,
-            Grabbing,
-            Dropping
-        }
-
         private bool _isInitialized = false;
         private JointManager _jointManager;
         private GestureRecognizer _gestureRecognizer;
@@ -26,17 +19,11 @@ namespace Rhinox.XR.Grapple.It
         private GameObject _SocketObjL;
         private GameObject _SocketObjR;
 
+        private readonly Vector3 _handSocketAndColliderOffset = new Vector3(0f, -0.03f, 0.025f);//magic numbers got from testing
+        private readonly Vector3 _colliderSize = new Vector3(0.065f, 0.045f, 0.08f);//magic numbers got from testing
+
         private bool _enabledL = true;
         private bool _enabledR = true;
-
-        private HandState _currentHandStateL = HandState.Neutral;
-        private HandState _previousHandStateL = HandState.Neutral;
-        private HandState _currentHandStateR = HandState.Neutral;
-        private HandState _previousHandStateR = HandState.Neutral;
-
-        private const float GRABBING_THRESHOLD = 0.05f;
-        private const float DROPPING_THRESHOLD = 0.062f;//prev: 0.065
-
 
         private GameObject _potentialGrabItemL = null;
         private GameObject _potentialGrabItemR = null;
@@ -63,7 +50,8 @@ namespace Rhinox.XR.Grapple.It
 
                 _SocketObjL = new GameObject("Socket Left");
                 _SocketObjL.transform.parent = _colliderObjL.transform;
-                _SocketObjL.transform.SetLocalPositionAndRotation(new(0f, -0.03f, 0.025f), Quaternion.Euler(0f, 0f, 270f));
+                //needs to be rotate 90°, otherwise object would go through handpalm and this one is rotate antoher 180°, because it's the opposite of left hand
+                _SocketObjL.transform.SetLocalPositionAndRotation(_handSocketAndColliderOffset, Quaternion.Euler(0f, 0f, 270f));
 
                 var colliderEventsL = _colliderObjL.AddComponent<PhysicsEventHandler>();
                 colliderEventsL.EnterEvent.AddListener(OnHandTriggerEnter);
@@ -73,8 +61,8 @@ namespace Rhinox.XR.Grapple.It
                 _ColliderL = _colliderObjL.AddComponent<BoxCollider>();
                 _ColliderL.isTrigger = true;
                 _ColliderL.enabled = false;
-                _ColliderL.center = new(0f, -0.03f, 0.0225f);
-                _ColliderL.size = new(0.06f, 0.035f, 0.07f);
+                _ColliderL.center = _handSocketAndColliderOffset;
+                _ColliderL.size = _colliderSize;
                 #endregion
 
                 #region Right Hand Creating and Init
@@ -83,8 +71,8 @@ namespace Rhinox.XR.Grapple.It
 
                 _SocketObjR = new GameObject("Socket Right");
                 _SocketObjR.transform.parent = _colliderObjR.transform;
-                //_SocketObjR.transform.localScale = new(-1f, 1f, 1f);//flipping X axis
-                _SocketObjR.transform.SetLocalPositionAndRotation(new(0f, -0.03f, 0.025f), Quaternion.Euler(0f, 0f, 90f));
+                //needs to be rotate 90°, otherwise object would go through handpalm.
+                _SocketObjR.transform.SetLocalPositionAndRotation(_handSocketAndColliderOffset, Quaternion.Euler(0f, 0f, 90f));
 
                 var colliderEventsR = _colliderObjR.AddComponent<PhysicsEventHandler>();
                 colliderEventsR.EnterEvent.AddListener(OnHandTriggerEnter);
@@ -94,8 +82,8 @@ namespace Rhinox.XR.Grapple.It
                 _ColliderR = _colliderObjR.AddComponent<BoxCollider>();
                 _ColliderR.enabled = false;
                 _ColliderR.isTrigger = true;
-                _ColliderR.center = new(0f, -0.03f, 0.0225f);
-                _ColliderR.size = new(0.06f, 0.035f, 0.07f);
+                _ColliderR.center = _handSocketAndColliderOffset;
+                _ColliderR.size = _colliderSize;
                 #endregion
             }
         }
@@ -111,7 +99,7 @@ namespace Rhinox.XR.Grapple.It
             if (_grabGesture != null)
             {
                 _grabGesture.OnRecognized.RemoveAllListeners();
-                _grabGesture.OnUnrecognized.AddListener(TryDrop);
+                _grabGesture.OnUnrecognized.RemoveAllListeners();
             }
         }
 
@@ -123,10 +111,11 @@ namespace Rhinox.XR.Grapple.It
             _jointManager.TrackingAcquired += TrackingAcquired;
             _jointManager.TrackingLost += TrackingLost;
 
-            if (_grabGesture == null)
+            //getting the grab gesture and linking events
+            if (_grabGesture.Name == null)
             {
                 _grabGesture = _gestureRecognizer.Gestures.Find(x => x.Name == "Grab");
-                if (_grabGesture != null)
+                if (_grabGesture.Name != "")
                 {
                     _grabGesture.OnRecognized.AddListener(TryGrab);
                     _grabGesture.OnUnrecognized.AddListener(TryDrop);
@@ -146,8 +135,6 @@ namespace Rhinox.XR.Grapple.It
 
         public void Update()
         {
-            return;
-
             if (!_isInitialized)
                 return;
 
@@ -155,66 +142,21 @@ namespace Rhinox.XR.Grapple.It
             if (!_enabledL && !_enabledR)
                 return;
 
-            #region LeftHandLogic
-            //if (_enabledL)
-            //{
-            //    //updating the obj with the is-in-grabbing reach collider and caching the palmbone.
-            //    _jointManager.TryGetJointFromHandById(XRHandJointID.Palm, Hand.Left, out var palmBone);
-            //    _colliderObjL.transform.position = palmBone.JointPosition;
-            //    _colliderObjL.transform.rotation = palmBone.JointRotation;
+            if (_enabledL)
+            {
+                //updating the obj with the is-in-grabbing reach collider
+                _jointManager.TryGetJointFromHandById(XRHandJointID.Palm, Hand.Left, out var palmBone);
+                _colliderObjL.transform.position = palmBone.JointPosition;
+                _colliderObjL.transform.rotation = palmBone.JointRotation;
+            }
 
-            //    _currentHandStateL = GetCurrentHandState(palmBone, Hand.Left);
-
-            //    TryGrabOrDropItem(_potentialGrabItemL, ref _grabbedItemL, ref _grabbedItemR, _currentHandStateL, ref _previousHandStateL);
-            //}
-            #endregion
-
-            #region RightHandLogic
-            //if (_enabledR)
-            //{
-            //    _jointManager.TryGetJointFromHandById(XRHandJointID.Palm, Hand.Right, out var palmBone);
-            //    _colliderObjR.transform.position = palmBone.JointPosition;
-            //    _colliderObjR.transform.rotation = palmBone.JointRotation;
-
-            //    _currentHandStateR = GetCurrentHandState(palmBone, Hand.Right);
-
-            //    ///
-            //    ///Grabbing logics
-            //    ///
-            //    if (_potentialGrabItemR != null && _grabbedItemR == null
-            //        && _currentHandStateR == HandState.Grabbing && _previousHandStateR != HandState.Grabbing)
-            //    {
-            //        //switch hand if the right potential object is currently grabbed by the left hand
-            //        if (_potentialGrabItemR == _grabbedItemL)
-            //        {
-            //            _grabbedItemL.GetComponent<GRPLBaseInteractable>().Dropped();
-            //            _grabbedItemL = null;
-            //        }
-
-            //        _potentialGrabItemR.GetComponent<GRPLBaseInteractable>().Grabbed(_SocketObjR, Hand.Right);
-
-            //        _grabbedItemR = _potentialGrabItemR;
-
-            //    }
-            //    ///
-            //    ///Dropping logic
-            //    ///
-            //    else
-            //    {
-            //        if (_grabbedItemR != null && _currentHandStateR == HandState.Dropping &&
-            //            _previousHandStateR != HandState.Dropping)
-            //        {
-            //            if (_grabbedItemL != _grabbedItemR)
-            //            {
-            //                _grabbedItemR.GetComponent<GRPLBaseInteractable>().Dropped();
-            //            }
-
-            //            _grabbedItemR = null;
-            //        }
-            //    }
-            //    _previousHandStateR = _currentHandStateR;
-            //}
-            #endregion
+            if (_enabledR)
+            {
+                //updating the obj with the is-in-grabbing reach collider
+                _jointManager.TryGetJointFromHandById(XRHandJointID.Palm, Hand.Right, out var palmBone);
+                _colliderObjR.transform.position = palmBone.JointPosition;
+                _colliderObjR.transform.rotation = palmBone.JointRotation;
+            }
         }
 
         #region Grab & Drop Logic
@@ -228,12 +170,10 @@ namespace Rhinox.XR.Grapple.It
                 case Hand.Left:
                     if (_enabledL)
                         TryGrabInternal(Hand.Left, _potentialGrabItemL, ref _grabbedItemL, ref _grabbedItemR, _SocketObjL);
-                    //TryGrabOrDropItem(_potentialGrabItemL, ref _grabbedItemL, ref _grabbedItemR, _currentHandStateL, ref _previousHandStateL);
                     break;
                 case Hand.Right:
                     if (_enabledR)
                         TryGrabInternal(Hand.Right, _potentialGrabItemR, ref _grabbedItemR, ref _grabbedItemL, _SocketObjR);
-                    //TryGrabOrDropItem(_potentialGrabItemL, ref _grabbedItemL, ref _grabbedItemR, _currentHandStateL, ref _previousHandStateL);
                     break;
                 case Hand.Both:
                     TryGrabInternal(Hand.Left, _potentialGrabItemL, ref _grabbedItemL, ref _grabbedItemR, _SocketObjL);
@@ -256,23 +196,20 @@ namespace Rhinox.XR.Grapple.It
             {
                 case Hand.Left:
                     if (_enabledL)
-                        TryDropInternal(ref _grabbedItemL, _grabbedItemR);
-                    //TryGrabOrDropItem(_potentialGrabItemL, ref _grabbedItemL, ref _grabbedItemR, _currentHandStateL, ref _previousHandStateL);
+                        TryDropInternal(Hand.Left, ref _grabbedItemL, _grabbedItemR);
                     break;
                 case Hand.Right:
                     if (_enabledR)
-                        TryDropInternal(ref _grabbedItemR, _grabbedItemL);
-                    //TryDropInternal(Hand.Right, _potentialGrabItemR, ref _grabbedItemR, ref _grabbedItemL, _SocketObjR);
-                    //TryGrabOrDropItem(_potentialGrabItemL, ref _grabbedItemL, ref _grabbedItemR, _currentHandStateL, ref _previousHandStateL);
+                        TryDropInternal(Hand.Right, ref _grabbedItemR, _grabbedItemL);
                     break;
                 case Hand.Both:
-                    TryDropInternal(ref _grabbedItemL, _grabbedItemR);
-                    TryDropInternal(ref _grabbedItemR, _grabbedItemL);
+                    TryDropInternal(Hand.Left, ref _grabbedItemL, _grabbedItemR);
+                    TryDropInternal(Hand.Right, ref _grabbedItemR, _grabbedItemL);
                     break;
                 case Hand.Invalid:
                 default:
                     Debug.LogError(
-                        $"{nameof(PhysicsSocketService)} - {nameof(TryGrab)}, function called with incorrect hand {hand}. Only left, right or both is supported!");
+                        $"{nameof(PhysicsSocketService)} - {nameof(TryDrop)}, function called with incorrect hand {hand}. Only left, right or both is supported!");
                     break;
             }
         }
@@ -280,75 +217,38 @@ namespace Rhinox.XR.Grapple.It
         private void TryGrabInternal(Hand hand, GameObject potentialGrabItem, ref GameObject grabbedItemCurrentHand, ref GameObject grabbedItemOtherHand, GameObject socket)
         {
             if (potentialGrabItem != null && grabbedItemCurrentHand == null)
-            //&& currentHandState == HandState.Grabbing && previousHandState != HandState.Grabbing)
             {
                 //switch hand if the potential object is currently grabbed by the other hand
                 if (potentialGrabItem == grabbedItemOtherHand)
                 {
                     grabbedItemOtherHand.GetComponent<GRPLBaseInteractable>().Dropped();
+                    OnObjectDropped.Invoke(hand, grabbedItemOtherHand);
                     grabbedItemOtherHand = null;
                 }
 
                 potentialGrabItem.GetComponent<GRPLBaseInteractable>().Grabbed(socket, hand);
 
                 grabbedItemCurrentHand = potentialGrabItem;
+
+                OnObjectGrabbed.Invoke(hand, grabbedItemCurrentHand);
             }
         }
 
-        private void TryDropInternal(ref GameObject grabbedItemCurrentHand, GameObject grabbedItemOtherHand)
+        private void TryDropInternal(Hand hand, ref GameObject grabbedItemCurrentHand, GameObject grabbedItemOtherHand)
         {
-            if (grabbedItemCurrentHand != null)// && currentHandState == HandState.Dropping &&
-                                               //previousHandState != HandState.Dropping)
+            if (grabbedItemCurrentHand != null)
             {
                 if (grabbedItemCurrentHand != grabbedItemOtherHand)
                 {
                     grabbedItemCurrentHand.GetComponent<GRPLBaseInteractable>().Dropped();
+
+                    OnObjectDropped.Invoke(hand, grabbedItemCurrentHand);
                 }
 
                 grabbedItemCurrentHand = null;
             }
         }
         #endregion
-
-
-        private void TryGrabOrDropItem(GameObject potentialGrabItem, ref GameObject grabbedItemCurrentHand, ref GameObject grabbedItemOtherHand, HandState currentHandState, ref HandState previousHandState)
-        {
-            //    ///
-            //    ///Grabbing logic
-            //    ///
-            //    if (potentialGrabItem != null && grabbedItemCurrentHand == null
-            //            && currentHandState == HandState.Grabbing && previousHandState != HandState.Grabbing)
-            //    {
-            //        //switch hand if the left potential object is currently grabbed by the right hand
-            //        if (potentialGrabItem == grabbedItemOtherHand)
-            //        {
-            //            grabbedItemOtherHand.GetComponent<GRPLBaseInteractable>().Dropped();
-            //            grabbedItemOtherHand = null;
-            //        }
-
-            //        potentialGrabItem.GetComponent<GRPLBaseInteractable>().Grabbed(_SocketObjL, Hand.Left);
-
-            //        grabbedItemCurrentHand = potentialGrabItem;
-            //    }
-            //    ///
-            //    ///Dropping logic
-            //    ///
-            //    else
-            //    {
-            //        if (grabbedItemCurrentHand != null && currentHandState == HandState.Dropping &&
-            //            previousHandState != HandState.Dropping)
-            //        {
-            //            if (grabbedItemCurrentHand != grabbedItemOtherHand)
-            //            {
-            //                grabbedItemCurrentHand.GetComponent<GRPLBaseInteractable>().Dropped();
-            //            }
-
-            //            grabbedItemCurrentHand = null;
-            //        }
-            //    }
-
-            //    previousHandState = currentHandState;
-        }
 
         #region Hand Trigger Logic
         public void OnHandTriggerEnter(GameObject triggerObj, GameObject otherObj, Hand hand)
@@ -392,34 +292,6 @@ namespace Rhinox.XR.Grapple.It
         private void TrackingAcquired(Hand hand) => SetHandEnabled(true, hand);
 
         private void TrackingLost(Hand hand) => SetHandEnabled(false, hand);
-
-        //checks if hand is doing a grabbing, dropping or neutral motion
-        HandState GetCurrentHandState(RhinoxJoint palmJoint, Hand hand)
-        {
-            if (hand == Hand.Both)
-                return HandState.Neutral;
-
-            //_gestureRecognizer.
-
-            float total = 0f;
-            _jointManager.TryGetJointFromHandById(XRHandJointID.ThumbTip, hand, out var thumbTip);
-            total += Vector3.SqrMagnitude(palmJoint.JointPosition - thumbTip.JointPosition);
-            _jointManager.TryGetJointFromHandById(XRHandJointID.IndexTip, hand, out var indexTip);
-            total += Vector3.SqrMagnitude(palmJoint.JointPosition - indexTip.JointPosition);
-            _jointManager.TryGetJointFromHandById(XRHandJointID.MiddleTip, hand, out var middleTip);
-            total += Vector3.SqrMagnitude(palmJoint.JointPosition - middleTip.JointPosition);
-            _jointManager.TryGetJointFromHandById(XRHandJointID.RingTip, hand, out var ringTip);
-            total += Vector3.SqrMagnitude(palmJoint.JointPosition - ringTip.JointPosition);
-            _jointManager.TryGetJointFromHandById(XRHandJointID.LittleTip, hand, out var littleTip);
-            total += Vector3.SqrMagnitude(palmJoint.JointPosition - littleTip.JointPosition);
-
-            if (total <= GRABBING_THRESHOLD)
-                return HandState.Grabbing;
-            else if (total >= DROPPING_THRESHOLD)
-                return HandState.Dropping;
-            else
-                return HandState.Neutral;
-        }
 
         public void SetHandEnabled(bool newState, Hand handedness)
         {
