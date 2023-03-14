@@ -283,8 +283,21 @@ namespace Rhinox.XR.Grapple
         }
         #endregion
 
-        private void SetHandCollisions(bool state,Hand hand)
+        public void EnableHandCollisions(Hand hand)
         {
+            SetHandCollisions(true, hand);
+        }
+
+        public void DisableHandCollisions(Hand hand)
+        {
+            SetHandCollisions(false,hand);
+        }
+
+        public void SetHandCollisions(bool state,Hand hand)
+        {
+            if(!_jointCollisionsEnabled)
+                return;
+            
             switch (hand)
             {
                 case Hand.Left:
