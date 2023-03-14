@@ -33,8 +33,8 @@ namespace Rhinox.XR.Grapple.It
 
         private RhinoxGesture _grabGesture;
 
-        public UnityEvent<Hand,GameObject> OnObjectGrabbed = new() ;
-        public UnityEvent<Hand,GameObject> OnObjectDropped = new();
+        public UnityEvent<Hand, GameObject> OnObjectGrabbed = new();
+        public UnityEvent<Hand, GameObject> OnObjectDropped = new();
 
         public UnityEvent<Hand> OnGrabStarted = new();
         public UnityEvent<Hand> OnGrabEnded = new();
@@ -106,11 +106,25 @@ namespace Rhinox.XR.Grapple.It
             // This assured that the grabbing of objects and hand colliders don't have weird behaviour
             OnGrabStarted.RemoveListener(_jointManager.DisableHandCollisions);
             OnGrabEnded.RemoveListener(_jointManager.EnableHandCollisionsAfterDelay);
-            
+
             if (_grabGesture != null)
             {
                 _grabGesture.OnRecognized.RemoveAllListeners();
                 _grabGesture.OnUnrecognized.RemoveAllListeners();
+            }
+
+            var colliderEventsL = _colliderObjL.GetComponent<PhysicsEventHandler>();
+            if (colliderEventsL != null)
+            {
+                colliderEventsL.EnterEvent.RemoveListener(OnHandTriggerEnter);
+                colliderEventsL.ExitEvent.RemoveListener(OnHandTriggerExit);
+            }
+
+            var colliderEventsR = _colliderObjR.GetComponent<PhysicsEventHandler>();
+            if (colliderEventsR != null)
+            {
+                colliderEventsR.EnterEvent.RemoveListener(OnHandTriggerEnter);
+                colliderEventsR.ExitEvent.RemoveListener(OnHandTriggerExit);
             }
         }
 
@@ -129,12 +143,12 @@ namespace Rhinox.XR.Grapple.It
             OnGrabEnded.AddListener(_jointManager.EnableHandCollisionsAfterDelay);
 
             _jointManager.ColliderActivationDelay = ColliderActivationDelay;
-            
+
             //getting the grab gesture and linking events
             if (_grabGesture.Name == null)
             {
                 _grabGesture = _gestureRecognizer.Gestures.Find(x => x.Name == "Grab");
-                if (_grabGesture.Name != "")
+                if (_grabGesture.Name != null)
                 {
                     _grabGesture.OnRecognized.AddListener(TryGrab);
                     _grabGesture.OnUnrecognized.AddListener(TryDrop);

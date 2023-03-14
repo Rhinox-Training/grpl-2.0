@@ -387,6 +387,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
+      propertyPath: ExportFileName
+      value: TeleportGestures
+      objectReference: {fileID: 0}
+    - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: ExportFilePath
       value: C:/Users/Rhinox/Documents/GRPLGestures
       objectReference: {fileID: 0}
@@ -396,19 +400,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: SavedGestureName
-      value: TeleportConfirm
+      value: TeleportPoint
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: RecordActionReference
       value: 
       objectReference: {fileID: -256493050157588337, guid: 3728c71f5f80ba44bbf940c3599fecc9, type: 3}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
+      propertyPath: OverwriteGesturesOnImport
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].Name
-      value: Pointing
+      value: TeleportPoint
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[1].Name
@@ -417,6 +425,14 @@ PrefabInstance:
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[2].Name
       value: TeleportConfirm
+      objectReference: {fileID: 0}
+    - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
+      propertyPath: Gestures.Array.data[0].DistanceThreshold
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
+      propertyPath: Gestures.Array.data[0].RotationThreshold
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.size
@@ -432,39 +448,39 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[1]
-      value: 0.046299186
+      value: 0.047388446
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[2]
-      value: 0.046097208
+      value: 0.047475655
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[3]
-      value: 0.07696927
+      value: 0.07937523
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[4]
-      value: 0.10809152
+      value: 0.11159581
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[5]
-      value: 0.12940946
+      value: 0.13395035
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[6]
-      value: 0.040640358
+      value: 0.04176845
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[7]
-      value: 0.09590505
+      value: 0.0981614
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[8]
-      value: 0.13095795
+      value: 0.1328946
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[9]
-      value: 0.15368742
+      value: 0.15538655
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[1].JointData.Array.data[1]
@@ -540,67 +556,67 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[10]
-      value: 0.17450547
+      value: 0.17629056
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[11]
-      value: 0.03344537
+      value: 0.034452025
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[12]
-      value: 0.09259837
+      value: 0.09477689
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[13]
-      value: 0.115059234
+      value: 0.11591195
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[14]
-      value: 0.09465801
+      value: 0.09489693
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[15]
-      value: 0.07320594
+      value: 0.072551094
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[16]
-      value: 0.037103288
+      value: 0.037976194
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[17]
-      value: 0.087698884
+      value: 0.089762084
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[18]
-      value: 0.104125425
+      value: 0.10334216
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[19]
-      value: 0.08310607
+      value: 0.08166004
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[20]
-      value: 0.061997194
+      value: 0.058913868
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[21]
-      value: 0.04080919
+      value: 0.041769285
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[22]
-      value: 0.08370979
+      value: 0.08567926
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[23]
-      value: 0.09538682
+      value: 0.0934582
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[24]
-      value: 0.07891307
+      value: 0.07703103
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].JointData.Array.data[25]
-      value: 0.059378747
+      value: 0.055559874
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[1].JointData.Array.data[10]
@@ -903,11 +919,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: befb734ffa0ccf840a92a403d1e70f92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PointingVisualStartDelay: 1.5
-  PointingVisualStopDelay: 1.5
+  PointingVisualStartDelay: 5
+  PointingVisualStopDelay: 0.5
   ChargingTime: 2
-  FadeDuration: 0.5
-  SnapAmount: 0.5
+  FadeDuration: 0.15
 --- !u!1 &2114071857
 GameObject:
   m_ObjectHideFlags: 0
