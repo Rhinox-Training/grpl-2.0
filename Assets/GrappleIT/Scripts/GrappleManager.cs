@@ -22,6 +22,19 @@ namespace Rhinox.XR.Grapple.It
 
         // private GRPLTeleport _teleporter = null;
 
+        void Awake()
+        {
+            JointManager.GlobalInitialized += OnJointManagerInitialized;
+        }
+
+        private void OnJointManagerInitialized(JointManager obj)
+        {
+            if (!_physicsService.GetIsInitialised())
+            {
+                _physicsService.TryInitialize(obj);
+            }
+        }
+
         void Start()
         {
             _jointManager = gameObject.AddComponent<JointManager>();

@@ -25,12 +25,15 @@ public static class UnityTypeExtensions
 
     public static Hand ToRhinoxHand(this Handedness hand)
     {
-        return hand switch
+        switch (hand)
         {
-            Handedness.Left => Hand.Left,
-            Handedness.Right => Hand.Right,
-            _ => Hand.Invalid
-        };
+            case Handedness.Left:
+                return Hand.Left;
+            case Handedness.Right:
+                return Hand.Right;
+            default:
+                return Hand.Invalid;
+        }
     }
 
     public static Vector3 FromFlippedXVector3f(this Vector3 v)

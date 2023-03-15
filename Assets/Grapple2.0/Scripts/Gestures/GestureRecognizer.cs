@@ -4,6 +4,7 @@ using UnityEngine.Events;
 using UnityEngine.XR.Hands;
 using System.Collections.Generic;
 using System.IO;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using UnityEngine.InputSystem;
 
@@ -299,7 +300,7 @@ namespace Rhinox.XR.Grapple
         private void RecognizeGesture(Hand handedness)
         {
             RhinoxGesture? currentGesture = null;
-            var currentMin = Mathf.Infinity;
+            float currentMin = float.MaxValue;
             _jointManager.TryGetJointsFromHand(handedness, out var joints);
             _jointManager.TryGetJointFromHandById(XRHandJointID.Wrist, handedness, out var wristJoint);
             if (wristJoint == null)
@@ -311,7 +312,7 @@ namespace Rhinox.XR.Grapple
             foreach (var gesture in Gestures)
             {
                 float sumDistance = 0;
-                var isDiscarded = false;
+                bool isDiscarded = false;
 
                 if (gesture.UseJointForward)
                 {
@@ -353,7 +354,7 @@ namespace Rhinox.XR.Grapple
                         _lastLeftGesture?.OnUnrecognized?.Invoke(handedness);
                         OnGestureUnrecognized?.Invoke(handedness, _lastLeftGesture?.Name);
                         _currentLeftGesture?.OnRecognized?.Invoke(handedness);
-                        if (currentGesture != null) OnGestureRecognized?.Invoke(handedness, currentGesture.Value.Name);
+                        if (currentGesture != null) TriggerEvent(handedness, currentGesture);
                     }
 
                     _lastLeftGesture = _currentLeftGesture;
@@ -372,6 +373,16 @@ namespace Rhinox.XR.Grapple
                     break;
             }
 
+        }
+
+        private void TriggerEvent(Hand handedness, RhinoxGesture? currentGesture)
+        {
+            TriggerEventOn(ref this, handedness, currentGesture);
+        }
+
+        private static void TriggerEventOn(GestureRecognizer r, Hand handedness, RhinoxGesture? currentGesture)
+        {
+            r.OnGestureRecognized?.Invoke(handedness, currentGesture.Value.Name);
         }
 
 #if UNITY_EDITOR
@@ -450,8 +461,7 @@ namespace Rhinox.XR.Grapple
                 return;
             }
 
-            var reader = new StreamReader(path);
-            var fileContent = reader.ReadToEnd();
+            var fileContent = File.ReadAllText(path);
             var json = JsonConvert.DeserializeObject<List<RhinoxGesture>>(fileContent);
 
             if (!OverwriteGesturesOnImport)
@@ -463,7 +473,6 @@ namespace Rhinox.XR.Grapple
                 Gestures = json;
 
             Gestures ??= new List<RhinoxGesture>();
-            reader.Close();
         }
 #endif
     }
