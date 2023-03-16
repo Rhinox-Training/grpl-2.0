@@ -12,8 +12,8 @@ namespace Rhinox.XR.Grapple.It
     public class GRPLTeleport : MonoBehaviour
     {
         [Header("Pointing Visual")]
-        public float PointingVisualStartDelay = 0.5f;
-        public float PointingVisualStopDelay = 0.5f;
+        public float PointingStartDelay = 0.5f;
+        public float PointingStopDelay = 0.5f;
         public float ChargingTime = 2.0f;
 
         //[Space(2)]
@@ -30,29 +30,15 @@ namespace Rhinox.XR.Grapple.It
 
         private LineRenderer _lineRenderer = null;
 
-        private Hand _hand;
+        private Hand _hand = Hand.Invalid;
 
         GameObject _teleportZoneVisual = null;
 
         private bool _isPointing = false;
         private bool _isCharging = false;
-        //private bool _showVisual = false;
-        //private bool _canteleport = false;
-        //private bool _isTryingToTeleport = false;
 
         private bool _isInitialized = false;
         public bool IsInitialized => _isInitialized;
-
-        enum TeleportationState
-        {
-            Nothing,
-            ChargingVisual,
-            ChargingTeleport,
-            Charged,
-        }
-
-        //private TeleportationState _currentState = TeleportationState.Nothing;
-        //private TeleportationState _previousState = TeleportationState.Nothing;
 
         public void Initialize(JointManager jointManager, GestureRecognizer gestureRecognizer)
         {
@@ -188,59 +174,49 @@ namespace Rhinox.XR.Grapple.It
 
         IEnumerator TryStartVisual()
         {
-            Debug.Log("INSIDE");
-            yield return new WaitForSeconds(PointingVisualStartDelay);
+            yield return new WaitForSeconds(PointingStartDelay);
 
-            Debug.Log("JOB NOW STARTS");
             _isCharging = true;
         }
 
-        void TryStopVisual()
+        IEnumerator TryStopVisual()
         {
+            yield return new WaitForSeconds(PointingStopDelay);
 
+            _lineRenderer.enabled = false;
+            _isCharging = false;
         }
 
-        private Coroutine startVisualCoroutine = null;
+        private Coroutine _startVisualCoroutine = null;
+        private Coroutine _stopVisualCoroutine = null;
 
         void StartedPointing(Hand hand, string gestureName)
         {
-            if (gestureName == "TeleportPoint")
+            if (/*_hand == Hand.Invalid &&*/ gestureName == "TeleportPoint")
             {
                 _isPointing = true;
                 _hand = hand;
-                startVisualCoroutine = StartCoroutine(nameof(TryStartVisual));
-
-                //    _isPointing = true;
-                //    if (_previousState is TeleportationState.StartedCharging or TeleportationState.Charged)
-                //        _currentState = TeleportationState.ResumedPointing;
-                //    else
-                //        _currentState = TeleportationState.StartedPoiting;
+                _startVisualCoroutine = StartCoroutine(nameof(TryStartVisual));
             }
-            //else if (hand == Hand.Right && _currentState == TeleportationState.Charged
-            //    && gestureName == "TeleportConfirm")
-            //{
-            //    _isTryingToTeleport = true;
-            //}
         }
 
 
         void StoppedPointing(Hand hand, string gestureName)
         {
-            if (gestureName == "TeleportPoint")
+            if (_hand == hand && gestureName == "TeleportPoint")
             {
                 _isPointing = false;
 
-                StopCoroutine(startVisualCoroutine);
-                startVisualCoroutine = null;
-                _isPointing = false;
-                _lineRenderer.enabled = false;
-                _isCharging = false;
-
-                //Invoke("TryStopVisual", PointingVisualStopDelay);
-
-
-                //    _isPointing = false;
-                //    _currentState = TeleportationState.StoppedPointing;
+                if (_isCharging)
+                {
+                    _stopVisualCoroutine = StartCoroutine(nameof(TryStopVisual));
+                }
+                else
+                {
+                    StopCoroutine(_startVisualCoroutine);
+                    _startVisualCoroutine = null;
+                    _hand = Hand.Invalid;
+                }
             }
         }
     }
