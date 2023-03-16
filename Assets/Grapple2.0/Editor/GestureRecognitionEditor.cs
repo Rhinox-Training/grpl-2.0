@@ -50,7 +50,7 @@ namespace Rhinox.XR.Grapple
             
             _recordActionReference = serializedObject.FindProperty("RecordActionReference");
             _newGestureName = serializedObject.FindProperty("SavedGestureName");
-            _handToRecord = serializedObject.FindProperty("HandToRecord");
+            _handToRecord = serializedObject.FindProperty("RhinoxHandToRecord");
             
             _recognitionDistanceThreshold = serializedObject.FindProperty("GestureDistanceThreshold");
             _recognitionForwardThreshold = serializedObject.FindProperty("GestureForwardThreshold");

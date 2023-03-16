@@ -12,7 +12,7 @@ public class KinematicPoxyPhysicsService : IPhysicsService
     /// </summary>
     private class KinematicProxyObject
     {
-        private Hand _handedness;
+        private RhinoxHand _handedness;
         private RhinoxJoint _joint;
         private CapsuleCollider _collider;
         private Rigidbody _rigidbody;
@@ -64,12 +64,12 @@ public class KinematicPoxyPhysicsService : IPhysicsService
         Update();
     }
 
-    public void SetHandEnabled(bool newState, Hand handedness)
+    public void SetHandEnabled(bool newState, RhinoxHand handedness)
     {
         throw new System.NotImplementedException();
     }
 
-    public bool GetIsHandEnabled(Hand handedness)
+    public bool GetIsHandEnabled(RhinoxHand handedness)
     {
         throw new System.NotImplementedException();
     }

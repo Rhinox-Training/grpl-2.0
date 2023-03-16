@@ -23,13 +23,13 @@ public static class UnityTypeExtensions
         return f1 > f2 - acceptableRange && f1 < f2 + acceptableRange;
     }
 
-    public static Hand ToRhinoxHand(this Handedness hand)
+    public static RhinoxHand ToRhinoxHand(this Handedness hand)
     {
         return hand switch
         {
-            Handedness.Left => Hand.Left,
-            Handedness.Right => Hand.Right,
-            _ => Hand.Invalid
+            Handedness.Left => RhinoxHand.Left,
+            Handedness.Right => RhinoxHand.Right,
+            _ => RhinoxHand.Invalid
         };
     }
 
