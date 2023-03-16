@@ -161,7 +161,8 @@ namespace Rhinox.XR.Grapple
                 RotationThreshold = GestureForwardThreshold
             };
             var gestureDistances = new List<float>();
-            _jointManager.TryGetJointsFromHand(RhinoxHandToRecord, out var joints);
+            if(!_jointManager.TryGetJointsFromHand(RhinoxHandToRecord, out var joints))
+                return;
 
             //Get the root (wrist joint)
             _jointManager.TryGetJointFromHandById(XRHandJointID.Wrist, RhinoxHandToRecord, out var wristJoint);
@@ -218,7 +219,9 @@ namespace Rhinox.XR.Grapple
         {
             RhinoxGesture currentGesture = null;
             var currentMin = Mathf.Infinity;
-            _jointManager.TryGetJointsFromHand(handedness, out var joints);
+            if(!_jointManager.TryGetJointsFromHand(handedness, out var joints))
+                return;
+            
             _jointManager.TryGetJointFromHandById(XRHandJointID.Wrist, handedness, out var wristJoint);
             if (wristJoint == null)
             {
