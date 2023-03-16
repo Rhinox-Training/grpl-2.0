@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.XR.Hands;
 using UnityEngine.XR.Management;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using Rhinox.GUIUtils.Attributes;
 
 namespace Rhinox.XR.Grapple
@@ -13,7 +12,7 @@ namespace Rhinox.XR.Grapple
     public class JointManager : MonoBehaviour
     {
         private XRHandSubsystem _subsystem;
-        
+
         private List<RhinoxJoint> _leftHandJoints = new List<RhinoxJoint>();
         private List<RhinoxJoint> _rightHandJoints = new List<RhinoxJoint>();
 
@@ -27,7 +26,7 @@ namespace Rhinox.XR.Grapple
         public bool HandTrackingProviderContainsCapsules = false;
 
         public float ColliderActivationDelay = 1.5f;
-        
+
         public bool JointCollisionsEnabled
         {
             get => _jointCollisionsEnabled;
@@ -41,9 +40,8 @@ namespace Rhinox.XR.Grapple
 
         private bool _jointCollisionsEnabled = true;
 
-        [Layer]
-        public int HandLayer = -1;
-        
+        [Layer] public int HandLayer = -1;
+
         public bool IsLeftHandTracked { get; private set; } = false;
         public bool IsRightHandTracked { get; private set; } = false;
 
@@ -54,6 +52,7 @@ namespace Rhinox.XR.Grapple
         private bool _fixedUpdateAfterTrackingRightFound = false;
 
         #region Initialization Methods
+
         public JointManager()
         {
             InitializeHandJoints();
@@ -84,24 +83,46 @@ namespace Rhinox.XR.Grapple
             // Disable collision between the rhinoxHand and between the joints
             Physics.IgnoreLayerCollision(HandLayer, HandLayer);
         }
-        
-        [SuppressMessage("ReSharper", "Unity.NoNullPropagation")]
+
         private void TryEnsureInitialized()
         {
+            var generalSettings = XRGeneralSettings.Instance;
+            if (generalSettings == null)
+            {
+                Debug.Log("Instance of XRGeneralSettings could not be acquired.");
+                return;
+            }
+
+            var manager = generalSettings.Manager;
+            if (manager == null)
+            {
+                Debug.Log("Instance of XrManagerSettings could not be acquired.");
+                return;
+            }
+
+            var activeLoader = manager.activeLoader;
+            if (activeLoader == null)
+            {
+                Debug.Log("Instance of XrLoader could not be acquired.");
+            }
+
             //Load the subsystem if possible
-            _subsystem = XRGeneralSettings.Instance?.Manager?.activeLoader?.GetLoadedSubsystem<XRHandSubsystem>();
+            _subsystem = activeLoader.GetLoadedSubsystem<XRHandSubsystem>();
 
             if (_subsystem == null)
                 return;
-            
-            // Subscribe the corresponding events
+
+            // SubscribeAndActivateAsset the corresponding events
             _subsystem.updatedHands += OnUpdatedHands;
             _subsystem.trackingAcquired += OnTrackingAcquired;
             _subsystem.trackingLost += OnTrackingLost;
         }
 
-         private void InitializeHandJoints()
+        private void InitializeHandJoints()
         {
+            if(AreJointsInitialised)
+                return;
+            
             //Initialize wrist
             {
                 var leftWristJoint = new RhinoxJoint(XRHandJointID.Wrist);
@@ -114,7 +135,8 @@ namespace Rhinox.XR.Grapple
             //Initialize finger joints
             foreach (XRHandJointID jointId in Enum.GetValues(typeof(XRHandJointID)))
             {
-                if (jointId is XRHandJointID.Invalid or XRHandJointID.Wrist or XRHandJointID.BeginMarker or XRHandJointID.EndMarker)
+                if (jointId is XRHandJointID.Invalid or XRHandJointID.Wrist or XRHandJointID.BeginMarker
+                    or XRHandJointID.EndMarker)
                     continue;
 
                 var leftJoint = new RhinoxJoint(jointId);
@@ -126,6 +148,10 @@ namespace Rhinox.XR.Grapple
             AreJointsInitialised = true;
         }
 
+        /// <summary>
+        /// This function collects the correct variables for the given handedness and calls <see cref="InitializeCapsulesForHand"/>.
+        /// </summary>
+        /// <param name="handedness"></param>
         private void InitializeJointCapsules(RhinoxHand handedness)
         {
             if (HandTrackingProviderContainsCapsules)
@@ -133,125 +159,143 @@ namespace Rhinox.XR.Grapple
                 Debug.LogError("RhinoxHand tracking provider has it's own capsules, don't create them manually");
                 return;
             }
-            
+
             // Check the parent object. If it doesn't exist, create it.
             // Parent is only null when the capsules are initialized for the first time
             switch (handedness)
             {
                 case RhinoxHand.Left:
-                    {
-                        if (_leftHandCollidersParent)
-                            break;
-                        _leftHandCollidersParent = new GameObject($"{handedness}_Capsules");
-                        _leftHandCollidersParent.transform.SetParent(transform, false);
-                        _leftHandCollidersParent.transform.localPosition = Vector3.zero;
-                        _leftHandCollidersParent.transform.localRotation = Quaternion.identity;
+                {
+                    if (_leftHandCollidersParent)
                         break;
-                    }
+                    _leftHandCollidersParent = new GameObject($"{handedness}_Capsules");
+                    Transform parentTransform = _leftHandCollidersParent.transform;
+                    parentTransform.SetParent(transform, false);
+                    parentTransform.localPosition = Vector3.zero;
+                    parentTransform.localRotation = Quaternion.identity;
+                    break;
+                }
                 case RhinoxHand.Right:
-                    {
-                        if (_rightHandCollidersParent)
-                            break;
-                        _rightHandCollidersParent = new GameObject($"{handedness}_Capsules");
-                        _rightHandCollidersParent.transform.SetParent(transform, false);
-                        _rightHandCollidersParent.transform.localPosition = Vector3.zero;
-                        _rightHandCollidersParent.transform.localRotation = Quaternion.identity;
+                {
+                    if (_rightHandCollidersParent)
                         break;
-                    }
+                    _rightHandCollidersParent = new GameObject($"{handedness}_Capsules");
+                    Transform parentTransform = _rightHandCollidersParent.transform;
+                    parentTransform.SetParent(transform, false);
+                    parentTransform.localPosition = Vector3.zero;
+                    parentTransform.localRotation = Quaternion.identity;
+                    break;
+                }
                 default:
                     Debug.LogError(
-                        $"{nameof(JointManager)} - {nameof(InitializeJointCapsules)}, function called with incorrect rhinoxHand {handedness}. Only left or right supported!");
-                    break;
-            }
-
-            // Get the correct parent, joints and capsule for the given handedness
-            RhinoxJointCapsule[] currentList; 
-            GameObject parent;
-            List<RhinoxJoint> joints;
-            switch (handedness)
-            {
-                case RhinoxHand.Left:
-                    if (_leftHandCapsules == null || _leftHandCapsules.Length != _leftHandJoints.Count)
-                        _leftHandCapsules = new RhinoxJointCapsule[_leftHandJoints.Count];
-                    currentList = _leftHandCapsules;
-                    parent = _leftHandCollidersParent;
-                    joints = _leftHandJoints;
-                    break;
-                case RhinoxHand.Right:
-                    if (_rightHandCapsules == null || _rightHandCapsules.Length != _rightHandJoints.Count)
-                        _rightHandCapsules = new RhinoxJointCapsule[_rightHandJoints.Count];
-                    currentList = _rightHandCapsules;
-                    parent = _rightHandCollidersParent;
-                    joints = _rightHandJoints;
-                    break;
-                default:
+                        $"{nameof(JointManager)} - {nameof(InitializeJointCapsules)}" +
+                        $", function called with incorrect rhinoxHand {handedness}. Only left or right supported!");
                     return;
             }
 
+            // Get the correct parent, joints and capsule for the given handedness
+            RhinoxJointCapsule[] capsules;
+            GameObject parent;
+            List<RhinoxJoint> joints;
+            if (handedness == RhinoxHand.Left)
+            {
+                if (_leftHandCapsules == null || _leftHandCapsules.Length != _leftHandJoints.Count)
+                    _leftHandCapsules = new RhinoxJointCapsule[_leftHandJoints.Count];
+                capsules = _leftHandCapsules;
+                parent = _leftHandCollidersParent;
+                joints = _leftHandJoints;
+            }
+            else
+            {
+                if (_rightHandCapsules == null || _rightHandCapsules.Length != _rightHandJoints.Count)
+                    _rightHandCapsules = new RhinoxJointCapsule[_rightHandJoints.Count];
+                capsules = _rightHandCapsules;
+                parent = _rightHandCollidersParent;
+                joints = _rightHandJoints;
+            }
+            InitializeCapsulesForHand(handedness, parent, capsules, joints);
+        }
+
+        /// <summary>
+        /// This function creates/ updates the capsules in a hand when tracking is acquired. 
+        /// </summary>
+        /// <param name="hand"></param>
+        /// <param name="parent"></param>
+        /// <param name="capsules"></param>
+        /// <param name="joints"></param>
+        private void InitializeCapsulesForHand(RhinoxHand hand, GameObject parent, RhinoxJointCapsule[] capsules,
+            List<RhinoxJoint> joints)
+        {
             //Loop over the capsules and process them
-            for (var index = currentList.Length - 1; index > 0; index--)
+            for (var index = capsules.Length - 1; index > 0; index--)
             {
                 // Get the current joint and get/create its corresponding capsule
                 // The current joint is the start joint of its corresponding capsule
-                TryGetJointFromHandById((XRHandJointID)index + 1, handedness, out var joint);
-                var jointCapsule = currentList[index] ?? (currentList[index] = new RhinoxJointCapsule());
+                if (!TryGetJointFromHandById((XRHandJointID)index + 1, hand, out var joint))
+                    return;
+                var jointCapsule = capsules[index] ?? (capsules[index] = new RhinoxJointCapsule());
                 jointCapsule.StartJoint = joint;
 
                 // Create the current capsules rigidbody if it does not exist yet
                 if (jointCapsule.JointRigidbody == null)
                 {
-                    jointCapsule.JointRigidbody = new GameObject(joint.JointID.ToString()+ "_Rigidbody").AddComponent<Rigidbody>();
+                    jointCapsule.JointRigidbody =
+                        new GameObject(joint.JointID.ToString() + "_Rigidbody").AddComponent<Rigidbody>();
                     jointCapsule.JointRigidbody.mass = 1.0f;
                     jointCapsule.JointRigidbody.isKinematic = true;
                     jointCapsule.JointRigidbody.useGravity = false;
                     jointCapsule.JointRigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
                 }
+
                 // Get the game object of the rigidbody and the component
                 // Disable the rigidbody to prevent scene explosions
                 var rbGo = jointCapsule.JointRigidbody.gameObject;
-                rbGo.transform.SetParent(parent.transform, false);
+                var rbTransform = rbGo.transform;
                 rbGo.layer = HandLayer;
-                rbGo.transform.position = joint.JointPosition;
-                rbGo.transform.rotation = joint.JointRotation;
+                rbTransform.SetParent(parent.transform, false);
+                rbTransform.position = joint.JointPosition;
+                rbTransform.rotation = joint.JointRotation;
 
                 // Create the current capsules collider if it does not exist yet
                 if (jointCapsule.JointCollider == null)
                 {
                     jointCapsule.JointCollider = new GameObject(joint.JointID.ToString() + "_CapsuleCollider")
-                            .AddComponent<CapsuleCollider>();
+                        .AddComponent<CapsuleCollider>();
                     jointCapsule.JointCollider.isTrigger = false;
                 }
 
                 // Get the transform of the connected joints
                 var p0 = joints[index].JointPosition;
-                var endJoint = !joint.JointID.ToString().Contains("Metacarpal") ? joints[index-1] : joints[0];
+                var endJoint = !joint.JointID.IsMetacarpal() ? joints[index - 1] : joints[0];
                 var p1 = endJoint.JointPosition;
-                
+
                 // Calculate the orientation and length of the capsule collider
                 var delta = p1 - p0;
                 var colliderLength = delta.magnitude;
                 var rot = Quaternion.FromToRotation(Vector3.right, delta);
-                
+
                 // Set all the collider data
                 jointCapsule.JointCollider.enabled = JointCollisionsEnabled;
                 jointCapsule.JointCollider.radius = 0.01f;
                 jointCapsule.JointCollider.height = colliderLength;
                 jointCapsule.JointCollider.direction = 0;
                 jointCapsule.JointCollider.center = Vector3.right * (colliderLength * 0.5f);
-                
+
                 // Set the correct physics info of the collider Game Object
                 var colliderGo = jointCapsule.JointCollider.gameObject;
                 colliderGo.layer = HandLayer;
-                colliderGo.transform.SetParent(rbGo.transform,false);
+                colliderGo.transform.SetParent(rbGo.transform, false);
                 colliderGo.transform.rotation = rot;
 
                 // Set the end joint of the capsule
                 jointCapsule.EndJoint = endJoint;
             }
         }
+
         #endregion
 
         #region Collision Setters
+
         public void EnableHandCollisions(RhinoxHand rhinoxHand)
         {
             SetHandCollisions(true, rhinoxHand);
@@ -259,31 +303,30 @@ namespace Rhinox.XR.Grapple
 
         public void DisableHandCollisions(RhinoxHand rhinoxHand)
         {
-            SetHandCollisions(false,rhinoxHand);
+            SetHandCollisions(false, rhinoxHand);
         }
 
         private IEnumerator SetHandCollisionsCoroutine(bool state, RhinoxHand rhinoxHand)
         {
             yield return new WaitForSecondsRealtime(ColliderActivationDelay);
             SetHandCollisions(state, rhinoxHand);
-
         }
 
         public void EnableHandCollisionsAfterDelay(RhinoxHand rhinoxHand)
         {
-            StartCoroutine(SetHandCollisionsCoroutine(true,rhinoxHand));
+            StartCoroutine(SetHandCollisionsCoroutine(true, rhinoxHand));
         }
 
         public void DisableHandCollisionsAfterDelay(RhinoxHand rhinoxHand)
         {
             StartCoroutine(SetHandCollisionsCoroutine(false, rhinoxHand));
         }
-        
-        public void SetHandCollisions(bool state,RhinoxHand rhinoxHand)
+
+        public void SetHandCollisions(bool state, RhinoxHand rhinoxHand)
         {
-            if(!_jointCollisionsEnabled)
+            if (!_jointCollisionsEnabled)
                 return;
-            
+
             switch (rhinoxHand)
             {
                 case RhinoxHand.Left:
@@ -295,14 +338,16 @@ namespace Rhinox.XR.Grapple
                         _rightHandCollidersParent.SetActive(state);
                     break;
                 default:
-                    Debug.LogError($"{nameof(JointManager)} - {nameof(SetHandCollisions)}, function called with invalid rhinoxHand value: {rhinoxHand}");
+                    Debug.LogError(
+                        $"{nameof(JointManager)} - {nameof(SetHandCollisions)}, function called with invalid rhinoxHand value: {rhinoxHand}");
                     break;
             }
-
         }
+
         #endregion
 
         #region Event Methods
+
         private void OnTrackingAcquired(XRHand hand)
         {
             switch (hand.handedness)
@@ -316,11 +361,13 @@ namespace Rhinox.XR.Grapple
                     IsRightHandTracked = true;
                     break;
                 default:
-                    Debug.LogError($"{nameof(JointManager)} - {nameof(OnTrackingAcquired)}, function called with incorrect rhinoxHand {hand}. Only left or right supported!");
+                    Debug.LogError(
+                        $"{nameof(JointManager)} - {nameof(OnTrackingAcquired)}, function called with incorrect rhinoxHand {hand}. Only left or right supported!");
                     break;
             }
-            if(_jointCollisionsEnabled)
-                SetHandCollisions(true,hand.handedness.ToRhinoxHand());
+
+            if (_jointCollisionsEnabled)
+                SetHandCollisions(true, hand.handedness.ToRhinoxHand());
             TrackingAcquired?.Invoke(hand.handedness.ToRhinoxHand());
         }
 
@@ -337,7 +384,8 @@ namespace Rhinox.XR.Grapple
                     IsRightHandTracked = false;
                     break;
                 default:
-                    Debug.LogError($"{nameof(JointManager)} - {nameof(OnTrackingLost)}, function called with incorrect rhinoxHand {hand}. Only left or right supported!");
+                    Debug.LogError(
+                        $"{nameof(JointManager)} - {nameof(OnTrackingLost)}, function called with incorrect rhinoxHand {hand}. Only left or right supported!");
                     break;
             }
 
@@ -345,9 +393,17 @@ namespace Rhinox.XR.Grapple
                 SetHandCollisions(false, hand.handedness.ToRhinoxHand());
             TrackingLost?.Invoke(hand.handedness.ToRhinoxHand());
         }
+
         #endregion
 
         #region Update Logic
+
+        /// <summary>
+        /// This function is a callback for the OnUpdatedHands event on the XRHandSubsystem.
+        /// </summary>
+        /// <param name="subsystem"></param>
+        /// <param name="updateSuccessFlags"></param>
+        /// <param name="updateType"></param>
         private void OnUpdatedHands(XRHandSubsystem subsystem, XRHandSubsystem.UpdateSuccessFlags updateSuccessFlags,
             XRHandSubsystem.UpdateType updateType)
         {
@@ -356,18 +412,17 @@ namespace Rhinox.XR.Grapple
             if (updateType == XRHandSubsystem.UpdateType.Dynamic)
                 return;
 
-            if ((updateSuccessFlags & XRHandSubsystem.UpdateSuccessFlags.LeftHandRootPose) != XRHandSubsystem.UpdateSuccessFlags.None)
+            if (updateSuccessFlags.HasFlag(XRHandSubsystem.UpdateSuccessFlags.LeftHandRootPose))
                 UpdateRootPose(RhinoxHand.Left);
 
-            if ((updateSuccessFlags & XRHandSubsystem.UpdateSuccessFlags.LeftHandJoints) != XRHandSubsystem.UpdateSuccessFlags.None)
+            if (updateSuccessFlags.HasFlag(XRHandSubsystem.UpdateSuccessFlags.LeftHandJoints))
                 UpdateJoints(RhinoxHand.Left);
 
-            if ((updateSuccessFlags & XRHandSubsystem.UpdateSuccessFlags.RightHandRootPose) != XRHandSubsystem.UpdateSuccessFlags.None)
+            if (updateSuccessFlags.HasFlag(XRHandSubsystem.UpdateSuccessFlags.RightHandRootPose))
                 UpdateRootPose(RhinoxHand.Right);
 
-            if ((updateSuccessFlags & XRHandSubsystem.UpdateSuccessFlags.RightHandJoints) != XRHandSubsystem.UpdateSuccessFlags.None)
+            if (updateSuccessFlags.HasFlag(XRHandSubsystem.UpdateSuccessFlags.RightHandJoints))
                 UpdateJoints(RhinoxHand.Right);
-
         }
 
         private void Update()
@@ -376,33 +431,36 @@ namespace Rhinox.XR.Grapple
                 TryEnsureInitialized();
         }
 
+        /// <summary>
+        /// Updates the root post (wrist)
+        /// </summary>
+        /// <param name="hand"></param>
         private void UpdateRootPose(RhinoxHand hand)
         {
             switch (hand)
             {
                 case RhinoxHand.Left:
-                    {
-                        var rootPose = _subsystem.leftHand.rootPose;
-                        _leftHandJoints[0].JointPosition = rootPose.position;
-                        _leftHandJoints[0].JointRotation = rootPose.rotation;
-                        _leftHandJoints[0].Forward = rootPose.forward;
+                {
+                    var rootPose = _subsystem.leftHand.rootPose;
+                    _leftHandJoints[0].JointPosition = rootPose.position;
+                    _leftHandJoints[0].JointRotation = rootPose.rotation;
+                    _leftHandJoints[0].Forward = rootPose.forward;
 
-                        if (_subsystem.leftHand.GetJoint(XRHandJointID.Wrist).TryGetRadius(out var radius))
-                            _leftHandJoints[0].JointRadius = radius;
-                        break;
-                    }
+                    if (_subsystem.leftHand.GetJoint(XRHandJointID.Wrist).TryGetRadius(out var radius))
+                        _leftHandJoints[0].JointRadius = radius;
+                    break;
+                }
                 case RhinoxHand.Right:
-                    {
-                        var rootPose = _subsystem.rightHand.rootPose;
-                        _rightHandJoints[0].JointPosition = rootPose.position;
-                        _rightHandJoints[0].JointRotation = rootPose.rotation;
-                        _rightHandJoints[0].Forward = rootPose.forward;
+                {
+                    var rootPose = _subsystem.rightHand.rootPose;
+                    _rightHandJoints[0].JointPosition = rootPose.position;
+                    _rightHandJoints[0].JointRotation = rootPose.rotation;
+                    _rightHandJoints[0].Forward = rootPose.forward;
 
-                        if (_subsystem.rightHand.GetJoint(XRHandJointID.Wrist).TryGetRadius(out var radius))
-                            _leftHandJoints[0].JointRadius = radius;
-                        break;
-
-                    }
+                    if (_subsystem.rightHand.GetJoint(XRHandJointID.Wrist).TryGetRadius(out var radius))
+                        _leftHandJoints[0].JointRadius = radius;
+                    break;
+                }
                 default:
                     Debug.LogError(
                         $"{nameof(JointManager)} - {nameof(UpdateRootPose)}, function called with incorrect rhinoxHand {hand}. Only left or right supported!");
@@ -411,14 +469,14 @@ namespace Rhinox.XR.Grapple
         }
 
         /// <summary>
-        /// Selects the correct data for the given hand and calls <see cref="UpdateJointsDelegate"/> and <see cref="UpdateCapsuleColliders"/>.
+        /// Selects the correct data for the given hand and calls <see cref="UpdateJointsForHand"/> and <see cref="UpdateCapsuleColliders"/>.
         /// </summary>
         /// <param name="hand"> The handedness of the hand to update</param>
         private void UpdateJoints(RhinoxHand hand)
         {
             XRHand xrHand;
             List<RhinoxJoint> joints;
-            
+
             switch (hand)
             {
                 case RhinoxHand.Left:
@@ -436,7 +494,7 @@ namespace Rhinox.XR.Grapple
                     return;
             }
 
-            UpdateJointsDelegate(xrHand, joints);
+            UpdateJointsForHand(xrHand, joints);
             UpdateCapsuleColliders(hand);
         }
 
@@ -445,7 +503,7 @@ namespace Rhinox.XR.Grapple
         /// </summary>
         /// <param name="hand"> The XRHand object of this hand</param>
         /// <param name="joints">The joints of the hand</param>
-        private void UpdateJointsDelegate(XRHand hand, List<RhinoxJoint> joints)
+        private void UpdateJointsForHand(XRHand hand, List<RhinoxJoint> joints)
         {
             foreach (XRHandJointID jointId in Enum.GetValues(typeof(XRHandJointID)))
             {
@@ -455,7 +513,8 @@ namespace Rhinox.XR.Grapple
                 var currentJoint = joints[(int)jointId - 1];
 
                 var subsystemJoint = hand.GetJoint(jointId);
-                subsystemJoint.TryGetPose(out var pose);
+                if(!subsystemJoint.TryGetPose(out var pose))
+                    return;
 
                 currentJoint.JointPosition = pose.position;
                 currentJoint.JointRotation = pose.rotation;
@@ -484,9 +543,10 @@ namespace Rhinox.XR.Grapple
                 default:
                     return;
             }
-            if(capsules == null)
+
+            if (capsules == null)
                 return;
-            
+
             foreach (var capsule in capsules)
             {
                 if (capsule == null)
@@ -508,7 +568,7 @@ namespace Rhinox.XR.Grapple
                 InitializeJointCapsules(RhinoxHand.Left);
                 _fixedUpdateAfterTrackingLeftFound = false;
             }
-            else if(IsLeftHandTracked)
+            else if (IsLeftHandTracked)
                 FixedUpdateCapsules(RhinoxHand.Left);
 
             if (_fixedUpdateAfterTrackingRightFound)
@@ -516,12 +576,12 @@ namespace Rhinox.XR.Grapple
                 InitializeJointCapsules(RhinoxHand.Right);
                 _fixedUpdateAfterTrackingRightFound = false;
             }
-            else if(IsRightHandTracked)
+            else if (IsRightHandTracked)
                 FixedUpdateCapsules(RhinoxHand.Right);
         }
 
         /// <summary>
-        /// Selects the correct data for the given hand and calls <see cref="FixedUpdateCapsulesDelegate"/>.
+        /// Selects the correct data for the given hand and calls <see cref="FixedUpdateCapsulesForHand"/>.
         /// </summary>
         /// <param name="rhinoxHand"></param>
         private void FixedUpdateCapsules(RhinoxHand rhinoxHand)
@@ -542,12 +602,11 @@ namespace Rhinox.XR.Grapple
                     joints = _rightHandJoints;
                     break;
             }
-            
-            if(parent == null)
+
+            if (parent == null)
                 return;
-          
-            FixedUpdateCapsulesDelegate(parent,list,joints);
-            
+
+            FixedUpdateCapsulesForHand(parent, list, joints);
         }
 
         /// <summary>
@@ -556,7 +615,7 @@ namespace Rhinox.XR.Grapple
         /// <param name="parent"> The parentObject of the capsules of this hand</param>
         /// <param name="capsules"> The capsules of the hand</param>
         /// <param name="joints">The joints of the hand</param>
-        private void FixedUpdateCapsulesDelegate(GameObject parent, RhinoxJointCapsule[] capsules,
+        private void FixedUpdateCapsulesForHand(GameObject parent, RhinoxJointCapsule[] capsules,
             List<RhinoxJoint> joints)
         {
             if (parent.activeSelf)
@@ -572,7 +631,6 @@ namespace Rhinox.XR.Grapple
                         capsule.JointRigidbody.MovePosition(joint.JointPosition);
                         capsule.JointRigidbody.MoveRotation(joint.JointRotation);
                         capsule.JointCollider.enabled = true;
-
                     }
                     else
                     {
@@ -584,62 +642,61 @@ namespace Rhinox.XR.Grapple
             }
         }
 
-        
         #endregion
-        
+
         #region Get methods
 
-            public bool TryGetJointsFromHand(RhinoxHand rhinoxHand, out List<RhinoxJoint> jointList)
+        public bool TryGetJointsFromHand(RhinoxHand rhinoxHand, out List<RhinoxJoint> jointList)
+        {
+            switch (rhinoxHand)
             {
-                switch (rhinoxHand)
-                {
-                    case RhinoxHand.Left:
-                        jointList = _leftHandJoints;
-                        return IsLeftHandTracked;
-                    case RhinoxHand.Right:
-                        jointList = _rightHandJoints;
-                        return IsRightHandTracked;
-                    default:
-                        jointList = new List<RhinoxJoint>();
-                        return false;
-                }
+                case RhinoxHand.Left:
+                    jointList = _leftHandJoints;
+                    return IsLeftHandTracked;
+                case RhinoxHand.Right:
+                    jointList = _rightHandJoints;
+                    return IsRightHandTracked;
+                default:
+                    jointList = new List<RhinoxJoint>();
+                    return false;
             }
+        }
 
-            public List<RhinoxJoint> GetJointsFromHand(Handedness hand)
+        public IReadOnlyCollection<RhinoxJoint> GetJointsFromHand(Handedness hand)
+        {
+            switch (hand)
             {
-                switch (hand)
-                {
-
-                    case Handedness.Left:
-                        return _leftHandJoints;
-                    case Handedness.Right:
-                        return _rightHandJoints;
-                    default:
-                        Debug.LogError(
-                            $"{nameof(JointManager)} - {nameof(GetJointsFromHand)}, function called with incorrect rhinoxHand {hand}. Only left or right supported!");
-                        return new List<RhinoxJoint>();
-                }
+                case Handedness.Left:
+                    return _leftHandJoints;
+                case Handedness.Right:
+                    return _rightHandJoints;
+                default:
+                    Debug.LogError(
+                        $"{nameof(JointManager)} - {nameof(GetJointsFromHand)}, " +
+                        $"function called with incorrect rhinoxHand {hand}. Only left or right supported!");
+                    return Array.Empty<RhinoxJoint>();
             }
+        }
 
-            public bool TryGetJointFromHandById(XRHandJointID jointID, RhinoxHand rhinoxHand, out RhinoxJoint joint)
+        public bool TryGetJointFromHandById(XRHandJointID jointID, RhinoxHand rhinoxHand, out RhinoxJoint joint)
+        {
+            switch (rhinoxHand)
             {
-                switch (rhinoxHand)
-                {
-                    case RhinoxHand.Left:
-                        joint = _leftHandJoints.First(rhinoxJoint => rhinoxJoint.JointID == jointID);
-                        return IsLeftHandTracked && joint != null;
-                    case RhinoxHand.Right:
-                        joint = _rightHandJoints.First(rhinoxJoint => rhinoxJoint.JointID == jointID);
-                        return IsRightHandTracked && joint != null;
-                    default:
-                        Debug.LogError(
-                            $"{nameof(JointManager)} - {nameof(TryGetJointFromHandById)}, function called with incorrect rhinoxHand {rhinoxHand}. Only left or right supported!");
-                        joint = null;
-                        return false;
-                }
+                case RhinoxHand.Left:
+                    joint = _leftHandJoints.FirstOrDefault(rhinoxJoint => rhinoxJoint.JointID == jointID);
+                    return IsLeftHandTracked && joint != null;
+                case RhinoxHand.Right:
+                    joint = _rightHandJoints.FirstOrDefault(rhinoxJoint => rhinoxJoint.JointID == jointID);
+                    return IsRightHandTracked && joint != null;
+                default:
+                    Debug.LogError(
+                        $"{nameof(JointManager)} - {nameof(TryGetJointFromHandById)}, " +
+                        $"function called with incorrect rhinoxHand {rhinoxHand}. Only left or right supported!");
+                    joint = null;
+                    return false;
             }
-            #endregion
+        }
+
+        #endregion
     }
-    
-
 }

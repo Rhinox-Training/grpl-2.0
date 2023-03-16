@@ -118,7 +118,7 @@ namespace Rhinox.XR.Grapple
             if (RecordActionReference == null)
                 Debug.LogWarning("GestureRecognizer.cs, Record action reference not set!");
 
-            UnityTypeExtensions.Subscribe(RecordActionReference, SaveGesture);
+            UnityTypeExtensions.SubscribeAndActivateAsset(RecordActionReference, SaveGesture);
 #endif
         }
 
