@@ -26,28 +26,28 @@ public class GestureRecognitionScreen : MonoBehaviour
         _recognizer.OnGestureUnrecognized.AddListener(RemoveScreenText);
     }
 
-    private void SetScreenText(Hand hand, string gesture)
+    private void SetScreenText(RhinoxHand rhinoxHand, string gesture)
     {
-        switch (hand)
+        switch (rhinoxHand)
         {
-            case Hand.Left:
+            case RhinoxHand.Left:
                 _leftScreen.text = gesture;
                 break;
-            case Hand.Right:
+            case RhinoxHand.Right:
                 _rightScreen.text = gesture;
                 break;
         }
     }
 
-    private void RemoveScreenText(Hand hand, string gesture)
+    private void RemoveScreenText(RhinoxHand rhinoxHand, string gesture)
     {
-        switch (hand)
+        switch (rhinoxHand)
         {
-            case Hand.Left:
+            case RhinoxHand.Left:
                 if (_leftScreen.text == gesture)
                     _leftScreen.text = "None";
                 break;
-            case Hand.Right:
+            case RhinoxHand.Right:
                 if (_rightScreen.text == gesture)
                     _rightScreen.text = "None";
                 break;

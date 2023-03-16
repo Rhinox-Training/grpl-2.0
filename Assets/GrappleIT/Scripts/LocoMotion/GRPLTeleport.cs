@@ -115,7 +115,7 @@ namespace Rhinox.XR.Grapple.It
 
             if (_showVisual)
             {
-                if (!_jointManager.TryGetJointFromHandById(UnityEngine.XR.Hands.XRHandJointID.IndexTip, Hand.Right, out var indexTip))
+                if (!_jointManager.TryGetJointFromHandById(UnityEngine.XR.Hands.XRHandJointID.IndexTip, RhinoxHand.Right, out var indexTip))
                     return;
 
                 if (Physics.Raycast(indexTip.JointPosition, indexTip.Forward, out var hitInfo))
@@ -129,7 +129,7 @@ namespace Rhinox.XR.Grapple.It
 
             if (_isTryingToTeleport)
             {
-                if (!_jointManager.TryGetJointFromHandById(UnityEngine.XR.Hands.XRHandJointID.IndexTip, Hand.Right, out var indexTip))
+                if (!_jointManager.TryGetJointFromHandById(UnityEngine.XR.Hands.XRHandJointID.IndexTip, RhinoxHand.Right, out var indexTip))
                     return;
 
                 if (Physics.Raycast(indexTip.JointPosition, indexTip.Forward, out var hitInfo))
@@ -141,9 +141,9 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
-        void IsStartingWithPointing(Hand hand, string gestureName)
+        void IsStartingWithPointing(RhinoxHand rhinoxHand, string gestureName)
         {
-            if (hand == Hand.Right && gestureName == "Pointing")
+            if (rhinoxHand == RhinoxHand.Right && gestureName == "Pointing")
             {
                 _isPointing = true;
                 if (_previousState is TeleportationState.StartedCharging or TeleportationState.Charged)
@@ -151,7 +151,7 @@ namespace Rhinox.XR.Grapple.It
                 else
                     _currentState = TeleportationState.StartedPoiting;
             }
-            else if (hand == Hand.Right && _currentState == TeleportationState.Charged
+            else if (rhinoxHand == RhinoxHand.Right && _currentState == TeleportationState.Charged
                 && gestureName == "TeleportConfirm")
             {
                 _isTryingToTeleport = true;
@@ -159,9 +159,9 @@ namespace Rhinox.XR.Grapple.It
         }
 
 
-        void IsStoppingWithPointing(Hand hand, string gestureName)
+        void IsStoppingWithPointing(RhinoxHand rhinoxHand, string gestureName)
         {
-            if (hand == Hand.Right && gestureName == "Pointing")
+            if (rhinoxHand == RhinoxHand.Right && gestureName == "Pointing")
             {
                 _isPointing = false;
                 _currentState = TeleportationState.StoppedPointing;
@@ -172,9 +172,9 @@ namespace Rhinox.XR.Grapple.It
         {
 
         }
-        //    if (hand == Hand.Right && gestureName == "Teleport")
+        //    if (rhinoxHand == RhinoxHand.Right && gestureName == "Teleport")
         //    {
-        //        if (!_jointManager.TryGetJointFromHandById(UnityEngine.XR.Hands.XRHandJointID.IndexTip, Hand.Right, out var indexTip))
+        //        if (!_jointManager.TryGetJointFromHandById(UnityEngine.XR.Hands.XRHandJointID.IndexTip, RhinoxHand.Right, out var indexTip))
         //            return;
 
         //        if (Physics.Raycast(indexTip.JointPosition, indexTip.Forward, out var hitInfo))

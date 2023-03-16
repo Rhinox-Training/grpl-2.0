@@ -207,7 +207,7 @@ namespace UnityEngine.XR.Hands.Samples.VisualizerSample
         {
             // we have no game logic depending on the Transforms, so early out here
             // (add game logic before this return here, directly querying from
-            // m_Subsystem.leftHand and m_Subsystem.rightHand using GetJoint on each hand)
+            // m_Subsystem.leftHand and m_Subsystem.rightHand using GetJoint on each rhinoxHand)
             if (updateType == XRHandSubsystem.UpdateType.Dynamic)
                 return;
 
@@ -289,7 +289,7 @@ namespace UnityEngine.XR.Hands.Samples.VisualizerSample
                     var child = m_HandRoot.transform.GetChild(childIndex);
                     if (child.gameObject.name.EndsWith(XRHandJointID.Wrist.ToString()))
                         wristRootXform = child;
-                    else if (child.gameObject.name.EndsWith("Hand"))
+                    else if (child.gameObject.name.EndsWith("RhinoxHand"))
                         child.GetComponent<SkinnedMeshRenderer>().sharedMaterial = meshMaterial;
                 }
 
@@ -340,7 +340,7 @@ namespace UnityEngine.XR.Hands.Samples.VisualizerSample
                             }
 
                             if (!lastChild.name.EndsWith(XRHandJointIDUtility.FromIndex(jointIndex).ToString()))
-                                throw new InvalidOperationException("Hand transform hierarchy not set correctly - couldn't find " + XRHandJointIDUtility.FromIndex(jointIndex).ToString() + " joint!");
+                                throw new InvalidOperationException("RhinoxHand transform hierarchy not set correctly - couldn't find " + XRHandJointIDUtility.FromIndex(jointIndex).ToString() + " joint!");
 
                             var jointId = XRHandJointIDUtility.FromIndex(jointIndex);
                             AssignJoint(jointId, lastChild, m_DrawJointsParent.transform);
@@ -356,7 +356,7 @@ namespace UnityEngine.XR.Hands.Samples.VisualizerSample
 
                     var jointId = fingerId.GetFrontJointID();
                     if (m_JointXforms[jointId.ToIndex()] == null)
-                        Debug.LogWarning("Hand transform hierarchy not set correctly - couldn't find " + jointId.ToString() + " joint!");
+                        Debug.LogWarning("RhinoxHand transform hierarchy not set correctly - couldn't find " + jointId.ToString() + " joint!");
                 }
             }
 

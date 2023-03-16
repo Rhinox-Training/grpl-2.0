@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.XR.Hands;
@@ -10,127 +9,45 @@ using UnityEngine.InputSystem;
 namespace Rhinox.XR.Grapple
 {
     /// <summary>
-    /// This struct represents a gesture in grapple. <br />
-    /// It contains all data related to one gesture, like the name, joint distances and joint forward.
-    /// </summary>
-    [Serializable]
-    public struct RhinoxGesture
-    {
-        [JsonProperty(PropertyName = "Gesture name")]
-        public string Name;
-
-        [JsonProperty(PropertyName = "Joint distances")]
-        public List<float> JointData;
-
-        [JsonProperty(PropertyName = "Uses joint forward")]
-        public bool UseJointForward;
-
-        [JsonProperty(PropertyName = "Forward joint")]
-        public XRHandJointID CheckJoint;
-
-        [JsonProperty(PropertyName = "Wrist rotation")]
-        public Vector3 JointForward;
-
-        [JsonProperty(PropertyName = "Distance threshold")]
-        public float DistanceThreshold;
-
-        [JsonProperty(PropertyName = "Rotation threshold")]
-        public float RotationThreshold;
-
-        [JsonIgnore]
-        public UnityEvent<Hand> OnRecognized;
-
-        [JsonIgnore]
-        public UnityEvent<Hand> OnUnrecognized;
-
-        /// <remarks>Does not compare the name or events!</remarks>
-        public override bool Equals(object obj)
-        {
-            if (obj == null)
-                return false;
-
-            if (obj.GetType() != typeof(RhinoxGesture))
-                return false;
-
-            var otherGesture = (RhinoxGesture)obj;
-            if (JointData is null && otherGesture.JointData is null)
-                return true;
-
-            if (JointData is null || otherGesture.JointData is null)
-                return false;
-
-            if (JointData.Count == otherGesture.JointData.Count)
-            {
-                for (var i = 0; i < JointData.Count; i++)
-                    if (!Mathf.Approximately(JointData[i], otherGesture.JointData[i]))
-                        return false;
-            }
-
-            return true;
-        }
-
-        public bool Equals(RhinoxGesture other)
-        {
-            return Name == other.Name && Equals(JointData, other.JointData) && Equals(OnRecognized, other.OnRecognized) && Equals(OnUnrecognized, other.OnUnrecognized);
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Name, JointData, OnRecognized, OnUnrecognized);
-        }
-
-        public static bool operator ==(RhinoxGesture gestureOne, RhinoxGesture gestureTwo)
-        {
-            return gestureOne.Equals(gestureTwo);
-        }
-
-        public static bool operator !=(RhinoxGesture gestureOne, RhinoxGesture gestureTwo)
-        {
-            return !gestureOne.Equals(gestureTwo);
-        }
-    }
-
-    /// <summary>
     /// This class implements the behaviour to detect gestures. These gestures can be imported from a json or recording during play mode.
     /// There is also the possibility to export the gestures in a (new) json file.
     /// </summary>
     public class GestureRecognizer : MonoBehaviour
     {
         #region Gesture import fields
-
         public bool ImportOnPlay = true;
-
         public string ImportFilePath = "";
         public bool OverwriteGesturesOnImport;
         #endregion
 
         #region Gesture Saving fields
+
         public bool ExportOnDestroy = false;
         public string ExportFilePath = "";
         public string ExportFileName = "RecordedGestures";
 
         public InputActionReference RecordActionReference;
         public string SavedGestureName = "New Gesture";
-        public Hand HandToRecord = Hand.Left;
+        public RhinoxHand RhinoxHandToRecord = RhinoxHand.Left;
         public bool UseJointForward = false;
         public XRHandJointID ForwardJoint;
 
         public float GestureDistanceThreshold = 0.02f;
         public float GestureForwardThreshold = 0.5f;
+
         #endregion
 
         #region Recognizer fields
         public List<RhinoxGesture> Gestures = new List<RhinoxGesture>();
 
-        private RhinoxGesture? _currentLeftGesture;
-        private RhinoxGesture? _currentRightGesture;
+        private RhinoxGesture _currentLeftGesture;
+        private RhinoxGesture _currentRightGesture;
 
-        private RhinoxGesture? _lastLeftGesture;
-        private RhinoxGesture? _lastRightGesture;
+        private RhinoxGesture _lastLeftGesture;
+        private RhinoxGesture _lastRightGesture;
 
-        public UnityEvent<Hand, string> OnGestureRecognized;
-        public UnityEvent<Hand, string> OnGestureUnrecognized;
-
+        public UnityEvent<RhinoxHand, string> OnGestureRecognized;
+        public UnityEvent<RhinoxHand, string> OnGestureUnrecognized;
         #endregion
 
         private JointManager _jointManager;
@@ -141,7 +58,7 @@ namespace Rhinox.XR.Grapple
         /// As the bone manager is an integral part of gesture recognition, this should always be called when creating this component! 
         /// </summary>
         /// <param name="jointManager"></param>
-        public void Initialize(JointManager jointManager)
+        private void Initialize(JointManager jointManager)
         {
             _jointManager = jointManager;
             _jointManager.TrackingLost += OnTrackingLost;
@@ -154,34 +71,33 @@ namespace Rhinox.XR.Grapple
             if (ImportOnPlay)
                 ReadGesturesFromJson();
 #endif
-
+            //Subscribe to the global initialized event of the joint manager
+            JointManager.GlobalInitialized += Initialize;
         }
 
-        private void OnTrackingLost(Hand hand)
+        private void OnTrackingLost(RhinoxHand rhinoxHand)
         {
-            switch (hand)
+            if (rhinoxHand == RhinoxHand.Invalid)
             {
-                case Hand.Left:
-                    if (_currentLeftGesture != null)
-                    {
-                        _currentLeftGesture.Value.OnUnrecognized.Invoke(hand);
-                        OnGestureUnrecognized.Invoke(hand, _currentLeftGesture.Value.Name);
-                        _lastLeftGesture = _currentLeftGesture;
-                        _currentLeftGesture = null;
-                    }
-                    break;
-                case Hand.Right:
-                    if (_currentRightGesture != null)
-                    {
-                        _currentRightGesture.Value.OnUnrecognized.Invoke(hand);
-                        OnGestureUnrecognized.Invoke(hand, _currentRightGesture.Value.Name);
-                        _lastRightGesture = _currentRightGesture;
-                        _currentRightGesture = null;
-                    }
-                    break;
-                default:
-                    Debug.LogError($"{nameof(GestureRecognizer)} - {nameof(OnTrackingLost)}, function called with unsupported hand value : {hand}");
-                    break;
+                Debug.LogError($"{nameof(GestureRecognizer)} - {nameof(OnTrackingLost)}, " +
+                               $"function called with unsupported rhinoxHand value : {rhinoxHand}");
+                return;
+            }
+            
+            if (rhinoxHand == RhinoxHand.Left)
+                InvokeGestureLostEvents(ref _currentLeftGesture, ref _lastLeftGesture, rhinoxHand);
+            else
+                InvokeGestureLostEvents(ref _currentRightGesture, ref _lastRightGesture, rhinoxHand);
+        }
+
+        private void InvokeGestureLostEvents(ref RhinoxGesture currentGesture,ref RhinoxGesture lastGesture, RhinoxHand rhinoxHand)
+        {
+            if (currentGesture != null)
+            {
+                currentGesture.OnUnrecognized.Invoke(rhinoxHand);
+                OnGestureUnrecognized.Invoke(rhinoxHand, currentGesture.Name);
+                lastGesture = null;
+                currentGesture = null;
             }
         }
 
@@ -200,7 +116,7 @@ namespace Rhinox.XR.Grapple
             if (RecordActionReference == null)
                 Debug.LogWarning("GestureRecognizer.cs, Record action reference not set!");
 
-            UnityTypeExtensions.Subscribe(RecordActionReference, SaveGesture);
+            UnityTypeExtensions.SubscribeAndActivateAsset(RecordActionReference, SaveGesture);
 #endif
         }
 
@@ -218,15 +134,14 @@ namespace Rhinox.XR.Grapple
 
             //Check for gesture recognition
             if (_jointManager.IsLeftHandTracked)
-                RecognizeGesture(Hand.Left);
+                RecognizeGesture(RhinoxHand.Left);
             if (_jointManager.IsRightHandTracked)
-                RecognizeGesture(Hand.Right);
-
+                RecognizeGesture(RhinoxHand.Right);
         }
 
 #if UNITY_EDITOR
         /// <summary>
-        /// Saves the current pose of the "HandToRecord" hand as a new gesture under the name "SavedGestureName". <br />
+        /// Saves the current pose of the "RhinoxHandToRecord" rhinoxHand as a new gesture under the name "SavedGestureName". <br />
         /// This also includes the option to record the forward of the joint "ForwardJoint", for more restricted recognition. 
         /// </summary>
         /// <param name="ctx">See <see cref="InputAction.CallbackContext"/></param>
@@ -243,13 +158,14 @@ namespace Rhinox.XR.Grapple
                 RotationThreshold = GestureForwardThreshold
             };
             var gestureDistances = new List<float>();
-            _jointManager.TryGetJointsFromHand(HandToRecord, out var joints);
+            if (!_jointManager.TryGetJointsFromHand(RhinoxHandToRecord, out var joints))
+                return;
 
             //Get the root (wrist joint)
-            _jointManager.TryGetJointFromHandById(XRHandJointID.Wrist, HandToRecord, out var wristJoint);
+            _jointManager.TryGetJointFromHandById(XRHandJointID.Wrist, RhinoxHandToRecord, out var wristJoint);
             if (wristJoint == null)
             {
-                Debug.LogError($"GestureRecognizer.cs - SaveGesture({HandToRecord}), no wrist joint found.");
+                Debug.LogError($"GestureRecognizer.cs - SaveGesture({RhinoxHandToRecord}), no wrist joint found.");
                 return;
             }
 
@@ -259,13 +175,14 @@ namespace Rhinox.XR.Grapple
             if (UseJointForward)
             {
                 newGesture.CheckJoint = ForwardJoint;
-                _jointManager.TryGetJointFromHandById(ForwardJoint, HandToRecord, out var joint);
+                _jointManager.TryGetJointFromHandById(ForwardJoint, RhinoxHandToRecord, out var joint);
 
                 if (joint == null)
                 {
-                    Debug.LogError($"Can't find joint {ForwardJoint} on {HandToRecord} hand");
+                    Debug.LogError($"Can't find joint {ForwardJoint} on {RhinoxHandToRecord} rhinoxHand");
                     return;
                 }
+
                 newGesture.JointForward = joint.Forward;
             }
 
@@ -283,7 +200,7 @@ namespace Rhinox.XR.Grapple
             if (duplicateGestures.Count > 0)
             {
                 Debug.LogWarning(
-                    $"GestureRecognizer.cs - SaveGesture({HandToRecord}), list with {HandToRecord} gestures already contains {duplicateGestures.Count} gestures with the same name, adding duplicate.");
+                    $"GestureRecognizer.cs - SaveGesture({RhinoxHandToRecord}), list with {RhinoxHandToRecord} gestures already contains {duplicateGestures.Count} gestures with the same name, adding duplicate.");
                 newGesture.Name = SavedGestureName + "_Dupe";
             }
 
@@ -292,15 +209,23 @@ namespace Rhinox.XR.Grapple
 #endif
 
         /// <summary>
-        /// Checks if the given hand "handedness" is currently representing a gesture. <br /> If a gesture is recognized, it is set as the current gesture and the corresponding events are invoked.
+        /// Checks if the given rhinoxHand "handedness" is currently representing a gesture. <br /> If a gesture is recognized, it is set as the current gesture and the corresponding events are invoked.
         /// <remarks>Use the "RecognitionDistanceThreshold" and "RecognitionForwardThreshold" to change the harshness of the recognition. </remarks>
         /// </summary>
         /// <param name="handedness"></param>
-        private void RecognizeGesture(Hand handedness)
+        private void RecognizeGesture(RhinoxHand handedness)
         {
-            RhinoxGesture? currentGesture = null;
-            var currentMin = Mathf.Infinity;
-            _jointManager.TryGetJointsFromHand(handedness, out var joints);
+            if (handedness == RhinoxHand.Invalid)
+            {
+                Debug.LogWarning("Handedness is invalid, returning");
+                return;
+            }
+
+            RhinoxGesture currentGesture = null;
+            float currentMin = float.MaxValue;
+            if (!_jointManager.TryGetJointsFromHand(handedness, out var joints))
+                return;
+
             _jointManager.TryGetJointFromHandById(XRHandJointID.Wrist, handedness, out var wristJoint);
             if (wristJoint == null)
             {
@@ -311,22 +236,22 @@ namespace Rhinox.XR.Grapple
             foreach (var gesture in Gestures)
             {
                 float sumDistance = 0;
-                var isDiscarded = false;
+                bool isDiscarded = false;
 
                 if (gesture.UseJointForward)
                 {
-                    //Get the correct forward of the current hand
+                    //Get the correct forward of the current rhinoxHand
                     if (!_jointManager.TryGetJointFromHandById(gesture.CheckJoint, handedness, out var bone))
                         continue;
 
-                    if (!UnityTypeExtensions.Approximately(bone.Forward, gesture.JointForward, gesture.RotationThreshold))
+                    if (!bone.Forward.Approximately(gesture.JointForward, gesture.RotationThreshold))
                         continue;
                 }
 
                 for (var i = 0; i < joints.Count; i++)
                 {
-                    var currentDist = Vector3.Distance(wristJoint.JointPosition, joints[i].JointPosition);
-                    var distance = currentDist - gesture.JointData[i];
+                    float currentDist = Vector3.Distance(wristJoint.JointPosition, joints[i].JointPosition);
+                    float distance = currentDist - gesture.JointData[i];
 
                     if (-GestureDistanceThreshold > distance || distance > gesture.DistanceThreshold)
                     {
@@ -344,34 +269,25 @@ namespace Rhinox.XR.Grapple
                 }
             }
 
-            switch (handedness)
+            if (handedness == RhinoxHand.Left)
+               HandleRecognizedGesture(currentGesture, ref _currentLeftGesture, ref _lastLeftGesture,handedness);
+            else
+                HandleRecognizedGesture(currentGesture, ref _currentRightGesture, ref _lastRightGesture,handedness);
+        }
+
+        private void HandleRecognizedGesture(RhinoxGesture newGesture, ref RhinoxGesture currentGesture,
+            ref RhinoxGesture lastGesture, RhinoxHand handedness)
+        {
+            lastGesture = currentGesture;
+            currentGesture = newGesture;
+            
+            if (currentGesture != lastGesture)
             {
-                case Hand.Left:
-                    _currentLeftGesture = currentGesture;
-                    if (_currentLeftGesture != _lastLeftGesture)
-                    {
-                        _lastLeftGesture?.OnUnrecognized?.Invoke(handedness);
-                        OnGestureUnrecognized?.Invoke(handedness, _lastLeftGesture?.Name);
-                        _currentLeftGesture?.OnRecognized?.Invoke(handedness);
-                        if (currentGesture != null) OnGestureRecognized?.Invoke(handedness, currentGesture.Value.Name);
-                    }
-
-                    _lastLeftGesture = _currentLeftGesture;
-                    break;
-                case Hand.Right:
-                    _currentRightGesture = currentGesture;
-                    if (_currentRightGesture != _lastRightGesture)
-                    {
-                        _lastRightGesture?.OnUnrecognized?.Invoke(handedness);
-                        OnGestureUnrecognized?.Invoke(handedness, _lastRightGesture?.Name);
-                        _currentRightGesture?.OnRecognized?.Invoke(handedness);
-                        if (currentGesture != null) OnGestureRecognized?.Invoke(handedness, currentGesture.Value.Name);
-                    }
-
-                    _lastRightGesture = _currentRightGesture;
-                    break;
+                lastGesture?.OnUnrecognized?.Invoke(handedness);
+                OnGestureUnrecognized?.Invoke(handedness, lastGesture?.Name);
+                currentGesture?.OnRecognized?.Invoke(handedness);
+                if (currentGesture != null) OnGestureRecognized?.Invoke(handedness, currentGesture.Name);
             }
-
         }
 
 #if UNITY_EDITOR

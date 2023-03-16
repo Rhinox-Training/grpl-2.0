@@ -5,13 +5,13 @@ namespace Rhinox.XR.Grapple.It
 {
     public class PhysicsEventHandler : MonoBehaviour
     {
-        public class PhysicsEvent : UnityEvent<GameObject, GameObject, Hand>
+        public class PhysicsEvent : UnityEvent<GameObject, GameObject, RhinoxHand>
         { }
 
         public PhysicsEvent EnterEvent { get; private set; } = new PhysicsEvent();
         public PhysicsEvent ExitEvent { get; private set; } = new PhysicsEvent();
 
-        public Hand Hand;
+        public RhinoxHand RhinoxHand;
 
         private void Awake()
         {
@@ -23,12 +23,12 @@ namespace Rhinox.XR.Grapple.It
 
         private void OnTriggerEnter(Collider other)
         {
-            EnterEvent.Invoke(gameObject, other.gameObject, Hand);
+            EnterEvent.Invoke(gameObject, other.gameObject, RhinoxHand);
         }
 
         private void OnTriggerExit(Collider other)
         {
-            ExitEvent.Invoke(gameObject, other.gameObject, Hand);
+            ExitEvent.Invoke(gameObject, other.gameObject, RhinoxHand);
         }
     }
 }

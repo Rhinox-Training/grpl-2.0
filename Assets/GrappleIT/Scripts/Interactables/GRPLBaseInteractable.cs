@@ -24,8 +24,8 @@ namespace Rhinox.XR.Grapple.It
                 _isValid = false;
         }
 
-        //save and change the rigidbody settings so it can properly move along with the hand it is now attached to
-        public virtual void Grabbed(GameObject parent, Hand hand)
+        //save and change the rigidbody settings so it can properly move along with the rhinoxHand it is now attached to
+        public virtual void Grabbed(GameObject parent, RhinoxHand rhinoxHand)
         {
             if (!_isValid)
                 return;
