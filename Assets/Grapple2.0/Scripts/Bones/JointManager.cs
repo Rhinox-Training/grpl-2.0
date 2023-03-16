@@ -48,14 +48,25 @@ namespace Rhinox.XR.Grapple
         public event Action<RhinoxHand> TrackingAcquired;
         public event Action<RhinoxHand> TrackingLost;
 
+        public event Action Initialized;
+        public static event Action<JointManager> GlobalInitialized;
+        
         private bool _fixedUpdateAfterTrackingLeftFound = false;
         private bool _fixedUpdateAfterTrackingRightFound = false;
 
         #region Initialization Methods
-
-        public JointManager()
+        
+        private void Awake()
         {
-            InitializeHandJoints();
+            InitializeHandJoints(); 
+            
+
+        }
+
+        private void Start()
+        {
+            // Disable collision between the hands and between the joints
+            Physics.IgnoreLayerCollision(HandLayer, HandLayer);
         }
 
         private void OnEnable()
@@ -77,12 +88,7 @@ namespace Rhinox.XR.Grapple
             _subsystem.trackingAcquired -= OnTrackingAcquired;
             _subsystem.trackingLost -= OnTrackingLost;
         }
-
-        private void Start()
-        {
-            // Disable collision between the rhinoxHand and between the joints
-            Physics.IgnoreLayerCollision(HandLayer, HandLayer);
-        }
+        
 
         private void TryEnsureInitialized()
         {
@@ -116,6 +122,9 @@ namespace Rhinox.XR.Grapple
             _subsystem.updatedHands += OnUpdatedHands;
             _subsystem.trackingAcquired += OnTrackingAcquired;
             _subsystem.trackingLost += OnTrackingLost;
+            
+            Initialized?.Invoke();
+            GlobalInitialized?.Invoke(this);
         }
 
         private void InitializeHandJoints()

@@ -39,9 +39,10 @@ namespace Rhinox.XR.Grapple.It
 
         public float ColliderActivationDelay = 1.0f;
 
-        public PhysicsSocketService(JointManager jointManager, GestureRecognizer gestureRecognizer, GameObject parentObject)
+        public PhysicsSocketService(GestureRecognizer gestureRecognizer, GameObject parentObject)
         {
-            _jointManager = jointManager;
+            JointManager.GlobalInitialized += Initialize;
+            
             _gestureRecognizer = gestureRecognizer;
 
             //creates gameobjects that follow each rhinoxHand and have a collider on them to know if an object is in grabbing range.
@@ -112,11 +113,11 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
-        public void TryInitialize()
+        public void Initialize(JointManager jointManager)
         {
-            if (!_jointManager.AreJointsInitialised && !_isInitialized)
+            if(_isInitialized || jointManager == null)
                 return;
-
+            _jointManager = jointManager;
             _jointManager.TrackingAcquired += TrackingAcquired;
             _jointManager.TrackingLost += TrackingLost;
 

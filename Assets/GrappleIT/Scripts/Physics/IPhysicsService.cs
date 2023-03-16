@@ -3,13 +3,12 @@ namespace Rhinox.XR.Grapple.It
     public enum PhysicServices
     {
         None,
-        Socketing,
-        KinematicProxy
+        Socketing
     }
 
     public interface IPhysicsService
     {
-        void TryInitialize();
+        void Initialize(JointManager jointManager);
         bool GetIsInitialised();
         void Update();
         void SetHandEnabled(bool newState, RhinoxHand handedness);
@@ -18,7 +17,7 @@ namespace Rhinox.XR.Grapple.It
 
     public class NullPhysicsService : IPhysicsService
     {
-        void IPhysicsService.TryInitialize() { }
+        void IPhysicsService.Initialize(JointManager jointManager) { }
 
         bool IPhysicsService.GetIsInitialised()
         { return false; }

@@ -1,8 +1,5 @@
 using Rhinox.GUIUtils.Attributes;
-using UnityEditor.SceneManagement;
-using UnityEditor.SearchService;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace Rhinox.XR.Grapple.It
 {
@@ -22,23 +19,17 @@ namespace Rhinox.XR.Grapple.It
 
         // private GRPLTeleport _teleporter = null;
 
-        void Start()
+        private void Start()
         {
             _jointManager = gameObject.AddComponent<JointManager>();
             _jointManager.HandLayer = _handLayer;
             _gestureRecognizer = GetComponent<GestureRecognizer>();
-            _gestureRecognizer.Initialize(_jointManager);
 
             switch (SelectedPhysicsService)
             {
                 case PhysicServices.Socketing:
                     {
-                        _physicsService = new PhysicsSocketService(_jointManager, _gestureRecognizer, gameObject);
-                        break;
-                    }
-                case PhysicServices.KinematicProxy:
-                    {
-                        _physicsService = new KinematicPoxyPhysicsService(_jointManager);
+                        _physicsService = new PhysicsSocketService(_gestureRecognizer, gameObject);
                         break;
                     }
             }
@@ -60,14 +51,13 @@ namespace Rhinox.XR.Grapple.It
         }
 
         // Update is called once per frame
-        void Update()
+        private void Update()
         {
-            if (!_physicsService.GetIsInitialised())
+            if (_physicsService.GetIsInitialised())
             {
-                _physicsService.TryInitialize();
+                _physicsService.Update();
             }
 
-            _physicsService.Update();
         }
     }
 }
