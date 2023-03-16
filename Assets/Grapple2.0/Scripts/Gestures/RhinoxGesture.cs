@@ -38,7 +38,14 @@ namespace Rhinox.XR.Grapple
         [JsonIgnore] public UnityEvent<RhinoxHand> OnRecognized;
 
         [JsonIgnore] public UnityEvent<RhinoxHand> OnUnrecognized;
+        
+        [JsonIgnore]
+        private static RhinoxGesture _noGesture;
 
+        [JsonIgnore]
+        private const int AMOUNTOFJOINTS = 26;
+        
+        
         /// <remarks>Does not compare the name or events!</remarks>
         public override bool Equals(object obj)
         {
@@ -101,5 +108,19 @@ namespace Rhinox.XR.Grapple
         }
 
         public static bool operator !=(RhinoxGesture obj1, RhinoxGesture obj2) => !(obj1 == obj2);
+
+        public static RhinoxGesture NoGesture()
+        {
+            if (_noGesture == null)
+            {
+                _noGesture = new RhinoxGesture
+                {
+                    Name = "No Gesture",
+                    JointData = new List<float>(AMOUNTOFJOINTS)
+                };
+            }
+            return _noGesture;
+        }
+        
     }
 }
