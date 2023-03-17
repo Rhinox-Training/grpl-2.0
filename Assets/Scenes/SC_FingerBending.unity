@@ -1279,7 +1279,7 @@ GameObject:
   - component: {fileID: 287279274}
   - component: {fileID: 287279273}
   m_Layer: 5
-  m_Name: MiddleValueSc
+  m_Name: LittleValueSc
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2885,7 +2885,7 @@ GameObject:
   - component: {fileID: 725247731}
   - component: {fileID: 725247730}
   m_Layer: 5
-  m_Name: MiddleValueSc
+  m_Name: LittleValueSc
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3020,7 +3020,7 @@ GameObject:
   - component: {fileID: 731946884}
   - component: {fileID: 731946883}
   m_Layer: 5
-  m_Name: MiddleValueUnsc
+  m_Name: LittleValueUnsc
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3290,7 +3290,7 @@ GameObject:
   - component: {fileID: 788377880}
   - component: {fileID: 788377879}
   m_Layer: 5
-  m_Name: MiddleValueUnsc
+  m_Name: RingValueUnsc
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3422,6 +3422,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 818043804}
+  - component: {fileID: 818043805}
+  - component: {fileID: 818043808}
+  - component: {fileID: 818043807}
+  - component: {fileID: 818043806}
   m_Layer: 0
   m_Name: Gesture visualization
   m_TagString: Untagged
@@ -3446,6 +3450,82 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &818043805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 818043803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdc8dab704992e74b83788069f25c354, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _thumb: {fileID: 411564996}
+  _index: {fileID: 755498602}
+  _middle: {fileID: 145341128}
+  _ring: {fileID: 1443385540}
+  _little: {fileID: 725247730}
+  _isScaled: 1
+  TargetHand: 0
+--- !u!114 &818043806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 818043803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdc8dab704992e74b83788069f25c354, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _thumb: {fileID: 613968857}
+  _index: {fileID: 115608633}
+  _middle: {fileID: 222516122}
+  _ring: {fileID: 929140028}
+  _little: {fileID: 972571075}
+  _isScaled: 0
+  TargetHand: 1
+--- !u!114 &818043807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 818043803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdc8dab704992e74b83788069f25c354, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _thumb: {fileID: 659601199}
+  _index: {fileID: 462621445}
+  _middle: {fileID: 1679769274}
+  _ring: {fileID: 1524001913}
+  _little: {fileID: 287279273}
+  _isScaled: 1
+  TargetHand: 1
+--- !u!114 &818043808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 818043803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdc8dab704992e74b83788069f25c354, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _thumb: {fileID: 182559238}
+  _index: {fileID: 1757224582}
+  _middle: {fileID: 473130323}
+  _ring: {fileID: 788377879}
+  _little: {fileID: 731946883}
+  _isScaled: 0
+  TargetHand: 0
 --- !u!1 &873038495
 GameObject:
   m_ObjectHideFlags: 0
@@ -3750,7 +3830,7 @@ GameObject:
   - component: {fileID: 929140029}
   - component: {fileID: 929140028}
   m_Layer: 5
-  m_Name: MiddleValueUnsc
+  m_Name: RingValueUnsc
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3979,7 +4059,7 @@ GameObject:
   - component: {fileID: 972571076}
   - component: {fileID: 972571075}
   m_Layer: 5
-  m_Name: MiddleValueUnsc
+  m_Name: LittleValueUnsc
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4636,7 +4716,7 @@ GameObject:
   - component: {fileID: 1443385541}
   - component: {fileID: 1443385540}
   m_Layer: 5
-  m_Name: MiddleValueSc
+  m_Name: RingValueSc
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4771,7 +4851,7 @@ GameObject:
   - component: {fileID: 1524001914}
   - component: {fileID: 1524001913}
   m_Layer: 5
-  m_Name: MiddleValueSc
+  m_Name: RingValueSc
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

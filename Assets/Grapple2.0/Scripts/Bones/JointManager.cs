@@ -31,11 +31,11 @@ namespace Rhinox.XR.Grapple
 
         // As it is impossible for the joints to fully touch each other, this value represents a total bend
         public float BendDistMin = 0.3f;
-        
+
         // As it is almost impossible for a finger to be fully stretched, this value represents a total stretch
         public float StretchDistMin = 0.9f;
-            
-        
+
+
         public bool JointCollisionsEnabled
         {
             get => _jointCollisionsEnabled;
@@ -56,6 +56,7 @@ namespace Rhinox.XR.Grapple
 
         public event Action<RhinoxHand> TrackingAcquired;
         public event Action<RhinoxHand> TrackingLost;
+        public event Action<RhinoxHand> OnHandsUpdated;
 
         public event Action Initialized;
         public static event Action<JointManager> GlobalInitialized;
@@ -513,6 +514,7 @@ namespace Rhinox.XR.Grapple
 
             UpdateJointsForHand(xrHand, joints);
             UpdateCapsuleColliders(hand);
+            OnHandsUpdated?.Invoke(hand);
         }
 
         /// <summary>
@@ -739,13 +741,13 @@ namespace Rhinox.XR.Grapple
 
             // The current bend value is the quotient of the current distance and the full stretch distance
             bendValue = Mathf.Clamp01(currentDist / fullStretchDistance);
-            
-            if(remap)
+
             // Map the original bend value to the range of [BendDistMin;StretchDistMin] 
-            bendValue = bendValue.Map(0,BendDistMin,1,StretchDistMin);
+            if (remap)
+                bendValue = bendValue.Map(0, 1, BendDistMin, StretchDistMin);
             return true;
         }
-        
+
         /// <summary>
         /// Attempts to create a list of the joint positions of all joints of the given finger on the given hand.
         /// </summary>
