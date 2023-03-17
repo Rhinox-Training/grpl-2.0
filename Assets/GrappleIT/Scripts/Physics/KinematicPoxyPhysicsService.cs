@@ -54,7 +54,7 @@ public class KinematicPoxyPhysicsService : IPhysicsService
     }
     
     
-    public bool GetIsInitialised()
+    public bool GetInitialised()
     {
         return _isInitialized;
     }

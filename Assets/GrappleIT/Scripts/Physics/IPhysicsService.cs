@@ -10,7 +10,7 @@ namespace Rhinox.XR.Grapple.It
     public interface IPhysicsService
     {
         void TryInitialize();
-        bool GetIsInitialised();
+        bool GetInitialised();
         void Update();
         void SetHandEnabled(bool newState, Hand handedness);
         bool GetIsHandEnabled(Hand handedness);
@@ -20,7 +20,7 @@ namespace Rhinox.XR.Grapple.It
     {
         void IPhysicsService.TryInitialize() { }
 
-        bool IPhysicsService.GetIsInitialised()
+        bool IPhysicsService.GetInitialised()
         { return false; }
 
         public void Update() { }

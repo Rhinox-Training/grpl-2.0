@@ -8,17 +8,29 @@ namespace Rhinox.XR.Grapple.It
 {
     public class PhysicsSocketService : IPhysicsService
     {
+        public UnityEvent<Hand, GameObject> OnObjectGrabbed = new();
+        public UnityEvent<Hand, GameObject> OnObjectDropped = new();
+
+        public UnityEvent<Hand> OnGrabStarted = new();
+        public UnityEvent<Hand> OnGrabEnded = new();
+
+        public float ColliderActivationDelay = 1.0f;
+
+
+
         private bool _isInitialized = false;
         private JointManager _jointManager;
         private GestureRecognizer _gestureRecognizer;
+
+        private RhinoxGesture _grabGesture;
 
         private GameObject _colliderObjL;
         private GameObject _colliderObjR;
         private BoxCollider _ColliderL;
         private BoxCollider _ColliderR;
 
-        private GameObject _SocketObjL;
-        private GameObject _SocketObjR;
+        private GameObject _socketObjL;
+        private GameObject _socketObjR;
 
         private readonly Vector3 _handSocketAndColliderOffset = new Vector3(0f, -0.03f, 0.025f);//magic numbers got from testing
         private readonly Vector3 _colliderSize = new Vector3(0.065f, 0.045f, 0.08f);//magic numbers got from testing
@@ -30,16 +42,6 @@ namespace Rhinox.XR.Grapple.It
         private GameObject _potentialGrabItemR = null;
         private GameObject _grabbedItemL = null;
         private GameObject _grabbedItemR = null;
-
-        private RhinoxGesture _grabGesture;
-
-        public UnityEvent<Hand, GameObject> OnObjectGrabbed = new();
-        public UnityEvent<Hand, GameObject> OnObjectDropped = new();
-
-        public UnityEvent<Hand> OnGrabStarted = new();
-        public UnityEvent<Hand> OnGrabEnded = new();
-
-        public float ColliderActivationDelay = 1.0f;
 
         public PhysicsSocketService(JointManager jointManager, GestureRecognizer gestureRecognizer, GameObject parentObject)
         {
@@ -54,10 +56,10 @@ namespace Rhinox.XR.Grapple.It
                 _colliderObjL = new GameObject("Collider Obj LEFT");
                 _colliderObjL.transform.parent = parentObject.transform;
 
-                _SocketObjL = new GameObject("Socket Left");
-                _SocketObjL.transform.parent = _colliderObjL.transform;
+                _socketObjL = new GameObject("Socket Left");
+                _socketObjL.transform.parent = _colliderObjL.transform;
                 //needs to be rotate 90°, otherwise object would go through handpalm and this one is rotate antoher 180°, because it's the opposite of left hand
-                _SocketObjL.transform.SetLocalPositionAndRotation(_handSocketAndColliderOffset, Quaternion.Euler(0f, 0f, 270f));
+                _socketObjL.transform.SetLocalPositionAndRotation(_handSocketAndColliderOffset, Quaternion.Euler(0f, 0f, 270f));
 
                 var colliderEventsL = _colliderObjL.AddComponent<PhysicsEventHandler>();
                 colliderEventsL.EnterEvent.AddListener(OnHandTriggerEnter);
@@ -75,10 +77,10 @@ namespace Rhinox.XR.Grapple.It
                 _colliderObjR = new GameObject("Collider Obj RIGHT");
                 _colliderObjR.transform.parent = parentObject.transform;
 
-                _SocketObjR = new GameObject("Socket Right");
-                _SocketObjR.transform.parent = _colliderObjR.transform;
+                _socketObjR = new GameObject("Socket Right");
+                _socketObjR.transform.parent = _colliderObjR.transform;
                 //needs to be rotate 90°, otherwise object would go through handpalm.
-                _SocketObjR.transform.SetLocalPositionAndRotation(_handSocketAndColliderOffset, Quaternion.Euler(0f, 0f, 90f));
+                _socketObjR.transform.SetLocalPositionAndRotation(_handSocketAndColliderOffset, Quaternion.Euler(0f, 0f, 90f));
 
                 var colliderEventsR = _colliderObjR.AddComponent<PhysicsEventHandler>();
                 colliderEventsR.EnterEvent.AddListener(OnHandTriggerEnter);
@@ -137,7 +139,7 @@ namespace Rhinox.XR.Grapple.It
             _jointManager.TrackingLost += TrackingLost;
 
 
-            // Add these function ass listeners
+            // Add these function as listeners
             // This assured that the grabbing of objects and hand colliders don't have weird behaviour
             OnGrabStarted.AddListener(_jointManager.DisableHandCollisions);
             OnGrabEnded.AddListener(_jointManager.EnableHandCollisionsAfterDelay);
@@ -161,7 +163,7 @@ namespace Rhinox.XR.Grapple.It
             _isInitialized = true;
         }
 
-        public bool GetIsInitialised()
+        public bool GetInitialised()
         {
             return _isInitialized;
         }
@@ -202,15 +204,15 @@ namespace Rhinox.XR.Grapple.It
             {
                 case Hand.Left:
                     if (_enabledL)
-                        TryGrabInternal(Hand.Left, _potentialGrabItemL, ref _grabbedItemL, ref _grabbedItemR, _SocketObjL);
+                        TryGrabInternal(Hand.Left, _potentialGrabItemL, ref _grabbedItemL, ref _grabbedItemR, _socketObjL);
                     break;
                 case Hand.Right:
                     if (_enabledR)
-                        TryGrabInternal(Hand.Right, _potentialGrabItemR, ref _grabbedItemR, ref _grabbedItemL, _SocketObjR);
+                        TryGrabInternal(Hand.Right, _potentialGrabItemR, ref _grabbedItemR, ref _grabbedItemL, _socketObjR);
                     break;
                 case Hand.Both:
-                    TryGrabInternal(Hand.Left, _potentialGrabItemL, ref _grabbedItemL, ref _grabbedItemR, _SocketObjL);
-                    TryGrabInternal(Hand.Right, _potentialGrabItemR, ref _grabbedItemR, ref _grabbedItemL, _SocketObjR);
+                    TryGrabInternal(Hand.Left, _potentialGrabItemL, ref _grabbedItemL, ref _grabbedItemR, _socketObjL);
+                    TryGrabInternal(Hand.Right, _potentialGrabItemR, ref _grabbedItemR, ref _grabbedItemL, _socketObjR);
                     break;
                 case Hand.Invalid:
                 default:

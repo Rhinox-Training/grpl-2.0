@@ -19,6 +19,7 @@ namespace Rhinox.XR.Grapple.It
 
             Matrix4x4 relativeMatrix;
 
+            //this extra code is only needed for right hand, otherwise the item will be flipped upside down.
             if (hand == Hand.Right)
             {
                 //because the right hand is mirror of the left one.
