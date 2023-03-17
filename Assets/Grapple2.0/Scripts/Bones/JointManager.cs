@@ -5,7 +5,9 @@ using UnityEngine;
 using UnityEngine.XR.Hands;
 using UnityEngine.XR.Management;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Rhinox.GUIUtils.Attributes;
+using Rhinox.Lightspeed;
 
 namespace Rhinox.XR.Grapple
 {
@@ -27,6 +29,13 @@ namespace Rhinox.XR.Grapple
 
         public float ColliderActivationDelay = 1.5f;
 
+        // As it is impossible for the joints to fully touch each other, this value represents a total bend
+        public float BendDistMin = 0.3f;
+        
+        // As it is almost impossible for a finger to be fully stretched, this value represents a total stretch
+        public float StretchDistMin = 0.9f;
+            
+        
         public bool JointCollisionsEnabled
         {
             get => _jointCollisionsEnabled;
@@ -50,17 +59,15 @@ namespace Rhinox.XR.Grapple
 
         public event Action Initialized;
         public static event Action<JointManager> GlobalInitialized;
-        
+
         private bool _fixedUpdateAfterTrackingLeftFound = false;
         private bool _fixedUpdateAfterTrackingRightFound = false;
 
         #region Initialization Methods
-        
+
         private void Awake()
         {
-            InitializeHandJoints(); 
-            
-
+            InitializeHandJoints();
         }
 
         private void Start()
@@ -88,7 +95,7 @@ namespace Rhinox.XR.Grapple
             _subsystem.trackingAcquired -= OnTrackingAcquired;
             _subsystem.trackingLost -= OnTrackingLost;
         }
-        
+
 
         private void TryEnsureInitialized()
         {
@@ -122,16 +129,16 @@ namespace Rhinox.XR.Grapple
             _subsystem.updatedHands += OnUpdatedHands;
             _subsystem.trackingAcquired += OnTrackingAcquired;
             _subsystem.trackingLost += OnTrackingLost;
-            
+
             Initialized?.Invoke();
             GlobalInitialized?.Invoke(this);
         }
 
         private void InitializeHandJoints()
         {
-            if(AreJointsInitialised)
+            if (AreJointsInitialised)
                 return;
-            
+
             //Initialize wrist
             {
                 var leftWristJoint = new RhinoxJoint(XRHandJointID.Wrist);
@@ -222,6 +229,7 @@ namespace Rhinox.XR.Grapple
                 parent = _rightHandCollidersParent;
                 joints = _rightHandJoints;
             }
+
             InitializeCapsulesForHand(handedness, parent, capsules, joints);
         }
 
@@ -522,7 +530,7 @@ namespace Rhinox.XR.Grapple
                 var currentJoint = joints[(int)jointId - 1];
 
                 var subsystemJoint = hand.GetJoint(jointId);
-                if(!subsystemJoint.TryGetPose(out var pose))
+                if (!subsystemJoint.TryGetPose(out var pose))
                     return;
 
                 currentJoint.JointPosition = pose.position;
@@ -655,6 +663,12 @@ namespace Rhinox.XR.Grapple
 
         #region Get methods
 
+        /// <summary>
+        /// Attempts to get all joint of the given hand.
+        /// </summary>
+        /// <param name="rhinoxHand">The target hand</param>
+        /// <param name="jointList">Out parameter for the list of joints</param>
+        /// <returns>Whether the function succeeded</returns>
         public bool TryGetJointsFromHand(RhinoxHand rhinoxHand, out List<RhinoxJoint> jointList)
         {
             switch (rhinoxHand)
@@ -668,22 +682,6 @@ namespace Rhinox.XR.Grapple
                 default:
                     jointList = new List<RhinoxJoint>();
                     return false;
-            }
-        }
-
-        public IReadOnlyCollection<RhinoxJoint> GetJointsFromHand(Handedness hand)
-        {
-            switch (hand)
-            {
-                case Handedness.Left:
-                    return _leftHandJoints;
-                case Handedness.Right:
-                    return _rightHandJoints;
-                default:
-                    Debug.LogError(
-                        $"{nameof(JointManager)} - {nameof(GetJointsFromHand)}, " +
-                        $"function called with incorrect rhinoxHand {hand}. Only left or right supported!");
-                    return Array.Empty<RhinoxJoint>();
             }
         }
 
@@ -704,6 +702,127 @@ namespace Rhinox.XR.Grapple
                     joint = null;
                     return false;
             }
+        }
+
+        /// <summary>
+        /// Attempts to get the bend value of the given finger on the given hand.This bend value is a float between 0 and 1;
+        /// </summary>
+        /// <param name="hand">The target hand</param>
+        /// <param name="finger">The target finger</param>
+        /// <param name="bendValue">Out parameter for the bend value</param>
+        /// <param name="remap">Specifies whether to remap the bend value to [BendDistMin;StretchDistMin]</param>
+        /// <returns>Whether the function succeeded.</returns>
+        /// <remarks>Not remapping the value, can make it impossible to recognize a finger as fully bend or stretched!</remarks>
+        public bool TryGetFingerBend(RhinoxHand hand, RhinoxFinger finger, out float bendValue, bool remap = true)
+        {
+            bendValue = float.MaxValue;
+
+            if (!TryGetFingerJointPositions(hand, finger, out var jointPositions))
+                return false;
+
+            // Calculate the distance for a total stretch
+            // This distance is the sum of the distance between connected joints
+            float fullStretchDistance = 0;
+            for (int i = 0; i + 1 < jointPositions.Count; i++)
+            {
+                var boneBeginPos = jointPositions[i];
+                var boneEndPos = jointPositions[i + 1];
+                fullStretchDistance += Vector3.Distance(boneBeginPos, boneEndPos);
+            }
+
+            // Calculate the distance between: 
+            // - The root of the finger (metacarpal), this is the first element of the list of positions
+            // - The tip of the finger (tip), this is the last element of the list of positions
+            var fingerMetacarpalPos = jointPositions.First();
+            var fingerTipPos = jointPositions.Last();
+            float currentDist = Vector3.Distance(fingerMetacarpalPos, fingerTipPos);
+
+            // The current bend value is the quotient of the current distance and the full stretch distance
+            bendValue = Mathf.Clamp01(currentDist / fullStretchDistance);
+            
+            if(remap)
+            // Map the original bend value to the range of [BendDistMin;StretchDistMin] 
+            bendValue = bendValue.Map(0,BendDistMin,1,StretchDistMin);
+            return true;
+        }
+        
+        /// <summary>
+        /// Attempts to create a list of the joint positions of all joints of the given finger on the given hand.
+        /// </summary>
+        /// <param name="hand">The target hand</param>
+        /// <param name="finger">The target finger</param>
+        /// <param name="jointPositions">An out parameter that will hold the joint positions, if the function succeeds.</param>
+        /// <returns>Whether the function succeeded</returns>
+        private bool TryGetFingerJointPositions(RhinoxHand hand, RhinoxFinger finger, out List<Vector3> jointPositions)
+        {
+            //Get the joints of the given finger
+            jointPositions = new List<Vector3>();
+            var jointIds = GetJointIdsFromFinger(finger);
+            var positions = Enumerable.Repeat(default(Vector3), jointIds.Count).ToList();
+            int currentIdx = 0;
+            foreach (XRHandJointID id in jointIds)
+            {
+                if (!TryGetJointFromHandById(id, hand, out var joint))
+                    return false;
+                positions[currentIdx] = joint.JointPosition;
+                ++currentIdx;
+            }
+
+            jointPositions = positions;
+            return true;
+        }
+
+        /// <summary>
+        /// Gets all the XRHandJointIds from the given finger. 
+        /// </summary>
+        /// <param name="finger"></param>
+        /// <returns>An ICollection holding all the joint ids of the given finger</returns>
+        public static ICollection<XRHandJointID> GetJointIdsFromFinger(RhinoxFinger finger)
+        {
+            var returnValue = new Collection<XRHandJointID>();
+            switch (finger)
+            {
+                case RhinoxFinger.Thumb:
+                    returnValue.Add(XRHandJointID.ThumbMetacarpal);
+                    returnValue.Add(XRHandJointID.ThumbProximal);
+                    returnValue.Add(XRHandJointID.ThumbDistal);
+                    returnValue.Add(XRHandJointID.ThumbTip);
+                    break;
+                case RhinoxFinger.Index:
+                    returnValue.Add(XRHandJointID.IndexMetacarpal);
+                    returnValue.Add(XRHandJointID.IndexProximal);
+                    returnValue.Add(XRHandJointID.IndexIntermediate);
+                    returnValue.Add(XRHandJointID.IndexDistal);
+                    returnValue.Add(XRHandJointID.IndexTip);
+                    break;
+                case RhinoxFinger.Middle:
+                    returnValue.Add(XRHandJointID.MiddleMetacarpal);
+                    returnValue.Add(XRHandJointID.MiddleProximal);
+                    returnValue.Add(XRHandJointID.MiddleIntermediate);
+                    returnValue.Add(XRHandJointID.MiddleDistal);
+                    returnValue.Add(XRHandJointID.MiddleTip);
+                    break;
+                case RhinoxFinger.Ring:
+                    returnValue.Add(XRHandJointID.RingMetacarpal);
+                    returnValue.Add(XRHandJointID.RingProximal);
+                    returnValue.Add(XRHandJointID.RingIntermediate);
+                    returnValue.Add(XRHandJointID.RingDistal);
+                    returnValue.Add(XRHandJointID.RingTip);
+                    break;
+                case RhinoxFinger.Little:
+                    returnValue.Add(XRHandJointID.LittleMetacarpal);
+                    returnValue.Add(XRHandJointID.LittleProximal);
+                    returnValue.Add(XRHandJointID.LittleIntermediate);
+                    returnValue.Add(XRHandJointID.LittleDistal);
+                    returnValue.Add(XRHandJointID.LittleTip);
+                    break;
+                default:
+                    Debug.LogError(
+                        $"GetJointIdsFromFinger, function called with unsupported RhinoxFinger value: {finger}");
+                    return Array.Empty<XRHandJointID>();
+            }
+
+            return returnValue;
         }
 
         #endregion

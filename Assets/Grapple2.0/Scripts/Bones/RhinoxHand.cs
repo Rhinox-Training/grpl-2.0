@@ -1,6 +1,9 @@
-public enum RhinoxHand
+namespace Rhinox.XR.Grapple
 {
-    Left,
-    Right,
-    Invalid
+    public enum RhinoxHand
+    {
+        Left,
+        Right,
+        Invalid
+    }
 }
