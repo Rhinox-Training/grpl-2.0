@@ -3508,11 +3508,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1112510675, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: m_DrawMeshes
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1112510675, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: m_DebugDrawJoints
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2494858725923593373, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: m_Name
