@@ -1159,6 +1159,7 @@ MonoBehaviour:
   PointingStopDelay: 0.2
   ChargingTime: 2
   Smoothing: 5
+  TeleportTreshold: 0.75
   FadeDuration: 0.15
 --- !u!1 &2114071857
 GameObject:

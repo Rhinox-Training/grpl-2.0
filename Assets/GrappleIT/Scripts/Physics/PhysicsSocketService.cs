@@ -163,7 +163,7 @@ namespace Rhinox.XR.Grapple.It
             _isInitialized = true;
         }
 
-        public bool GetInitialised()
+        public bool IsInitialized()
         {
             return _isInitialized;
         }
@@ -352,7 +352,7 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
-        public bool GetIsHandEnabled(Hand handedness)
+        public bool IsHandEnabled(Hand handedness)
         {
             switch (handedness)
             {

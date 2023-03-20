@@ -10,24 +10,24 @@ namespace Rhinox.XR.Grapple.It
     public interface IPhysicsService
     {
         void TryInitialize();
-        bool GetInitialised();
+        bool IsInitialized();
         void Update();
         void SetHandEnabled(bool newState, Hand handedness);
-        bool GetIsHandEnabled(Hand handedness);
+        bool IsHandEnabled(Hand handedness);
     }
 
     public class NullPhysicsService : IPhysicsService
     {
         void IPhysicsService.TryInitialize() { }
 
-        bool IPhysicsService.GetInitialised()
+        bool IPhysicsService.IsInitialized()
         { return false; }
 
         public void Update() { }
 
         void IPhysicsService.SetHandEnabled(bool newState, Hand handedness) { }
 
-        bool IPhysicsService.GetIsHandEnabled(Hand handedness)
+        bool IPhysicsService.IsHandEnabled(Hand handedness)
         { return false; }
     }
 }

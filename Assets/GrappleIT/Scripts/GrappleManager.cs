@@ -60,7 +60,7 @@ namespace Rhinox.XR.Grapple.It
         // Update is called once per frame
         void Update()
         {
-            if (!_physicsService.GetInitialised())
+            if (!_physicsService.IsInitialized())
             {
                 _physicsService.TryInitialize();
             }

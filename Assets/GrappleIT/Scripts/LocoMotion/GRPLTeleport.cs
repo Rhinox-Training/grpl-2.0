@@ -138,7 +138,7 @@ namespace Rhinox.XR.Grapple.It
                         {
                             _lineRenderer.startColor = Color.Lerp(Color.blue, Color.green, _timeLeft / ChargingTime);
                             _lineRenderer.endColor = Color.Lerp(Color.blue, Color.green, _timeLeft / ChargingTime);
-                            _lineRenderer.widthMultiplier += Mathf.Lerp(0.25f, 0.05f, _timeLeft / ChargingTime);
+                            _lineRenderer.widthMultiplier = Mathf.Lerp(0.25f, 0f, _timeLeft / ChargingTime);//change magic numbers to vars
                         }
                     }
                     else
@@ -146,13 +146,12 @@ namespace Rhinox.XR.Grapple.It
                         _timeLeft = ChargingTime;
                         _lineRenderer.startColor = Color.green;
                         _lineRenderer.endColor = Color.green;
-                        _lineRenderer.widthMultiplier = 0.05f;
+                        _lineRenderer.widthMultiplier = 0f;
                     }
                 }
                 else
                 {
                     _lineRenderer.enabled = false;
-
                 }
             }
 
