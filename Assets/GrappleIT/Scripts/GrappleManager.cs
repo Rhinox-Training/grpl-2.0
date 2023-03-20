@@ -1,4 +1,6 @@
 using Rhinox.GUIUtils.Attributes;
+using UnityEditor.SceneManagement;
+using UnityEditor.SearchService;
 using UnityEngine;
 
 namespace Rhinox.XR.Grapple.It
@@ -17,7 +19,7 @@ namespace Rhinox.XR.Grapple.It
 
         private GestureRecognizer _gestureRecognizer = null;
 
-        // private GRPLTeleport _teleporter = null;
+        private GRPLTeleport _teleporter = null;
 
         private void Start()
         {
@@ -39,21 +41,19 @@ namespace Rhinox.XR.Grapple.It
                 Debug.LogError($"{nameof(GrappleManager)} Failed to add {SelectedPhysicsService} service");
             }
 
-            //if (gameObject.TryGetComponent(out _teleporter))
-            //    _teleporter.Initialize(_jointManager, _gestureRecognizer);
-            //else
-            //{
-            //    Debug.LogError($"{nameof(HandInputManager)} Failed to find {nameof(GRPLTeleport)}");
-            //    return;
-            //}
-
-            //_teleporter = gameObject.GetComponent<GRPLTeleport>();//gameObject.AddComponent<GRPLTeleport>();
+            if (gameObject.TryGetComponent(out _teleporter))
+                _teleporter.Initialize(_jointManager, _gestureRecognizer);
+            else
+            {
+                Debug.LogError($"{nameof(GrappleManager)} Failed to find {nameof(GRPLTeleport)}");
+                return;
+            }
         }
 
         // Update is called once per frame
         private void Update()
         {
-            if (_physicsService.GetIsInitialised())
+            if (_physicsService.IsInitialized())
             {
                 _physicsService.Update();
             }
