@@ -13,16 +13,16 @@ namespace Rhinox.XR.Grapple.It
                 Debug.LogError($"{nameof(GRPLSocketable)} Socket was not set.");
         }
 
-        public override void Grabbed(GameObject parent, Hand hand)
+        public override void Grabbed(GameObject parent, RhinoxHand rhinoxHand)
         {
-            base.Grabbed(parent, hand);
+            base.Grabbed(parent, rhinoxHand);
 
             Matrix4x4 relativeMatrix;
 
             //this extra code is only needed for right hand, otherwise the item will be flipped upside down.
-            if (hand == Hand.Right)
+            if (rhinoxHand == RhinoxHand.Right)
             {
-                //because the right hand is mirror of the left one.
+                //because the right rhinoxHand is mirror of the left one.
                 //the object needs to be flip around the X-axis to mirror it. 
                 Socket.transform.localRotation = new Quaternion(Socket.transform.localRotation.x * -1.0f,
                                             Socket.transform.localRotation.y,

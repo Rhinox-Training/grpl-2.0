@@ -8,11 +8,11 @@ namespace Rhinox.XR.Grapple.It
 {
     public class PhysicsSocketService : IPhysicsService
     {
-        public UnityEvent<Hand, GameObject> OnObjectGrabbed = new();
-        public UnityEvent<Hand, GameObject> OnObjectDropped = new();
+        public UnityEvent<RhinoxHand, GameObject> OnObjectGrabbed = new();
+        public UnityEvent<RhinoxHand, GameObject> OnObjectDropped = new();
 
-        public UnityEvent<Hand> OnGrabStarted = new();
-        public UnityEvent<Hand> OnGrabEnded = new();
+        public UnityEvent<RhinoxHand> OnGrabStarted = new();
+        public UnityEvent<RhinoxHand> OnGrabEnded = new();
 
         public float ColliderActivationDelay = 1.0f;
 
@@ -26,8 +26,8 @@ namespace Rhinox.XR.Grapple.It
 
         private GameObject _colliderObjL;
         private GameObject _colliderObjR;
-        private BoxCollider _ColliderL;
-        private BoxCollider _ColliderR;
+        private BoxCollider _colliderL;
+        private BoxCollider _colliderR;
 
         private GameObject _socketObjL;
         private GameObject _socketObjR;
@@ -43,9 +43,10 @@ namespace Rhinox.XR.Grapple.It
         private GameObject _grabbedItemL = null;
         private GameObject _grabbedItemR = null;
 
-        public PhysicsSocketService(JointManager jointManager, GestureRecognizer gestureRecognizer, GameObject parentObject)
+        public PhysicsSocketService(GestureRecognizer gestureRecognizer, GameObject parentObject)
         {
-            _jointManager = jointManager;
+            JointManager.GlobalInitialized += Initialize;
+            
             _gestureRecognizer = gestureRecognizer;
 
             //creates gameobjects that follow each hand and have a collider on them to know if an object is in grabbing range.
@@ -64,13 +65,13 @@ namespace Rhinox.XR.Grapple.It
                 var colliderEventsL = _colliderObjL.AddComponent<PhysicsEventHandler>();
                 colliderEventsL.EnterEvent.AddListener(OnHandTriggerEnter);
                 colliderEventsL.ExitEvent.AddListener(OnHandTriggerExit);
-                colliderEventsL.Hand = Hand.Left;
+                colliderEventsL.RhinoxHand = RhinoxHand.Left;
 
-                _ColliderL = _colliderObjL.AddComponent<BoxCollider>();
-                _ColliderL.isTrigger = true;
-                _ColliderL.enabled = false;
-                _ColliderL.center = _handSocketAndColliderOffset;
-                _ColliderL.size = _colliderSize;
+                _colliderL = _colliderObjL.AddComponent<BoxCollider>();
+                _colliderL.isTrigger = true;
+                _colliderL.enabled = false;
+                _colliderL.center = _handSocketAndColliderOffset;
+                _colliderL.size = _colliderSize;
                 #endregion
 
                 #region Right Hand Creating and Init
@@ -85,13 +86,13 @@ namespace Rhinox.XR.Grapple.It
                 var colliderEventsR = _colliderObjR.AddComponent<PhysicsEventHandler>();
                 colliderEventsR.EnterEvent.AddListener(OnHandTriggerEnter);
                 colliderEventsR.ExitEvent.AddListener(OnHandTriggerExit);
-                colliderEventsR.Hand = Hand.Right;
+                colliderEventsR.RhinoxHand = RhinoxHand.Right;
 
-                _ColliderR = _colliderObjR.AddComponent<BoxCollider>();
-                _ColliderR.enabled = false;
-                _ColliderR.isTrigger = true;
-                _ColliderR.center = _handSocketAndColliderOffset;
-                _ColliderR.size = _colliderSize;
+                _colliderR = _colliderObjR.AddComponent<BoxCollider>();
+                _colliderR.enabled = false;
+                _colliderR.isTrigger = true;
+                _colliderR.center = _handSocketAndColliderOffset;
+                _colliderR.size = _colliderSize;
                 #endregion
             }
         }
@@ -130,11 +131,11 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
-        public void TryInitialize()
+        public void Initialize(JointManager jointManager)
         {
-            if (!_jointManager.AreJointsInitialised && !_isInitialized)
+            if(_isInitialized || jointManager == null)
                 return;
-
+            _jointManager = jointManager;
             _jointManager.TrackingAcquired += TrackingAcquired;
             _jointManager.TrackingLost += TrackingLost;
 
@@ -147,18 +148,18 @@ namespace Rhinox.XR.Grapple.It
             _jointManager.ColliderActivationDelay = ColliderActivationDelay;
 
             //getting the grab gesture and linking events
-            if (_grabGesture.Name == null)
+            if (_grabGesture == null)
             {
                 _grabGesture = _gestureRecognizer.Gestures.Find(x => x.Name == "Grab");
-                if (_grabGesture.Name != null)
+                if (_grabGesture != null)
                 {
                     _grabGesture.OnRecognized.AddListener(TryGrab);
                     _grabGesture.OnUnrecognized.AddListener(TryDrop);
                 }
             }
 
-            _ColliderL.enabled = true;
-            _ColliderR.enabled = true;
+            _colliderL.enabled = true;
+            _colliderR.enabled = true;
 
             _isInitialized = true;
         }
@@ -180,7 +181,7 @@ namespace Rhinox.XR.Grapple.It
             if (_enabledL)
             {
                 //updating the obj with the is-in-grabbing reach collider
-                _jointManager.TryGetJointFromHandById(XRHandJointID.Palm, Hand.Left, out var palmBone);
+                _jointManager.TryGetJointFromHandById(XRHandJointID.Palm, RhinoxHand.Left, out var palmBone);
                 _colliderObjL.transform.position = palmBone.JointPosition;
                 _colliderObjL.transform.rotation = palmBone.JointRotation;
             }
@@ -188,68 +189,60 @@ namespace Rhinox.XR.Grapple.It
             if (_enabledR)
             {
                 //updating the obj with the is-in-grabbing reach collider
-                _jointManager.TryGetJointFromHandById(XRHandJointID.Palm, Hand.Right, out var palmBone);
+                _jointManager.TryGetJointFromHandById(XRHandJointID.Palm, RhinoxHand.Right, out var palmBone);
                 _colliderObjR.transform.position = palmBone.JointPosition;
                 _colliderObjR.transform.rotation = palmBone.JointRotation;
             }
         }
 
         #region Grab & Drop Logic
-        public void TryGrab(Hand hand)
+        public void TryGrab(RhinoxHand hand)
         {
             if (!_enabledL && !_enabledR)
                 return;
 
             switch (hand)
             {
-                case Hand.Left:
+                case RhinoxHand.Left:
                     if (_enabledL)
-                        TryGrabInternal(Hand.Left, _potentialGrabItemL, ref _grabbedItemL, ref _grabbedItemR, _socketObjL);
+                        TryGrabInternal(RhinoxHand.Left, _potentialGrabItemL, ref _grabbedItemL, ref _grabbedItemR, _socketObjL);
                     break;
-                case Hand.Right:
+                case RhinoxHand.Right:
                     if (_enabledR)
-                        TryGrabInternal(Hand.Right, _potentialGrabItemR, ref _grabbedItemR, ref _grabbedItemL, _socketObjR);
+                        TryGrabInternal(RhinoxHand.Right, _potentialGrabItemR, ref _grabbedItemR, ref _grabbedItemL, _socketObjR);
                     break;
-                case Hand.Both:
-                    TryGrabInternal(Hand.Left, _potentialGrabItemL, ref _grabbedItemL, ref _grabbedItemR, _socketObjL);
-                    TryGrabInternal(Hand.Right, _potentialGrabItemR, ref _grabbedItemR, ref _grabbedItemL, _socketObjR);
-                    break;
-                case Hand.Invalid:
+                case RhinoxHand.Invalid:
                 default:
                     Debug.LogError(
-                        $"{nameof(PhysicsSocketService)} - {nameof(TryGrab)}, function called with incorrect hand {hand}. Only left, right or both is supported!");
+                        $"{nameof(PhysicsSocketService)} - {nameof(TryGrab)}, function called with incorrect Hand {hand}. Only left or right is supported!");
                     break;
             }
         }
 
-        public void TryDrop(Hand hand)
+        public void TryDrop(RhinoxHand hand)
         {
             if (!_enabledL && !_enabledR)
                 return;
 
             switch (hand)
             {
-                case Hand.Left:
+                case RhinoxHand.Left:
                     if (_enabledL)
-                        TryDropInternal(Hand.Left, ref _grabbedItemL, _grabbedItemR);
+                        TryDropInternal(RhinoxHand.Left, ref _grabbedItemL, _grabbedItemR);
                     break;
-                case Hand.Right:
+                case RhinoxHand.Right:
                     if (_enabledR)
-                        TryDropInternal(Hand.Right, ref _grabbedItemR, _grabbedItemL);
+                        TryDropInternal(RhinoxHand.Right, ref _grabbedItemR, _grabbedItemL);
                     break;
-                case Hand.Both:
-                    TryDropInternal(Hand.Left, ref _grabbedItemL, _grabbedItemR);
-                    TryDropInternal(Hand.Right, ref _grabbedItemR, _grabbedItemL);
-                    break;
-                case Hand.Invalid:
+                case RhinoxHand.Invalid:
                 default:
                     Debug.LogError(
-                        $"{nameof(PhysicsSocketService)} - {nameof(TryDrop)}, function called with incorrect hand {hand}. Only left, right or both is supported!");
+                        $"{nameof(PhysicsSocketService)} - {nameof(TryDrop)}, function called with incorrect hand {hand}. Only left or right is supported!");
                     break;
             }
         }
 
-        private void TryGrabInternal(Hand hand, GameObject potentialGrabItem, ref GameObject grabbedItemCurrentHand, ref GameObject grabbedItemOtherHand, GameObject socket)
+        private void TryGrabInternal(RhinoxHand hand, GameObject potentialGrabItem, ref GameObject grabbedItemCurrentHand, ref GameObject grabbedItemOtherHand, GameObject socket)
         {
             if (potentialGrabItem != null && grabbedItemCurrentHand == null)
             {
@@ -271,7 +264,7 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
-        private void TryDropInternal(Hand hand, ref GameObject grabbedItemCurrentHand, GameObject grabbedItemOtherHand)
+        private void TryDropInternal(RhinoxHand hand, ref GameObject grabbedItemCurrentHand, GameObject grabbedItemOtherHand)
         {
             if (grabbedItemCurrentHand != null)
             {
@@ -289,7 +282,7 @@ namespace Rhinox.XR.Grapple.It
         #endregion
 
         #region Hand Trigger Logic
-        public void OnHandTriggerEnter(GameObject triggerObj, GameObject otherObj, Hand hand)
+        public void OnHandTriggerEnter(GameObject triggerObj, GameObject otherObj, RhinoxHand hand)
         {
             var grplInteractableCmp = otherObj.GetComponent<GRPLBaseInteractable>();
             if (grplInteractableCmp == null)
@@ -297,10 +290,10 @@ namespace Rhinox.XR.Grapple.It
 
             switch (hand)
             {
-                case Hand.Left:
+                case RhinoxHand.Left:
                     _potentialGrabItemL = otherObj;
                     break;
-                case Hand.Right:
+                case RhinoxHand.Right:
                     _potentialGrabItemR = otherObj;
                     break;
                 default:
@@ -308,15 +301,15 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
-        public void OnHandTriggerExit(GameObject triggerObj, GameObject otherObj, Hand hand)
+        public void OnHandTriggerExit(GameObject triggerObj, GameObject otherObj, RhinoxHand hand)
         {
             switch (hand)
             {
-                case Hand.Left:
+                case RhinoxHand.Left:
                     if (_potentialGrabItemL == otherObj)
                         _potentialGrabItemL = null;
                     break;
-                case Hand.Right:
+                case RhinoxHand.Right:
                     if (_potentialGrabItemR == otherObj)
                         _potentialGrabItemR = null;
                     break;
@@ -327,41 +320,33 @@ namespace Rhinox.XR.Grapple.It
         #endregion
 
         #region State Logic
-        private void TrackingAcquired(Hand hand) => SetHandEnabled(true, hand);
+        private void TrackingAcquired(RhinoxHand hand) => SetHandEnabled(true, hand);
 
-        private void TrackingLost(Hand hand) => SetHandEnabled(false, hand);
+        private void TrackingLost(RhinoxHand hand) => SetHandEnabled(false, hand);
 
-        public void SetHandEnabled(bool newState, Hand handedness)
+        public void SetHandEnabled(bool newState, RhinoxHand handedness)
         {
             switch (handedness)
             {
-                case Hand.Left:
+                case RhinoxHand.Left:
                     _enabledL = newState;
-                    _ColliderL.enabled = newState;
+                    _colliderL.enabled = newState;
                     break;
-                case Hand.Right:
+                case RhinoxHand.Right:
                     _enabledR = newState;
-                    _ColliderR.enabled = newState;
-                    break;
-                case Hand.Both:
-                    _enabledL = newState;
-                    _ColliderL.enabled = newState;
-                    _enabledR = newState;
-                    _ColliderR.enabled = newState;
+                    _colliderR.enabled = newState;
                     break;
             }
         }
 
-        public bool IsHandEnabled(Hand handedness)
+        public bool IsHandEnabled(RhinoxHand handedness)
         {
             switch (handedness)
             {
-                case Hand.Left:
+                case RhinoxHand.Left:
                     return _enabledL;
-                case Hand.Right:
+                case RhinoxHand.Right:
                     return _enabledR;
-                case Hand.Both:
-                    return _enabledL && _enabledR;
                 default:
                     return false;
             }

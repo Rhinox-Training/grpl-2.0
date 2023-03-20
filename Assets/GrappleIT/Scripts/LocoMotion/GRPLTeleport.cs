@@ -45,7 +45,7 @@ namespace Rhinox.XR.Grapple.It
 
         private LineRenderer _lineRenderer = null;
 
-        private Hand _hand = Hand.Invalid;
+        private RhinoxHand _hand = RhinoxHand.Invalid;
 
         GameObject _teleportZoneVisual = null;
 
@@ -253,9 +253,9 @@ namespace Rhinox.XR.Grapple.It
         private Coroutine _startVisualCoroutine = null;
         private Coroutine _stopVisualCoroutine = null;
 
-        void StartedPointing(Hand hand, string gestureName)
+        void StartedPointing(RhinoxHand hand, string gestureName)
         {
-            if ((_hand == Hand.Invalid || _hand == hand) && gestureName == "TeleportPoint")
+            if ((_hand == RhinoxHand.Invalid || _hand == hand) && gestureName == "TeleportPoint")
             {
                 _isPointing = true;
                 if (_isCharging)
@@ -271,7 +271,7 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
-        void StoppedPointing(Hand hand, string gestureName)
+        void StoppedPointing(RhinoxHand hand, string gestureName)
         {
             if (_hand == hand && gestureName == "TeleportPoint")
             {
@@ -285,7 +285,7 @@ namespace Rhinox.XR.Grapple.It
                 {
                     StopCoroutine(_startVisualCoroutine);
                     _startVisualCoroutine = null;
-                    _hand = Hand.Invalid;
+                    _hand = RhinoxHand.Invalid;
                 }
             }
         }
