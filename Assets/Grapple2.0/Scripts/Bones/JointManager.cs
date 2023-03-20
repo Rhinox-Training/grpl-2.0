@@ -7,7 +7,6 @@ using UnityEngine.XR.Management;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Rhinox.GUIUtils.Attributes;
-using Rhinox.Lightspeed;
 
 namespace Rhinox.XR.Grapple
 {
@@ -34,7 +33,6 @@ namespace Rhinox.XR.Grapple
 
         // As it is almost impossible for a finger to be fully stretched, this value represents a total stretch
         public float StretchDistMin = 0.9f;
-
 
         public bool JointCollisionsEnabled
         {
@@ -63,6 +61,25 @@ namespace Rhinox.XR.Grapple
 
         private bool _fixedUpdateAfterTrackingLeftFound = false;
         private bool _fixedUpdateAfterTrackingRightFound = false;
+        private bool _firstHandUpdateAfterTrackingFound = false;
+
+        //-----------------------------
+        // Finger bend fields
+        //-----------------------------
+        [Header("Bend Thresholds")] [SerializeField]
+        public float ThumbBendThreshold = 0.75f;
+
+        [SerializeField] public float IndexBendThreshold = 0.3f;
+        [SerializeField] public float MiddleBendThreshold = 0.25f;
+        [SerializeField] public float RingBendThreshold = 0.3f;
+        [SerializeField] public float LittleBendThreshold = 0.3f;
+
+        // Finger full stretch values
+        private float _thumbFullStretchVal = 0;
+        private float _indexFullStretchVal = 0;
+        private float _middleFullStretchVal = 0;
+        private float _ringFullStretchVal = 0;
+        private float _littleFullStretchVal = 0;
 
         #region Initialization Methods
 
@@ -310,6 +327,29 @@ namespace Rhinox.XR.Grapple
             }
         }
 
+
+        private void InitializeFingerBendFields(RhinoxHand hand)
+        {
+            foreach (RhinoxFinger finger in Enum.GetValues(typeof(RhinoxFinger)))
+            {
+                // Get the corresponding joint positions
+                if (!TryGetFingerJointPositions(hand, finger, out var jointPositions))
+                    continue;
+
+                // Calculate the distance for a total stretch
+                // This distance is the sum of the distance between connected joints
+                float fullStretchDistance = 0;
+                for (int i = 0; i + 1 < jointPositions.Count; i++)
+                {
+                    var boneBeginPos = jointPositions[i];
+                    var boneEndPos = jointPositions[i + 1];
+                    fullStretchDistance += Vector3.Distance(boneBeginPos, boneEndPos);
+                }
+
+                SetFullStretchDistance(finger, fullStretchDistance);
+            }
+        }
+
         #endregion
 
         #region Collision Setters
@@ -387,6 +427,8 @@ namespace Rhinox.XR.Grapple
             if (_jointCollisionsEnabled)
                 SetHandCollisions(true, hand.handedness.ToRhinoxHand());
             TrackingAcquired?.Invoke(hand.handedness.ToRhinoxHand());
+
+            _firstHandUpdateAfterTrackingFound = true;
         }
 
         private void OnTrackingLost(XRHand hand)
@@ -434,7 +476,14 @@ namespace Rhinox.XR.Grapple
                 UpdateRootPose(RhinoxHand.Left);
 
             if (updateSuccessFlags.HasFlag(XRHandSubsystem.UpdateSuccessFlags.LeftHandJoints))
+            {
                 UpdateJoints(RhinoxHand.Left);
+                if (_firstHandUpdateAfterTrackingFound)
+                {
+                    _firstHandUpdateAfterTrackingFound = false;
+                    InitializeFingerBendFields(RhinoxHand.Left);
+                }
+            }
 
             if (updateSuccessFlags.HasFlag(XRHandSubsystem.UpdateSuccessFlags.RightHandRootPose))
                 UpdateRootPose(RhinoxHand.Right);
@@ -712,7 +761,7 @@ namespace Rhinox.XR.Grapple
         /// <param name="hand">The target hand</param>
         /// <param name="finger">The target finger</param>
         /// <param name="bendValue">Out parameter for the bend value</param>
-        /// <param name="remap">Specifies whether to remap the bend value to [BendDistMin;StretchDistMin]</param>
+        /// <param name="remap">Specifies whether to remap the values so the bend value is a percentage of [0, 1 - finger bend threshold]</param>
         /// <returns>Whether the function succeeded.</returns>
         /// <remarks>Not remapping the value, can make it impossible to recognize a finger as fully bend or stretched!</remarks>
         public bool TryGetFingerBend(RhinoxHand hand, RhinoxFinger finger, out float bendValue, bool remap = true)
@@ -722,15 +771,12 @@ namespace Rhinox.XR.Grapple
             if (!TryGetFingerJointPositions(hand, finger, out var jointPositions))
                 return false;
 
-            // Calculate the distance for a total stretch
-            // This distance is the sum of the distance between connected joints
-            float fullStretchDistance = 0;
-            for (int i = 0; i + 1 < jointPositions.Count; i++)
-            {
-                var boneBeginPos = jointPositions[i];
-                var boneEndPos = jointPositions[i + 1];
-                fullStretchDistance += Vector3.Distance(boneBeginPos, boneEndPos);
-            }
+            if (!TryGetFingerBendThreshold(finger, out var bendThreshold))
+                return false;
+
+            // Get the full stretch distance corresponding with this finger
+            if (!TryGetFingerStretchDistance(finger, out float fullStretchDistance))
+                return false;
 
             // Calculate the distance between: 
             // - The root of the finger (metacarpal), this is the first element of the list of positions
@@ -742,11 +788,85 @@ namespace Rhinox.XR.Grapple
             // The current bend value is the quotient of the current distance and the full stretch distance
             bendValue = Mathf.Clamp01(currentDist / fullStretchDistance);
 
-            // Map the original bend value to the range of [BendDistMin;StretchDistMin] 
+            // Find the percentage of bend value in [0; 1 - bendThreshold] 
             if (remap)
-                bendValue = bendValue.Map(0, 1, BendDistMin, StretchDistMin);
+            {
+                var mappedMax = 1 - bendThreshold;
+                var mappedValue = bendValue - bendThreshold;
+                bendValue = Mathf.Clamp01(mappedValue / mappedMax);
+            }
+
             return true;
         }
+
+        /// <summary>
+        /// This function attempts to return the full stretch distance for the given finger.
+        /// </summary>
+        /// <param name="finger"></param>
+        /// <param name="stretchDistance"></param>
+        /// <returns></returns>
+        private bool TryGetFingerStretchDistance(RhinoxFinger finger, out float stretchDistance)
+        {
+            switch (finger)
+            {
+                case RhinoxFinger.Thumb:
+                    stretchDistance = _thumbFullStretchVal;
+                    break;
+                case RhinoxFinger.Index:
+                    stretchDistance = _indexFullStretchVal;
+                    break;
+                case RhinoxFinger.Middle:
+                    stretchDistance = _middleFullStretchVal;
+                    break;
+                case RhinoxFinger.Ring:
+                    stretchDistance = _ringFullStretchVal;
+                    break;
+                case RhinoxFinger.Little:
+                    stretchDistance = _littleFullStretchVal;
+                    break;
+                default:
+                    stretchDistance = float.MaxValue;
+                    Debug.LogError($"TryGetFingerStretchDistance, RhinoxFinger {finger} not supported!");
+                    return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// This function attempts to return the minimum bend threshold for the given finger.
+        /// </summary>
+        /// <param name="finger">The finger to get the threshold of.</param>
+        /// <param name="threshold">Out float parameter holding said threshold.</param>
+        /// <returns></returns>
+        private bool TryGetFingerBendThreshold(RhinoxFinger finger, out float threshold)
+        {
+            switch (finger)
+            {
+                case RhinoxFinger.Thumb:
+                    threshold = ThumbBendThreshold;
+                    break;
+                case RhinoxFinger.Index:
+                    threshold = IndexBendThreshold;
+                    break;
+                case RhinoxFinger.Middle:
+                    threshold = MiddleBendThreshold;
+                    break;
+                case RhinoxFinger.Ring:
+                    threshold = RingBendThreshold;
+                    break;
+                case RhinoxFinger.Little:
+                    threshold = LittleBendThreshold;
+                    break;
+                default:
+                    Debug.LogError($"TryGetFingerBendThreshold, RhinoxFinger {finger} is not supported!");
+                    threshold = float.MaxValue;
+                    return false;
+            }
+
+            return true;
+        }
+
 
         /// <summary>
         /// Attempts to create a list of the joint positions of all joints of the given finger on the given hand.
@@ -828,5 +948,35 @@ namespace Rhinox.XR.Grapple
         }
 
         #endregion
+
+        /// <summary>
+        /// Sets the full stretch distance of the desired finger.
+        /// </summary>
+        /// <param name="finger">The finger of which to set the full stretch distance</param>
+        /// <param name="newValue">The new value of the full stretch distance</param>
+        private void SetFullStretchDistance(RhinoxFinger finger, float newValue)
+        {
+            switch (finger)
+            {
+                case RhinoxFinger.Thumb:
+                    _thumbFullStretchVal = newValue;
+                    break;
+                case RhinoxFinger.Index:
+                    _indexFullStretchVal = newValue;
+                    break;
+                case RhinoxFinger.Middle:
+                    _middleFullStretchVal = newValue;
+                    break;
+                case RhinoxFinger.Ring:
+                    _ringFullStretchVal = newValue;
+                    break;
+                case RhinoxFinger.Little:
+                    _littleFullStretchVal = newValue;
+                    break;
+                default:
+                    Debug.LogError($"SetFullStretchDistance, RhinoxFinger {finger} is not supported!");
+                    break;
+            }
+        }
     }
 }
