@@ -79,3 +79,6 @@ crashlytics-build.properties
 
 # Packages 
 /Packages/packages-lock.json
+
+# Merge Tool generated files
+*.orig
