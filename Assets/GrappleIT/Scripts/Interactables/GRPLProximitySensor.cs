@@ -10,21 +10,28 @@ namespace Rhinox.XR.Grapple.It
         [Layer][SerializeField] private int _handLayer = 3;
 
         [Space(15f)]
-        public UnityEvent OnSensorEnter = new();
+        public UnityEvent<GameObject> OnSensorEnter = new();
         [Space(10f)]
-        public UnityEvent OnSensorExit = new();
+        public UnityEvent<GameObject> OnSensorExit = new();
 
+        private Collider _collider;
+
+        private void Awake()
+        {
+            _collider = GetComponent<Collider>();
+            _collider.isTrigger = true;
+        }
 
         private void OnTriggerEnter(Collider other)
         {
             if (other.gameObject.layer == _handLayer)
-                OnSensorEnter.Invoke();
+                OnSensorEnter.Invoke(other.gameObject);
         }
 
         private void OnTriggerExit(Collider other)
         {
             if (other.gameObject.layer == _handLayer)
-                OnSensorExit.Invoke();
+                OnSensorExit.Invoke(other.gameObject);
         }
     }
 }

@@ -48,6 +48,8 @@ namespace Rhinox.XR.Grapple.It
                 Debug.LogError($"{nameof(GrappleManager)} Failed to find {nameof(GRPLTeleport)}");
                 return;
             }
+            
+     
         }
 
         // Update is called once per frame
