@@ -137,7 +137,7 @@ GameObject:
   - component: {fileID: 449773815}
   - component: {fileID: 449773819}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: Bench
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 1
@@ -384,7 +384,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: ImportOnPlay
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: ExportFileName
@@ -396,7 +396,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: ImportFilePath
-      value: C:/Users/Rhinox/Documents/GRPLGestures/RecordedGestures.json
+      value: C:/Users/Rhinox/Documents/GRPLGestures/TeleportGesture.json
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: UseJointForward
@@ -424,7 +424,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: OverwriteGesturesOnImport
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.data[0].Name
@@ -1039,7 +1039,7 @@ GameObject:
   - component: {fileID: 1731350531}
   - component: {fileID: 1731350530}
   m_Layer: 0
-  m_Name: Cube (1)
+  m_Name: WallRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 1
@@ -1368,12 +1368,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: befb734ffa0ccf840a92a403d1e70f92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PointingStartDelay: 0.3
-  PointingStopDelay: 0.2
-  ChargingTime: 2
+  _sensorModel: {fileID: 6311602514245672929, guid: e807ec05dc1453141b70aaec3b955f78, type: 3}
+  _pointingStartDelay: 0.5
+  _pointingStopDelay: 0.5
+  _chargingTime: 2
   _smoothingAmount: 5
-  TeleportTreshold: 0.75
-  FadeDuration: 0.15
   _maxDistance: 50
   _lowestHeight: -50
   _initialVelocity: 1

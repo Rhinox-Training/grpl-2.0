@@ -8,6 +8,11 @@ namespace Rhinox.XR.Grapple.It
     public class GRPLProximitySensor : MonoBehaviour
     {
         [Layer][SerializeField] private int _handLayer = 3;
+        public int HandLayer
+        {
+            get { return _handLayer; }
+            set { _handLayer = value; }
+        }
 
         [Space(15f)]
         public UnityEvent OnSensorEnter = new();
