@@ -5,7 +5,6 @@ using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple.It
 {
-    [RequireComponent(typeof(Collider))]
     public class GRPLButtonInteractable : GRPLInteractable
     {
         [Header("Poke parameters")] 
@@ -20,7 +19,6 @@ namespace Rhinox.XR.Grapple.It
         public float SelectStartPercentage => _selectStartPercentage;
         private float _maxPressDistance;
         public float MaxPressedDistance => _maxPressDistance;
-        
         
         private bool _isSelected = false;
         public bool IsSelected => _isSelected;
@@ -39,11 +37,13 @@ namespace Rhinox.XR.Grapple.It
 
         internal override void InteractStarted()
         {
+            _isSelected = true;
             OnSelectStarted?.Invoke();
         }
 
         internal override void InteractStopped()
         {
+            _isSelected = false;
             OnSelectEnd?.Invoke();
         }
 

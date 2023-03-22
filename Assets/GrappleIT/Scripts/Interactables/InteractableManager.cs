@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using PlasticPipe.PlasticProtocol.Client.Proxies;
 using Rhinox.Lightspeed;
-using Rhinox.Perceptor;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple.It
@@ -16,6 +13,10 @@ namespace Rhinox.XR.Grapple.It
 
         private JointManager _jointManager;
         private List<GRPLInteractable> _interactables = null;
+
+        private GRPLInteractable _currentLeftSelectedObject = null;
+        private GRPLInteractable _currentRightSelectedObject = null;
+        
         public void Awake()
         {
             if (Instance == null)
@@ -45,12 +46,13 @@ namespace Rhinox.XR.Grapple.It
 
         }
 
-        private Vector3 _projectedPos;
         private void Update()
         {
             if(_jointManager == null)
                 return;
-            var interactJoints = _jointManager.GetJointsFromBothHand(XRHandJointID.IndexTip);
+            
+            if(!_jointManager.TryGetJointFromHandById(XRHandJointID.IndexTip,RhinoxHand.Right,out var joint))
+                return;
             var buttons = _interactables.OfType<GRPLButtonInteractable>().ToArray();
 
             foreach (var button in buttons)
@@ -64,25 +66,16 @@ namespace Rhinox.XR.Grapple.It
                 Transform buttonBaseTransform = button.ButtonBaseTransform;
                 
                 //Loop over the joints
-                foreach (RhinoxJoint joint in interactJoints)
                 {
                     var back = -buttonBaseTransform.forward;
 
-                    // Check if the finger pos is in front of the button
-                    // Check the dot product of the forward of the base and the vector from the base to the joint pos
-                    Vector3 toJoint = joint.JointPosition - buttonBaseTransform.position;
-                    float dotValue = Vector3.Dot(back, toJoint);
-                    if (dotValue < 0)
+                    // Check if the joint pos is in front of the plane that is defined by the button
+                    if(!IsPositionInFrontOfPlane(joint.JointPosition, buttonBaseTransform.position,back))
                         continue;
-
-                    // Project the joints position on the plane of the button base 
-                    _projectedPos = Vector3.ProjectOnPlane(joint.JointPosition, back) +
-                                    Vector3.Dot(buttonBaseTransform.position, back) *
-                                    back;
-
-                    // If the projected pos is not within the bounding box of the button base
-                    // continue;
-                    if (!button.gameObject.GetObjectBounds().Contains(_projectedPos))
+                    
+                    // Check if the projected joint pos is within the button bounding box
+                    if(!IsPlaneProjectedPointInBounds(joint.JointPosition,buttonBaseTransform.position,
+                           Vector3.back, button.gameObject.GetObjectBounds()))
                         continue;
                     
                     // Check if the distance is correct
@@ -107,8 +100,48 @@ namespace Rhinox.XR.Grapple.It
                         button.InteractStarted();
                     }
                 }
+                else if (button.IsSelected)
+                {
+                    button.InteractStopped();
+                }
 
             }
+        }
+
+        /// <summary>
+        /// Checks if the given position is in front of given plane. The plane is defined with a point and forward vector.
+        /// </summary>
+        /// <param name="pos">The position to check</param>
+        /// <param name="planePosition">A point on the desired plane</param>
+        /// <param name="planeNormal">The normal of the desired plane</param>
+        /// <returns></returns>
+        private bool IsPositionInFrontOfPlane(Vector3 pos, Vector3 planePosition, Vector3 planeNormal)
+        {
+            // Check if the finger pos is in front of the button
+            // Check the dot product of the forward of the base and the vector from the base to the joint pos
+            Vector3 toPos = pos - planePosition;
+            float dotValue = Vector3.Dot(planeNormal, toPos);
+            return dotValue >= 0;
+        }
+
+        /// <summary>
+        /// Checks whether the projected position of the given point on the plane (defined by
+        /// the planePosition and PlaneForward) is within the given bounds.
+        /// </summary>
+        /// <param name="point">The point to project.</param>
+        /// <param name="planePosition">A point on the desired plane</param>
+        /// <param name="planeNormal">The normal of the desired plane</param>
+        /// <param name="bounds">The bounds to check</param>
+        /// <returns></returns>
+        private bool IsPlaneProjectedPointInBounds(Vector3 point, Vector3 planePosition, Vector3 planeNormal,
+            Bounds bounds)
+        {
+            // Project the position on the plane defined by the given position and forward
+            var projectedPos = Vector3.ProjectOnPlane(point, planeNormal) +
+                               Vector3.Dot(planePosition, planeNormal) *
+                               planeNormal;
+            
+            return bounds.Contains(projectedPos);
         }
         
         
@@ -130,12 +163,6 @@ namespace Rhinox.XR.Grapple.It
             Debug.Log(((GRPLButtonInteractable)interactable).gameObject.name + " Removed");
             _interactables.Remove(interactable);
             
-        }
-
-        public void OnDrawGizmos()
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawSphere(_projectedPos,.05f);
         }
     }
 }
