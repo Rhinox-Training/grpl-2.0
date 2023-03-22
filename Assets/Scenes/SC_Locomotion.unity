@@ -388,7 +388,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: ExportFileName
-      value: TeleportGestures
+      value: TeleportGesture
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: ExportFilePath
@@ -399,17 +399,29 @@ PrefabInstance:
       value: C:/Users/Rhinox/Documents/GRPLGestures/RecordedGestures.json
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
+      propertyPath: UseJointForward
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: SavedGestureName
-      value: TeleportPoint
+      value: Teleport
+      objectReference: {fileID: 0}
+    - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
+      propertyPath: RhinoxHandToRecord
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: Gestures.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: RecordActionReference
       value: 
       objectReference: {fileID: -256493050157588337, guid: 3728c71f5f80ba44bbf940c3599fecc9, type: 3}
+    - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
+      propertyPath: GestureDistanceThreshold
+      value: 0.025
+      objectReference: {fileID: 0}
     - target: {fileID: 6356985968223755894, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
       propertyPath: OverwriteGesturesOnImport
       value: 0
@@ -1359,9 +1371,13 @@ MonoBehaviour:
   PointingStartDelay: 0.3
   PointingStopDelay: 0.2
   ChargingTime: 2
-  Smoothing: 5
+  _smoothingAmount: 5
   TeleportTreshold: 0.75
   FadeDuration: 0.15
+  _maxDistance: 50
+  _lowestHeight: -50
+  _initialVelocity: 1
+  _lineSubIterations: 0.5
 --- !u!1 &2114071857
 GameObject:
   m_ObjectHideFlags: 0

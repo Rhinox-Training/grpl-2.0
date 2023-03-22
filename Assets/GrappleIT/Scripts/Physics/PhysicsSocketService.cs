@@ -46,7 +46,7 @@ namespace Rhinox.XR.Grapple.It
         public PhysicsSocketService(GestureRecognizer gestureRecognizer, GameObject parentObject)
         {
             JointManager.GlobalInitialized += Initialize;
-            
+
             _gestureRecognizer = gestureRecognizer;
 
             //creates gameobjects that follow each hand and have a collider on them to know if an object is in grabbing range.
@@ -56,9 +56,11 @@ namespace Rhinox.XR.Grapple.It
                 #region Left Hand Creation and Init
                 _colliderObjL = new GameObject("Collider Obj LEFT");
                 _colliderObjL.transform.parent = parentObject.transform;
+                
 
                 _socketObjL = new GameObject("Socket Left");
                 _socketObjL.transform.parent = _colliderObjL.transform;
+                
                 //needs to be rotate 90°, otherwise object would go through handpalm and this one is rotate antoher 180°, because it's the opposite of left hand
                 _socketObjL.transform.SetLocalPositionAndRotation(_handSocketAndColliderOffset, Quaternion.Euler(0f, 0f, 270f));
 
@@ -77,9 +79,11 @@ namespace Rhinox.XR.Grapple.It
                 #region Right Hand Creating and Init
                 _colliderObjR = new GameObject("Collider Obj RIGHT");
                 _colliderObjR.transform.parent = parentObject.transform;
+                
 
                 _socketObjR = new GameObject("Socket Right");
                 _socketObjR.transform.parent = _colliderObjR.transform;
+                
                 //needs to be rotate 90°, otherwise object would go through handpalm.
                 _socketObjR.transform.SetLocalPositionAndRotation(_handSocketAndColliderOffset, Quaternion.Euler(0f, 0f, 90f));
 
@@ -133,12 +137,16 @@ namespace Rhinox.XR.Grapple.It
 
         public void Initialize(JointManager jointManager)
         {
-            if(_isInitialized || jointManager == null)
+            if (_isInitialized || jointManager == null)
                 return;
             _jointManager = jointManager;
             _jointManager.TrackingAcquired += TrackingAcquired;
             _jointManager.TrackingLost += TrackingLost;
 
+            _colliderObjL.layer = _jointManager.HandLayer;
+            _socketObjL.layer = _jointManager.HandLayer;
+            _colliderObjR.layer = _jointManager.HandLayer;
+            _socketObjR.layer = _jointManager.HandLayer;
 
             // Add these function as listeners
             // This assured that the grabbing of objects and hand colliders don't have weird behaviour
