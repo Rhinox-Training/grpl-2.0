@@ -181,7 +181,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Instance: {fileID: 0}
-  _maxAmountOfProximatesPerHand: 2
+  _maxAmountOfProximatesPerHand: 1
   _proximateRadius: 0.5
 --- !u!1 &37698822
 GameObject:

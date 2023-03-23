@@ -63,6 +63,12 @@ namespace Rhinox.XR.Grapple.It
 
         private protected virtual void ProximityStarted() {}
         private protected virtual void ProximityStopped() {}
-        
+
+        /// <summary>
+        /// Check whether the given joint activates the interaction for this interactable.
+        /// </summary>
+        /// <param name="joint">The joint to check with</param>
+        /// <returns>Whether the interaction is now happening</returns>
+        public abstract bool CheckForInteraction(RhinoxJoint joint);
     }
 }

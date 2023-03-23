@@ -7,19 +7,20 @@ namespace Rhinox.XR.Grapple.It
 {
     public class GRPLButtonInteractable : GRPLInteractable
     {
-        [Header("Poke parameters")] 
-        [SerializeField] private Transform _interactableBaseTransform;
+        [Header("Poke parameters")] [SerializeField]
+        private Transform _interactableBaseTransform;
+
         public Transform ButtonBaseTransform => _interactableBaseTransform;
         [SerializeField] private Transform _interactObject;
         public Transform ButtonSurface => _interactObject;
 
-        [Header("Activation parameters")] 
-        [SerializeField][Range(0f,1f)] private float _selectStartPercentage = 0.25f;
+        [Header("Activation parameters")] [SerializeField] [Range(0f, 1f)]
+        private float _selectStartPercentage = 0.25f;
 
         public float SelectStartPercentage => _selectStartPercentage;
         private float _maxPressDistance;
         public float MaxPressedDistance => _maxPressDistance;
-        
+
         public event Action OnInteractStarted;
         public event Action OnInteractEnded;
         public event Action OnProximityStarted;
@@ -63,9 +64,51 @@ namespace Rhinox.XR.Grapple.It
         {
             PLog.Warn<GrappleItLogger>($"Proximity ended with {gameObject.name}");
             OnProximityEnded?.Invoke();
-
         }
-        
+
+        public override bool CheckForInteraction(RhinoxJoint joint)
+        {
+            if (!gameObject.activeInHierarchy)
+                return false;
+
+            float closestDistance = MaxPressedDistance;
+
+            // Cache the button fields that get reused
+            Transform buttonBaseTransform = ButtonBaseTransform;
+
+            var back = -buttonBaseTransform.forward;
+
+            // Check if the joint pos is in front of the plane that is defined by the button
+            if (!InteractableMathUtils.IsPositionInFrontOfPlane(joint.JointPosition, buttonBaseTransform.position,
+                    back))
+                return false;
+
+            // Check if the projected joint pos is within the button bounding box
+            if (!InteractableMathUtils.IsPlaneProjectedPointInBounds(joint.JointPosition, buttonBaseTransform.position,
+                    Vector3.back, PressBounds))
+                return false;
+
+            // Projects the joint pos onto the normal out of the button and gets the distance
+            float pokeDistance =
+                Vector3.Dot(joint.JointPosition - buttonBaseTransform.position,
+                    back);
+
+            pokeDistance -= joint.JointRadius;
+            if (pokeDistance < 0f)
+            {
+                pokeDistance = 0f;
+            }
+            
+            closestDistance = Math.Min(pokeDistance, closestDistance);
+
+            ButtonSurface.transform.position = buttonBaseTransform.position +
+                                               -closestDistance * buttonBaseTransform.forward;
+
+            float pressPercentage = 1 - (closestDistance / MaxPressedDistance);
+
+            return pressPercentage > SelectStartPercentage;
+        }
+
         public void OnDrawGizmosSelected()
         {
             Gizmos.matrix = Matrix4x4.identity;

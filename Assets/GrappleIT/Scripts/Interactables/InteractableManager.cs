@@ -64,65 +64,44 @@ namespace Rhinox.XR.Grapple.It
             
             if(!_jointManager.TryGetJointFromHandById(XRHandJointID.IndexTip,RhinoxHand.Right,out var joint))
                 return;
+            if(_jointManager.IsLeftHandTracked)
+                HandUpdate(RhinoxHand.Left);         
             
-            DetectProximates(RhinoxHand.Right,joint.JointPosition);
-            
-            var buttons = _interactables.OfType<GRPLButtonInteractable>().ToArray();
+            if(_jointManager.IsRightHandTracked)
+                HandUpdate(RhinoxHand.Right);
+        }
 
-            foreach (var button in buttons)
+        private void HandUpdate(RhinoxHand hand)
+        {
+            // Get the palm joint
+            // If it failed to get the joint, return
+            if(!_jointManager.TryGetJointFromHandById(XRHandJointID.Palm,hand,out var palm))
+                return;
+            
+            
+            // Detect all the current proximates for this hand and invoke their events (if necessary)
+            var proximates = DetectProximates(RhinoxHand.Right, palm.JointPosition);
+
+            // Get all the joints of the given hand
+            // If it failed to get the joints, return
+            if(!_jointManager.TryGetJointsFromHand(hand, out var joints))
+                return;
+            
+            // For every proximate
+            foreach (var proximate in proximates)
             {
-                if(!button.isActiveAndEnabled)
-                    continue;
-                
-                float closestDistance = button.MaxPressedDistance;
+                var isInteracted = proximate.CheckForInteraction(palm);
 
-                // Cache the button fields that get reused
-                Transform buttonBaseTransform = button.ButtonBaseTransform;
-                
-                //Loop over the joints
+                if (isInteracted)
                 {
-                    var back = -buttonBaseTransform.forward;
-
-                    // Check if the joint pos is in front of the plane that is defined by the button
-                    if(!IsPositionInFrontOfPlane(joint.JointPosition, buttonBaseTransform.position,back))
-                        continue;
-                    
-                    // Check if the projected joint pos is within the button bounding box
-                    if(!IsPlaneProjectedPointInBounds(joint.JointPosition,buttonBaseTransform.position,
-                           Vector3.back, button.PressBounds))
-                        continue;
-                    
-                    // Projects the joint pos onto the normal out of the button and gets the distance
-                    float pokeDistance =
-                        Vector3.Dot(joint.JointPosition - buttonBaseTransform.position,
-                            back);
-                    
-                    pokeDistance -= joint.JointRadius;
-                    if (pokeDistance < 0f)
-                    {
-                        pokeDistance = 0f;
-                    }
-
-                    closestDistance = Math.Min(pokeDistance, closestDistance);
+                    if (proximate.State != GRPLInteractionState.Interacted)
+                        proximate.SetState(GRPLInteractionState.Interacted);
                 }
-
-                button.ButtonSurface.transform.position = buttonBaseTransform.position +
-                                                          -closestDistance * buttonBaseTransform.forward;
-
-                float pressPercentage = 1 - (closestDistance / button.MaxPressedDistance);
-                if (pressPercentage > button.SelectStartPercentage)
-                {
-                    if (button.State != GRPLInteractionState.Interacted)
-                    {
-                        button.SetState(GRPLInteractionState.Interacted);
-                    }
-                }
-                else if (button.State == GRPLInteractionState.Interacted)
-                {
-                    button.SetState(GRPLInteractionState.Proximate);
-                }
-
+                else if (proximate.State == GRPLInteractionState.Interacted)
+                    proximate.SetState(GRPLInteractionState.Proximate);
             }
+
+
         }
 
         /// <summary>
@@ -131,8 +110,9 @@ namespace Rhinox.XR.Grapple.It
         /// </summary>
         /// <param name="hand">The desired hand.</param>
         /// <param name="referenceJointPos"> A reference point of the given hand. F.e. Wrist joint position.</param>
+        /// <returns> An ICollection holding all the proximates</returns>
         /// <remarks>Hand should be RhinoxHand.Left or RhinoxHand.Right!</remarks>
-        private void DetectProximates(RhinoxHand hand, Vector3 referenceJointPos)
+        private ICollection<GRPLInteractable> DetectProximates(RhinoxHand hand, Vector3 referenceJointPos)
         {
             List<GRPLInteractable> currentProximates;
             switch (hand)
@@ -145,7 +125,7 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 default:
                     PLog.Error<GrappleItLogger>($"[{this.GetType()}:DetectProximates], function called with invalid hand {hand}");
-                    return;
+                    return Array.Empty<GRPLInteractable>();
             }
             
             
@@ -210,44 +190,9 @@ namespace Rhinox.XR.Grapple.It
             var stoppedProximates = previousProximates.Where(x => currentProximates.Contains(x) == false);
             foreach (var proximate in stoppedProximates)
                 proximate.SetState(GRPLInteractionState.Active);
-            
-        }
-        
-        /// <summary>
-        /// Checks if the given position is in front of given plane. The plane is defined with a point and forward vector.
-        /// </summary>
-        /// <param name="pos">The position to check</param>
-        /// <param name="planePosition">A point on the desired plane</param>
-        /// <param name="planeNormal">The normal of the desired plane</param>
-        /// <returns></returns>
-        private bool IsPositionInFrontOfPlane(Vector3 pos, Vector3 planePosition, Vector3 planeNormal)
-        {
-            // Check if the finger pos is in front of the button
-            // Check the dot product of the forward of the base and the vector from the base to the joint pos
-            Vector3 toPos = pos - planePosition;
-            float dotValue = Vector3.Dot(planeNormal, toPos);
-            return dotValue >= 0;
-        }
 
-        /// <summary>
-        /// Checks whether the projected position of the given point on the plane (defined by
-        /// the planePosition and PlaneForward) is within the given bounds.
-        /// </summary>
-        /// <param name="point">The point to project.</param>
-        /// <param name="planePosition">A point on the desired plane</param>
-        /// <param name="planeNormal">The normal of the desired plane</param>
-        /// <param name="bounds">The bounds to check</param>
-        /// <returns></returns>
-        private bool IsPlaneProjectedPointInBounds(Vector3 point, Vector3 planePosition, Vector3 planeNormal,
-            Bounds bounds)
-        {
-            // Project the position on the plane defined by the given position and forward
-            var projectedPos = Vector3.ProjectOnPlane(point, planeNormal) +
-                               Vector3.Dot(planePosition, planeNormal) *
-                               planeNormal;
-            return bounds.Contains(projectedPos);
+            return currentProximates;
         }
-        
         
         private void OnDestroy()
         {
