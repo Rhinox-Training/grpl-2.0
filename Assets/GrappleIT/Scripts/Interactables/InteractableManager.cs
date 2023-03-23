@@ -1,19 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Rhinox.Lightspeed;
+using Rhinox.Lightspeed.Collections;
+using Rhinox.Perceptor;
 using UnityEngine;
-using UnityEngine.VFX;
 using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple.It
 {
     public class InteractableManager :  MonoBehaviour
     {
+        [HideInInspector]
         public InteractableManager Instance;
 
+        [Header("Proximate detection parameters")]
+        [SerializeField] private int _maxAmountOfProximatesPerHand = 3;
+        [SerializeField] private float _proximateRadius = 1f;
+        
         private JointManager _jointManager;
         private List<GRPLInteractable> _interactables = null;
+
+        private List<GRPLInteractable> _leftHandProximites;
+        private List<GRPLInteractable> _rightHandProximites;
 
         private GRPLInteractable _currentLeftSelectedObject = null;
         private GRPLInteractable _currentRightSelectedObject = null;
@@ -31,6 +39,9 @@ namespace Rhinox.XR.Grapple.It
             }
 
             JointManager.GlobalInitialized += OnJointManagerInitialised;
+
+            _leftHandProximites = new List<GRPLInteractable>();
+            _rightHandProximites = new List<GRPLInteractable>();
         }
 
         private void OnJointManagerInitialised(JointManager obj) =>_jointManager = obj;
@@ -46,8 +57,6 @@ namespace Rhinox.XR.Grapple.It
             _interactables = new List<GRPLInteractable>();
 
         }
-
-        private Vector3 _projectedPos;
         
         private void Update()
         {
@@ -56,6 +65,9 @@ namespace Rhinox.XR.Grapple.It
             
             if(!_jointManager.TryGetJointFromHandById(XRHandJointID.IndexTip,RhinoxHand.Right,out var joint))
                 return;
+            
+            DetectProximates(RhinoxHand.Right,joint.JointPosition);
+            
             var buttons = _interactables.OfType<GRPLButtonInteractable>().ToArray();
 
             foreach (var button in buttons)
@@ -75,9 +87,6 @@ namespace Rhinox.XR.Grapple.It
                     // Check if the joint pos is in front of the plane that is defined by the button
                     if(!IsPositionInFrontOfPlane(joint.JointPosition, buttonBaseTransform.position,back))
                         continue;
-                    
-                    // Create the bounds of the button as if it was not pressed
-                    Vector3 boundsCenter = button.gameObject.GetObjectBounds().center + (button.MaxPressedDistance / 2f) * back;
                     
                     // Check if the projected joint pos is within the button bounding box
                     if(!IsPlaneProjectedPointInBounds(joint.JointPosition,buttonBaseTransform.position,
@@ -117,6 +126,87 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
+        private void DetectProximates(RhinoxHand hand, Vector3 referenceJointPos)
+        {
+            List<GRPLInteractable> currentProximates;
+            switch (hand)
+            {
+                case RhinoxHand.Left:
+                    currentProximates = _leftHandProximites;
+                    break;
+                case RhinoxHand.Right:
+                    currentProximates = _rightHandProximites;
+                    break;
+                default:
+                    PLog.Error<GrappleItLogger>($"[{this.GetType()}:DetectProximates], function called with invalid hand {hand}");
+                    return;
+            }
+            
+            
+            var newProximateInteractables =
+                new Dictionary<float, GRPLInteractable>();
+            float proximateRadiusSqr = _proximateRadius * _proximateRadius;
+            foreach (var interactable in _interactables)
+            {
+                // Calculate the vector from th joint to the interactable
+                Vector3 fromJointToInteractable = interactable.transform.position - referenceJointPos;
+                
+                // Calculate the distance from the interactable to the reference pos
+                float sqrDistance = Vector3.SqrMagnitude(fromJointToInteractable);
+                
+                // If the calculated distance is larger than the squared proximate radius
+                // continue
+                if(sqrDistance > proximateRadiusSqr)
+                    continue;
+                
+                // If there are les than "_maxAmountOfProximatesPerHand" objects in the dictionary
+                // Add it to the list and continue
+                if (newProximateInteractables.Count < _maxAmountOfProximatesPerHand)
+                {
+                    newProximateInteractables.Add(sqrDistance, interactable);
+                    continue;                    
+                }
+                
+                // Find the new proximate at the furthest distance
+                // If the new square distance is smaller than that distance
+                // Replace it in the list
+                var furthestPair = new KeyValuePair<float, GRPLInteractable>(float.MaxValue, null);
+                foreach (var pair in newProximateInteractables)
+                {
+                    if (pair.Key < furthestPair.Key)
+                        furthestPair = pair;
+                }
+
+                if (furthestPair.Key > sqrDistance)
+                {
+                    newProximateInteractables.Remove(furthestPair.Key);
+                    newProximateInteractables.Add(sqrDistance,interactable);
+                }
+
+            }
+            
+            // Detect which proximates are new
+            // Do this by selecting all the pairs that the currentProximates list does not contain
+            var newProximates = newProximateInteractables.Where(x => currentProximates.Contains(x.Value) == false);
+            foreach (var pair in newProximates)
+                pair.Value.ProximityStarted();
+
+            // Save a copy of the current proximates as the previousProximates
+            var previousProximates = new List<GRPLInteractable>(currentProximates);
+            
+            // Set the new current proximates
+            currentProximates.Clear();
+            foreach (var pair in newProximateInteractables)
+                currentProximates.Add(pair.Value);
+            
+            // Detect which proximates are not valid anymore
+            // Do this by selecting all proximates in previousProximates that the currentProximates does not contain
+            var stoppedProximates = previousProximates.Where(x => currentProximates.Contains(x) == false);
+            foreach (var proximate in stoppedProximates)
+                proximate.ProximityStopped();
+            
+        }
+        
         /// <summary>
         /// Checks if the given position is in front of given plane. The plane is defined with a point and forward vector.
         /// </summary>
@@ -149,7 +239,6 @@ namespace Rhinox.XR.Grapple.It
             var projectedPos = Vector3.ProjectOnPlane(point, planeNormal) +
                                Vector3.Dot(planePosition, planeNormal) *
                                planeNormal;
-            _projectedPos = projectedPos;
             return bounds.Contains(projectedPos);
         }
         

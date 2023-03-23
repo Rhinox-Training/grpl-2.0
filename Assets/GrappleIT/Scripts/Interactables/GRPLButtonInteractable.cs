@@ -1,7 +1,7 @@
 using System;
 using Rhinox.Lightspeed;
+using Rhinox.Perceptor;
 using UnityEngine;
-using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple.It
 {
@@ -25,8 +25,8 @@ namespace Rhinox.XR.Grapple.It
         
         public event Action OnSelectStarted;
         public event Action OnSelectEnd;
-        public event Action OnHoverStarted;
-        public event Action OnHoverEnd;
+        public event Action OnProximityStarted;
+        public event Action OnProximityEnded;
 
         public Bounds PressBounds { get; private set; }
 
@@ -58,6 +58,17 @@ namespace Rhinox.XR.Grapple.It
             OnSelectEnd?.Invoke();
         }
 
+        internal override void ProximityStarted()
+        {
+            PLog.Warn<GrappleItLogger>($"Proximity started with {gameObject.name}");
+        }
+
+        internal override void ProximityStopped()
+        {
+            PLog.Warn<GrappleItLogger>($"Proximity ended with {gameObject.name}");
+
+        }
+        
         public void OnDrawGizmosSelected()
         {
             Gizmos.matrix = Matrix4x4.identity;

@@ -27,8 +27,8 @@ namespace Rhinox.XR.Grapple.It
         internal virtual void InteractStarted() {}
         internal virtual void InteractStopped() {}
 
-        internal virtual void HoverStarted() {}
-        internal virtual void HoverStopped() {}
+        internal virtual void ProximityStarted() {}
+        internal virtual void ProximityStopped() {}
         
     }
 }

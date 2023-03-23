@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Rhinox.XR.Grapple.It;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -13,14 +10,14 @@ public class PokeInteractableUnityWrapper : MonoBehaviour
     // Unity events
     [SerializeField] private UnityEvent _onSelectStart;
     [SerializeField] private UnityEvent _onSelectEnd;
-    [SerializeField] private UnityEvent _onHoverStart;
-    [SerializeField] private UnityEvent _onHoverEnd;
+    [SerializeField] private UnityEvent _onProximityStart;
+    [SerializeField] private UnityEvent _onProximityEnd;
 
     // Unity event props
     public UnityEvent OnSelectStart => _onSelectStart;
     public UnityEvent OnSelectEnd => _onSelectEnd;
-    public UnityEvent OnHoverStart => _onHoverStart;
-    public UnityEvent OnHoverEnd => _onHoverEnd;
+    public UnityEvent OnProximityStart => _onProximityStart;
+    public UnityEvent OnProximityEnd => _onProximityEnd;
 
     private void OnValidate()
     {
@@ -33,20 +30,20 @@ public class PokeInteractableUnityWrapper : MonoBehaviour
         
         _interactable.OnSelectStarted += OnInteractableSelectStarted;
         _interactable.OnSelectEnd += OnInteractableSelectEnded;
-        _interactable.OnHoverStarted += OnInteractableHoverStarted;
-        _interactable.OnHoverEnd += OnInteractableHoverEnded;
+        _interactable.OnProximityStarted += OnInteractableProximityStarted;
+        _interactable.OnProximityEnded += OnInteractableProximityEnded;
     }
 
     private void OnDisable()
     {
         _interactable.OnSelectStarted -= OnInteractableSelectStarted;
         _interactable.OnSelectEnd -= OnInteractableSelectEnded;
-        _interactable.OnHoverStarted -= OnInteractableHoverStarted;
-        _interactable.OnHoverEnd -= OnInteractableHoverEnded;
+        _interactable.OnProximityStarted -= OnInteractableProximityStarted;
+        _interactable.OnProximityEnded -= OnInteractableProximityEnded;
    }
 
     private void OnInteractableSelectStarted() => OnSelectStart.Invoke();
     private void OnInteractableSelectEnded() => OnSelectEnd.Invoke();
-    private void OnInteractableHoverStarted() => OnHoverStart.Invoke();
-    private void OnInteractableHoverEnded() => OnHoverEnd.Invoke();
+    private void OnInteractableProximityStarted() => OnProximityStart.Invoke();
+    private void OnInteractableProximityEnded() => OnProximityEnd.Invoke();
 }
