@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Rhinox.Lightspeed;
 using UnityEngine;
+using UnityEngine.VFX;
 using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple.It
@@ -46,6 +47,8 @@ namespace Rhinox.XR.Grapple.It
 
         }
 
+        private Vector3 _projectedPos;
+        
         private void Update()
         {
             if(_jointManager == null)
@@ -73,13 +76,19 @@ namespace Rhinox.XR.Grapple.It
                     if(!IsPositionInFrontOfPlane(joint.JointPosition, buttonBaseTransform.position,back))
                         continue;
                     
+                    // Create the bounds of the button as if it was not pressed
+                    Vector3 boundsCenter = button.gameObject.GetObjectBounds().center + (button.MaxPressedDistance / 2f) * back;
+                    
                     // Check if the projected joint pos is within the button bounding box
                     if(!IsPlaneProjectedPointInBounds(joint.JointPosition,buttonBaseTransform.position,
-                           Vector3.back, button.gameObject.GetObjectBounds()))
+                           Vector3.back, button.PressBounds))
                         continue;
                     
                     // Check if the distance is correct
                     float pokeDistance = Vector3.Distance(joint.JointPosition, buttonBaseTransform.position);
+                    
+                    
+                    
                     pokeDistance -= joint.JointRadius;
                     if (pokeDistance < 0f)
                     {
@@ -140,7 +149,7 @@ namespace Rhinox.XR.Grapple.It
             var projectedPos = Vector3.ProjectOnPlane(point, planeNormal) +
                                Vector3.Dot(planePosition, planeNormal) *
                                planeNormal;
-            
+            _projectedPos = projectedPos;
             return bounds.Contains(projectedPos);
         }
         

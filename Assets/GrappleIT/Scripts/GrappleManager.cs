@@ -1,4 +1,5 @@
 using Rhinox.GUIUtils.Attributes;
+using Rhinox.Perceptor;
 using UnityEditor.SceneManagement;
 using UnityEditor.SearchService;
 using UnityEngine;
@@ -45,7 +46,7 @@ namespace Rhinox.XR.Grapple.It
                 _teleporter.Initialize(_jointManager, _gestureRecognizer);
             else
             {
-                Debug.LogError($"{nameof(GrappleManager)} Failed to find {nameof(GRPLTeleport)}");
+                PLog.Warn<GrappleItLogger>($"{nameof(GrappleManager)} Failed to find {nameof(GRPLTeleport)}",this);
                 return;
             }
             
