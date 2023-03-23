@@ -20,11 +20,8 @@ namespace Rhinox.XR.Grapple.It
         private float _maxPressDistance;
         public float MaxPressedDistance => _maxPressDistance;
         
-        private bool _isSelected = false;
-        public bool IsSelected => _isSelected;
-        
-        public event Action OnSelectStarted;
-        public event Action OnSelectEnd;
+        public event Action OnInteractStarted;
+        public event Action OnInteractEnded;
         public event Action OnProximityStarted;
         public event Action OnProximityEnded;
 
@@ -46,26 +43,26 @@ namespace Rhinox.XR.Grapple.It
             };
         }
 
-        internal override void InteractStarted()
+        private protected override void InteractStarted()
         {
-            _isSelected = true;
-            OnSelectStarted?.Invoke();
+            OnInteractStarted?.Invoke();
         }
 
-        internal override void InteractStopped()
+        private protected override void InteractStopped()
         {
-            _isSelected = false;
-            OnSelectEnd?.Invoke();
+            OnInteractEnded?.Invoke();
         }
 
-        internal override void ProximityStarted()
+        private protected override void ProximityStarted()
         {
             PLog.Warn<GrappleItLogger>($"Proximity started with {gameObject.name}");
+            OnProximityStarted?.Invoke();
         }
 
-        internal override void ProximityStopped()
+        private protected override void ProximityStopped()
         {
             PLog.Warn<GrappleItLogger>($"Proximity ended with {gameObject.name}");
+            OnProximityEnded?.Invoke();
 
         }
         

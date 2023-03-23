@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Rhinox.Lightspeed.Collections;
 using Rhinox.Perceptor;
 using UnityEngine;
 using UnityEngine.XR.Hands;
@@ -113,19 +112,26 @@ namespace Rhinox.XR.Grapple.It
                 float pressPercentage = 1 - (closestDistance / button.MaxPressedDistance);
                 if (pressPercentage > button.SelectStartPercentage)
                 {
-                    if (!button.IsSelected)
+                    if (button.State != GRPLInteractionState.Interacted)
                     {
-                        button.InteractStarted();
+                        button.SetState(GRPLInteractionState.Interacted);
                     }
                 }
-                else if (button.IsSelected)
+                else if (button.State == GRPLInteractionState.Interacted)
                 {
-                    button.InteractStopped();
+                    button.SetState(GRPLInteractionState.Proximate);
                 }
 
             }
         }
 
+        /// <summary>
+        /// Detects all proximate interactables of the given hand in a range of "_proximateRadius".<br />
+        /// This function also calls the appropriate Proximity events of the interactables.
+        /// </summary>
+        /// <param name="hand">The desired hand.</param>
+        /// <param name="referenceJointPos"> A reference point of the given hand. F.e. Wrist joint position.</param>
+        /// <remarks>Hand should be RhinoxHand.Left or RhinoxHand.Right!</remarks>
         private void DetectProximates(RhinoxHand hand, Vector3 referenceJointPos)
         {
             List<GRPLInteractable> currentProximates;
@@ -148,11 +154,16 @@ namespace Rhinox.XR.Grapple.It
             float proximateRadiusSqr = _proximateRadius * _proximateRadius;
             foreach (var interactable in _interactables)
             {
+                // Ask senior
+                // Is it worth to do a raycast to determine if nothing is blocking the object?
+                // => would add a lot of calculations if there are many buttons
+                
+                
                 // Calculate the vector from th joint to the interactable
                 Vector3 fromJointToInteractable = interactable.transform.position - referenceJointPos;
                 
                 // Calculate the distance from the interactable to the reference pos
-                float sqrDistance = Vector3.SqrMagnitude(fromJointToInteractable);
+                float sqrDistance = fromJointToInteractable.sqrMagnitude;
                 
                 // If the calculated distance is larger than the squared proximate radius
                 // continue
@@ -166,20 +177,15 @@ namespace Rhinox.XR.Grapple.It
                     newProximateInteractables.Add(sqrDistance, interactable);
                     continue;                    
                 }
-                
-                // Find the new proximate at the furthest distance
-                // If the new square distance is smaller than that distance
-                // Replace it in the list
-                var furthestPair = new KeyValuePair<float, GRPLInteractable>(float.MaxValue, null);
-                foreach (var pair in newProximateInteractables)
-                {
-                    if (pair.Key < furthestPair.Key)
-                        furthestPair = pair;
-                }
 
-                if (furthestPair.Key > sqrDistance)
+                // Find the new proximate at the furthest distance
+                var furthestKey = newProximateInteractables.Keys.Max();
+                
+                // If the new square distance is smaller than that distance
+                if (furthestKey > sqrDistance)
                 {
-                    newProximateInteractables.Remove(furthestPair.Key);
+                    // Replace it in the list
+                    newProximateInteractables.Remove(furthestKey);
                     newProximateInteractables.Add(sqrDistance,interactable);
                 }
 
@@ -189,7 +195,7 @@ namespace Rhinox.XR.Grapple.It
             // Do this by selecting all the pairs that the currentProximates list does not contain
             var newProximates = newProximateInteractables.Where(x => currentProximates.Contains(x.Value) == false);
             foreach (var pair in newProximates)
-                pair.Value.ProximityStarted();
+                pair.Value.SetState(GRPLInteractionState.Proximate);
 
             // Save a copy of the current proximates as the previousProximates
             var previousProximates = new List<GRPLInteractable>(currentProximates);
@@ -203,7 +209,7 @@ namespace Rhinox.XR.Grapple.It
             // Do this by selecting all proximates in previousProximates that the currentProximates does not contain
             var stoppedProximates = previousProximates.Where(x => currentProximates.Contains(x) == false);
             foreach (var proximate in stoppedProximates)
-                proximate.ProximityStopped();
+                proximate.SetState(GRPLInteractionState.Active);
             
         }
         

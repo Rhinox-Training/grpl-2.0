@@ -8,14 +8,14 @@ public class PokeInteractableUnityWrapper : MonoBehaviour
     [SerializeField] private GRPLButtonInteractable _interactable;
     
     // Unity events
-    [SerializeField] private UnityEvent _onSelectStart;
-    [SerializeField] private UnityEvent _onSelectEnd;
+    [SerializeField] private UnityEvent _onInteractedStart;
+    [SerializeField] private UnityEvent _OnInteractedEnd;
     [SerializeField] private UnityEvent _onProximityStart;
     [SerializeField] private UnityEvent _onProximityEnd;
 
     // Unity event props
-    public UnityEvent OnSelectStart => _onSelectStart;
-    public UnityEvent OnSelectEnd => _onSelectEnd;
+    public UnityEvent OnInteractedStart => _onInteractedStart;
+    public UnityEvent OnInteractedEnd => _OnInteractedEnd;
     public UnityEvent OnProximityStart => _onProximityStart;
     public UnityEvent OnProximityEnd => _onProximityEnd;
 
@@ -28,22 +28,22 @@ public class PokeInteractableUnityWrapper : MonoBehaviour
     private void OnEnable()
     {
         
-        _interactable.OnSelectStarted += OnInteractableSelectStarted;
-        _interactable.OnSelectEnd += OnInteractableSelectEnded;
+        _interactable.OnInteractStarted += OnInteractableInteractStarted;
+        _interactable.OnInteractEnded += OnInteractableEnded;
         _interactable.OnProximityStarted += OnInteractableProximityStarted;
         _interactable.OnProximityEnded += OnInteractableProximityEnded;
     }
 
     private void OnDisable()
     {
-        _interactable.OnSelectStarted -= OnInteractableSelectStarted;
-        _interactable.OnSelectEnd -= OnInteractableSelectEnded;
+        _interactable.OnInteractStarted -= OnInteractableInteractStarted;
+        _interactable.OnInteractEnded -= OnInteractableEnded;
         _interactable.OnProximityStarted -= OnInteractableProximityStarted;
         _interactable.OnProximityEnded -= OnInteractableProximityEnded;
    }
 
-    private void OnInteractableSelectStarted() => OnSelectStart.Invoke();
-    private void OnInteractableSelectEnded() => OnSelectEnd.Invoke();
+    private void OnInteractableInteractStarted() => OnInteractedStart.Invoke();
+    private void OnInteractableEnded() => OnInteractedEnd.Invoke();
     private void OnInteractableProximityStarted() => OnProximityStart.Invoke();
     private void OnInteractableProximityEnded() => OnProximityEnd.Invoke();
 }

@@ -1,9 +1,10 @@
 namespace Rhinox.XR.Grapple.It
 {
-    enum GRPLInteractionState
+    public enum GRPLInteractionState
     {
         Active,
-        Hovered,
-        Selected
+        Proximate,
+        Interacted,
+        Disabled
     }
 }

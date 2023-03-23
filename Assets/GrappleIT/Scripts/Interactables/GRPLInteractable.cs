@@ -10,7 +10,9 @@ namespace Rhinox.XR.Grapple.It
 
         protected virtual void Initialize() { }
         protected virtual void Destroyed() { }
-        
+
+        private GRPLInteractionState _state = GRPLInteractionState.Active;
+        public GRPLInteractionState State => _state;
         
         private void Start()
         {
@@ -24,11 +26,43 @@ namespace Rhinox.XR.Grapple.It
             Destroyed();
         }
 
-        internal virtual void InteractStarted() {}
-        internal virtual void InteractStopped() {}
+        private void OnEnable() => _state = GRPLInteractionState.Active;
 
-        internal virtual void ProximityStarted() {}
-        internal virtual void ProximityStopped() {}
+        private void OnDisable() => _state = GRPLInteractionState.Disabled;
+
+        public void SetState(GRPLInteractionState newState)
+        {
+            if(_state == newState)
+                return;
+            
+            switch (_state)
+            {
+                case GRPLInteractionState.Proximate:
+                    ProximityStopped();
+                    break;
+                case GRPLInteractionState.Interacted:
+                    InteractStopped();
+                    break;
+            }
+            
+            switch (newState)
+            {
+                case GRPLInteractionState.Proximate:
+                    ProximityStarted();
+                    break;
+                case GRPLInteractionState.Interacted:
+                    InteractStarted();
+                    break;
+            }
+
+            _state = newState;
+        }
+
+        private protected virtual void InteractStarted() {}
+        private protected virtual void InteractStopped() {}
+
+        private protected virtual void ProximityStarted() {}
+        private protected virtual void ProximityStopped() {}
         
     }
 }
