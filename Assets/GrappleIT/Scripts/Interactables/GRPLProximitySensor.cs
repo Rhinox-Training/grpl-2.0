@@ -1,4 +1,5 @@
 using Rhinox.GUIUtils.Attributes;
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -15,21 +16,47 @@ namespace Rhinox.XR.Grapple.It
         }
 
         [Space(15f)]
-        public UnityEvent OnSensorEnter = new();
+        [SerializeField] private UnityEvent OnSensorEnter = null;
         [Space(10f)]
-        public UnityEvent OnSensorExit = new();
+        [SerializeField] private UnityEvent OnSensorExit = null;
 
 
         private void OnTriggerEnter(Collider other)
         {
             if (other.gameObject.layer == _handLayer)
-                OnSensorEnter.Invoke();
+                OnSensorEnter?.Invoke();
         }
 
         private void OnTriggerExit(Collider other)
         {
             if (other.gameObject.layer == _handLayer)
-                OnSensorExit.Invoke();
+                OnSensorExit?.Invoke();
+        }
+
+        public void AddListenerOnSensorEnter(UnityAction action)
+        {
+            if (OnSensorEnter == null)
+                OnSensorEnter = new UnityEvent();
+
+            OnSensorEnter.AddListener(action);
+        }
+
+        public void RemoveListenerOnSensorEnter(UnityAction action)
+        {
+            OnSensorEnter?.RemoveListener(action);
+        }
+
+        public void AddListenerOnSensorExit(UnityAction action)
+        {
+            if (OnSensorExit == null)
+                OnSensorExit = new UnityEvent();
+
+            OnSensorExit.AddListener(action);
+        }
+
+        public void RemoveListenerOnSensorExit(UnityAction action)
+        {
+            OnSensorExit?.RemoveListener(action);
         }
     }
 }
