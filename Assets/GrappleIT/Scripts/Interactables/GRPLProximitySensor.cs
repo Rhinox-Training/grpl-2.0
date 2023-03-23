@@ -33,6 +33,8 @@ namespace Rhinox.XR.Grapple.It
                 OnSensorExit?.Invoke();
         }
 
+
+        #region SensorEnter
         public void AddListenerOnSensorEnter(UnityAction action)
         {
             if (OnSensorEnter == null)
@@ -46,6 +48,18 @@ namespace Rhinox.XR.Grapple.It
             OnSensorEnter?.RemoveListener(action);
         }
 
+        public void RemoveAllListenersOnSensorEnter()
+        {
+            OnSensorEnter?.RemoveAllListeners();
+        }
+
+        public void InvokeOnSensorEnter()
+        {
+            OnSensorEnter?.Invoke();
+        }
+        #endregion
+
+        #region SensorExit
         public void AddListenerOnSensorExit(UnityAction action)
         {
             if (OnSensorExit == null)
@@ -58,5 +72,16 @@ namespace Rhinox.XR.Grapple.It
         {
             OnSensorExit?.RemoveListener(action);
         }
+
+        public void RemoveAllListenersOnSensorExit()
+        {
+            OnSensorExit?.RemoveAllListeners();
+        }
+
+        public void InvokeOnSensorExit()
+        {
+            OnSensorExit?.Invoke();
+        }
+        #endregion
     }
 }

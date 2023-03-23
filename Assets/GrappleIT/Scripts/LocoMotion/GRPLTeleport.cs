@@ -4,35 +4,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.XR;
 
 namespace Rhinox.XR.Grapple.It
 {
     public class GRPLTeleport : MonoBehaviour
     {
-        [Header("Visual")]
+        //[Header("Visual")]
         [SerializeField] private GameObject _sensorModel = null;
 
-        //[Header("Pointing Visual")]
-        [SerializeField] public float _pointingStartDelay = 0.5f;
-        [SerializeField] public float _pointingStopDelay = 0.5f;
-        //[SerializeField] public float _chargingTime = 2.0f;
+        [Header("Arc Visual Settings")]
+        //[SerializeField] public LineRenderer _lineRenderer=null;
+        [SerializeField] public float _visualStartDelay = 0.3f;
+        [SerializeField] public float _visualStopDelay = 0.5f;
+        [SerializeField] public float _teleportCooldown = 1.5f;
 
         [Range(1, 10)]
-        [SerializeField] private int _smoothingAmount = 5;
+        [SerializeField] private int _destinationSmoothingAmount = 5;//TODO: IMPLEMENT ACTUAL SMOOTHING
 
-        //public float TeleportTreshold = 0.75f;
-
-        //[Header("Fade Settings")]
-        //[SerializeField] public float FadeDuration = .15f;
-        //[Header("Snapping")]
-        //public float SnapAmount = .15f;
-
-
-
-        public bool IsInitialized => _isInitialized;
-
-        [Header("Arc Visual Settings")]
         [SerializeField] public float _maxDistance = 50f;
         [SerializeField] public float _lowestHeight = -50f;
         [SerializeField] public float _initialVelocity = 1f;
@@ -41,27 +30,47 @@ namespace Rhinox.XR.Grapple.It
         [Range(0.001f, 2f)]
         [SerializeField] private float _lineSubIterations = 1f;
 
+        //[Header("Fade Settings")]
+        //[SerializeField] public float FadeDuration = .15f;
+        //[Header("Snapping")]
+        //public float SnapAmount = .15f;
 
-        private LimitedQueue<Vector3> _teleportPositions = new LimitedQueue<Vector3>(5);
 
-        private float _timeLeft = 0f;
+        public bool IsInitialized => _isInitialized;
+
+        /// <summary>
+        /// Enable or disable the line rendering
+        /// </summary>
+        public bool ShowArc
+        {
+            get { return _lineRenderer.enabled; }
+            set { _lineRenderer.enabled = value; }
+        }
 
         private JointManager _jointManager = null;
         private GestureRecognizer _gestureRecognizer = null;
         private LineRenderer _lineRenderer = null;
+
+        private RhinoxGesture _teleportGesture = null;
         private bool _isInitialized = false;
-        public bool Initialized => _isInitialized;
+
         private RhinoxHand _hand = RhinoxHand.Invalid;
         private GameObject _teleportZoneVisual = null;
 
-        private GameObject _leftHandSensor = null;
-        private GameObject _rightHandSensor = null;
+        private Coroutine _startVisualCoroutine = null;
+        private Coroutine _stopVisualCoroutine = null;
 
-        private Vector3 _sensorOffset = new Vector3(0f, -0.02f, -0.04f); //sensColliderL.center = new Vector3(0f, -0.03f, -0.025f);
-        private Vector3 _sensorSize = new Vector3(0.04f, 0.03f, 0.04f);//sensColliderL.size = new Vector3(0.05f, 0.05f, 0.05f);
+        private LimitedQueue<Vector3> _teleportPositions = new LimitedQueue<Vector3>(5);
+        private GameObject _sensorObjL = null;
+        private GameObject _sensorObjR = null;
+        private GRPLProximitySensor _proxySensorL = null;
+        private GRPLProximitySensor _proxySensorR = null;
 
-        private bool _isPointing = false;
-        private bool _isCharging = false;
+
+        private Vector3 _sensorOffset = new Vector3(0f, 0f, -0.05f);
+        private Vector3 _sensorSize = new Vector3(0.08f, 0.08f, 0.08f);
+
+        private bool _isOnCooldown = false;
 
         private bool _isEnabledL = false;
         private bool _isEnabledR = false;
@@ -72,56 +81,32 @@ namespace Rhinox.XR.Grapple.It
             if (_jointManager == null)
             {
                 Debug.LogError($"{nameof(JointManager)} was NULL");
-                _isInitialized = false;
                 return;
             }
             _gestureRecognizer = gestureRecognizer;
             if (_gestureRecognizer == null)
             {
                 Debug.LogError($"{nameof(GestureRecognizer)} was NULL");
-                _isInitialized = false;
                 return;
             }
 
-            _gestureRecognizer.OnGestureRecognized.AddListener(StartedPointing);
-            _gestureRecognizer.OnGestureUnrecognized.AddListener(StoppedPointing);
+            if (!TrySetupTeleportGesture())
+            {
+                Debug.LogError($"no \"Teleport\" gesture was found inside {nameof(GestureRecognizer)}");
+                return;
+            }
+
+            //if (_lineRenderer == null)
+            //{
+            //    Debug.LogError($"Given {nameof(LineRenderer)} was NULL");
+            //    return;
+            //}
 
             _jointManager.TrackingAcquired += TrackingAcquired;
             _jointManager.TrackingLost += TrackingLost;
 
-            #region Sensor SetupS
-            //Left hand sensor
-            _leftHandSensor = new GameObject("LeftHand Sensor");
-            _leftHandSensor.transform.parent = transform;
-            _leftHandSensor.SetActive(false);
-            Instantiate(_sensorModel, _sensorOffset, Quaternion.identity, _leftHandSensor.transform).transform.localScale = _sensorSize;
-
-            var sensColliderL = _leftHandSensor.AddComponent<BoxCollider>();
-            sensColliderL.isTrigger = true;
-            sensColliderL.center = _sensorOffset;
-            sensColliderL.size = _sensorSize;
-            var proxSensL = _leftHandSensor.AddComponent<GRPLProximitySensor>();
-            proxSensL.HandLayer = LayerMask.NameToLayer("Hands");
-            proxSensL.OnSensorEnter.AddListener(TryTeleport);
-
-            //Right hand sensor
-            _rightHandSensor = new GameObject("RightHand Sensor");
-            _rightHandSensor.transform.parent = transform;
-            _rightHandSensor.SetActive(false);
-            Instantiate(_sensorModel, _sensorOffset, Quaternion.identity, _rightHandSensor.transform).transform.localScale = _sensorSize;
-
-            var sensColliderR = _rightHandSensor.AddComponent<BoxCollider>();
-            sensColliderR.isTrigger = true;
-            sensColliderR.center = _sensorOffset;
-            sensColliderR.size = _sensorSize;
-            var proxSensR = _rightHandSensor.AddComponent<GRPLProximitySensor>();
-            proxSensR.HandLayer = LayerMask.NameToLayer("Hands");
-            proxSensR.OnSensorEnter.AddListener(TryTeleport);
-            #endregion
-
-
-
-
+            SensorSetup(out _sensorObjL, RhinoxHand.Left, out _proxySensorL);
+            SensorSetup(out _sensorObjR, RhinoxHand.Right, out _proxySensorR);
 
             _teleportZoneVisual = GameObject.CreatePrimitive(PrimitiveType.Cube);
             _teleportZoneVisual.transform.localScale = new Vector3(.5f, .1f, .5f);
@@ -134,12 +119,109 @@ namespace Rhinox.XR.Grapple.It
             _lineRenderer.widthMultiplier = .05f;
             _lineRenderer.enabled = false;
 
-            _teleportPositions.Limit = _smoothingAmount;
+            _teleportPositions.Limit = _destinationSmoothingAmount;
 
             _isInitialized = true;
         }
 
-        private void CalculateTeleportLocation(Ray startRay)
+        private bool TrySetupTeleportGesture()
+        {
+            //getting the teleport gesture and linking events
+            _teleportGesture = _gestureRecognizer.Gestures.Find(x => x.Name == "Teleport");
+            if (_teleportGesture != null)
+            {
+                _teleportGesture.AddListenerOnRecognized(StartedPointing);
+                _teleportGesture.AddListenerOnUnRecognized(StoppedPointing);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Intial setup function to create and place the sensor object and visual part correctly onto the given hand and setting up the events.
+        /// </summary>
+        /// <param name="sensorObj">The main object where the sensor script will be placed onto and the sensor model will be childed under</param>
+        /// <param name="hand">Mainly to give the sensor <see cref="GameObject"/> the correct name</param>
+        /// <param name="proxySensor">The sensor logic to hook into the events</param>
+        void SensorSetup(out GameObject sensorObj, RhinoxHand hand, out GRPLProximitySensor proxySensor)
+        {
+            sensorObj = new GameObject($"{hand}Hand Sensor");
+            sensorObj.transform.parent = transform;
+            sensorObj.SetActive(false);
+            Instantiate(_sensorModel, _sensorOffset, Quaternion.identity, sensorObj.transform).transform.localScale = _sensorSize;
+
+            var sensCollider = sensorObj.AddComponent<BoxCollider>();
+            sensCollider.isTrigger = true;
+            sensCollider.center = _sensorOffset;
+            sensCollider.size = _sensorSize;
+            proxySensor = sensorObj.AddComponent<GRPLProximitySensor>();
+            proxySensor.HandLayer = LayerMask.NameToLayer("Hands");
+            proxySensor.AddListenerOnSensorEnter(ConfirmTeleport);
+        }
+
+        private void OnEnable()
+        {
+            if (!_isInitialized)
+                return;
+
+            _jointManager.TrackingAcquired += TrackingAcquired;
+            _jointManager.TrackingLost += TrackingLost;
+
+            _teleportGesture.AddListenerOnRecognized(StartedPointing);
+            _teleportGesture.AddListenerOnUnRecognized(StoppedPointing);
+
+
+            _proxySensorL.AddListenerOnSensorEnter(ConfirmTeleport);
+            _proxySensorR.AddListenerOnSensorEnter(ConfirmTeleport);
+        }
+
+        private void OnDisable()
+        {
+            if (!_isInitialized)
+                return;
+
+            _teleportGesture.RemoveListenerOnRecognized(StartedPointing);
+            _teleportGesture.RemoveListenerOnUnRecognized(StoppedPointing);
+
+            _jointManager.TrackingAcquired -= TrackingAcquired;
+            _jointManager.TrackingLost -= TrackingLost;
+
+            _proxySensorL.RemoveListenerOnSensorEnter(ConfirmTeleport);
+            _proxySensorR.RemoveListenerOnSensorEnter(ConfirmTeleport);
+
+            StopAllCoroutines();
+        }
+
+        private void Update()
+        {
+            //update hantracked sensors to confirm teleportation
+            if (_isEnabledL && _sensorObjL.activeSelf)
+            {
+                if (_jointManager.TryGetJointFromHandById(UnityEngine.XR.Hands.XRHandJointID.Wrist, RhinoxHand.Left, out var wrist))
+                    _sensorObjL.transform.SetPositionAndRotation(wrist.JointPosition, wrist.JointRotation);
+            }
+            else if (_isEnabledR && _sensorObjR.activeSelf)
+            {
+                if (_jointManager.TryGetJointFromHandById(UnityEngine.XR.Hands.XRHandJointID.Wrist, RhinoxHand.Right, out var wrist))
+                    _sensorObjR.transform.SetPositionAndRotation(wrist.JointPosition, wrist.JointRotation);
+            }
+
+
+            if (ShowArc && _hand != RhinoxHand.Invalid)
+            {
+                if (!_jointManager.TryGetJointFromHandById(UnityEngine.XR.Hands.XRHandJointID.Wrist, _hand, out var wrist))
+                    return;
+                if (!_jointManager.TryGetJointFromHandById(UnityEngine.XR.Hands.XRHandJointID.MiddleMetacarpal, _hand, out var palm))
+                    return;
+
+                Ray ray = new Ray(wrist.JointPosition, (palm.JointPosition - wrist.JointPosition).normalized);
+
+                CalculateTeleportLocation(ray);
+            }
+        }
+
+        public void CalculateTeleportLocation(Ray startRay)
         {
             var aimPosition = startRay.origin;
             var aimDirection = startRay.direction * _initialVelocity;
@@ -187,171 +269,119 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
-        private void OnEnable()
+        private void ConfirmTeleport()
         {
-            if (_isInitialized || _gestureRecognizer == null)
+            if (_isOnCooldown)
                 return;
 
-            _gestureRecognizer.OnGestureRecognized.AddListener(StartedPointing);
-            _gestureRecognizer.OnGestureUnrecognized.AddListener(StoppedPointing);
-        }
-
-        private void OnDisable()
-        {
-            if (!_isInitialized)
-                return;
-
-            _gestureRecognizer.OnGestureRecognized.RemoveListener(StartedPointing);
-            _gestureRecognizer.OnGestureUnrecognized.RemoveListener(StoppedPointing);
-
-            _jointManager.TrackingAcquired -= TrackingAcquired;
-            _jointManager.TrackingLost -= TrackingLost;
-
-            StopAllCoroutines();
-        }
-
-        private void Update()
-        {
-            if (_isEnabledL && _leftHandSensor.activeSelf)
-            {
-                if (_jointManager.TryGetJointFromHandById(UnityEngine.XR.Hands.XRHandJointID.Wrist, RhinoxHand.Left, out var wrist))
-                    _leftHandSensor.transform.SetPositionAndRotation(wrist.JointPosition, wrist.JointRotation);
-            }
-
-            if (_isEnabledR && _rightHandSensor.activeSelf)
-            {
-                if (_jointManager.TryGetJointFromHandById(UnityEngine.XR.Hands.XRHandJointID.Wrist, RhinoxHand.Right, out var wrist))
-                    _rightHandSensor.transform.SetPositionAndRotation(wrist.JointPosition, wrist.JointRotation);
-            }
-
-
-            if (_isCharging)
-            {
-                if (!_jointManager.TryGetJointFromHandById(UnityEngine.XR.Hands.XRHandJointID.Wrist, _hand, out var wrist))
-                    return;
-                if (!_jointManager.TryGetJointFromHandById(UnityEngine.XR.Hands.XRHandJointID.MiddleMetacarpal, _hand, out var palm))
-                    return;
-
-                Debug.DrawLine(wrist.JointPosition, palm.JointPosition, Color.magenta, 0f, false);
-
-                Ray ray = new Ray(wrist.JointPosition, (palm.JointPosition - wrist.JointPosition).normalized);
-
-                CalculateTeleportLocation(ray);
-            }
-        }
-
-        private void TryTeleport()
-        {
             gameObject.transform.position = new Vector3(_teleportZoneVisual.transform.position.x, gameObject.transform.position.y, _teleportZoneVisual.transform.position.z);
+
+            _lineRenderer.startColor = Color.red;
+            _lineRenderer.endColor = Color.red;
+            _isOnCooldown = true;
+
+            Invoke(nameof(ResetCooldown), _teleportCooldown);
 
             //disabling sensor so you can't teleport multiple times
             switch (_hand)
             {
                 case RhinoxHand.Left:
-                    _leftHandSensor.SetActive(false);
+                    _sensorObjL.SetActive(false);
                     break;
                 case RhinoxHand.Right:
-                    _rightHandSensor.SetActive(false);
+                    _sensorObjR.SetActive(false);
                     break;
                 case RhinoxHand.Invalid:
                 default:
                     break;
             }
-
-            //Debug.Log("\\._./ SCHMOVE");
         }
 
-        //private void Teleport(Vector3 position)
-        //{
-        //    gameObject.transform.position = new Vector3(position.x, gameObject.transform.position.y, position.z);
-        //}
-
-        private IEnumerator TryStartVisual()
+        private void ResetCooldown()
         {
-            yield return new WaitForSeconds(_pointingStartDelay);
-
-            _isCharging = true;
-            //_timeLeft = _chargingTime;
-            _lineRenderer.enabled = true;
+            _isOnCooldown = false;
         }
 
-        IEnumerator TryStopVisual()
+        #region Handtracking Specific Logic
+        private IEnumerator StartVisualCoRountine()
         {
-            yield return new WaitForSeconds(_pointingStopDelay);
+            yield return new WaitForSeconds(_visualStartDelay);
 
-            _lineRenderer.enabled = false;
-            _isCharging = false;
-            _lineRenderer.enabled = false;
-        }
-
-        private Coroutine _startVisualCoroutine = null;
-        private Coroutine _stopVisualCoroutine = null;
-
-        private void StartedPointing(RhinoxHand hand, string gestureName)
-        {
-            if ((_hand == RhinoxHand.Invalid || _hand == hand) && gestureName == "Teleport")
+            //if left hand is doing gesture than right hand sensor should be disabled and vice versa
+            switch (_hand)
             {
-                _isPointing = true;
-                if (_isCharging)
+                case RhinoxHand.Left:
+                    _sensorObjL.SetActive(true);
+                    _sensorObjR.SetActive(false);
+                    break;
+                case RhinoxHand.Right:
+                    _sensorObjL.SetActive(false);
+                    _sensorObjR.SetActive(true);
+                    break;
+                case RhinoxHand.Invalid:
+                default:
+                    Debug.LogWarning($"[{nameof(GRPLTeleport)}] {nameof(StartedPointing)}: invalid hand was given");
+                    break;
+            }
+
+            ShowArc = true;
+        }
+
+        private IEnumerator StopVisualCoRountine()
+        {
+            yield return new WaitForSeconds(_visualStopDelay);
+
+            switch (_hand)
+            {
+                case RhinoxHand.Left:
+                    _sensorObjL.SetActive(false);
+                    break;
+                case RhinoxHand.Right:
+                    _sensorObjR.SetActive(false);
+                    break;
+                case RhinoxHand.Invalid:
+                default:
+                    Debug.LogWarning($"[{nameof(GRPLTeleport)}] StoppedPointing: invalid hand was given");
+                    break;
+            }
+
+            _hand = RhinoxHand.Invalid;
+
+            ShowArc = false;
+        }
+
+        private void StartedPointing(RhinoxHand hand)
+        {
+            if (_hand == hand)
+            {
+                if (_stopVisualCoroutine != null)
                 {
                     StopCoroutine(_stopVisualCoroutine);
                     _stopVisualCoroutine = null;
                 }
-                else
-                {
-                    _hand = hand;
-                    _startVisualCoroutine = StartCoroutine(nameof(TryStartVisual));
-
-                    switch (hand)
-                    {
-                        case RhinoxHand.Left:
-                            _leftHandSensor.SetActive(true);
-                            break;
-                        case RhinoxHand.Right:
-                            _rightHandSensor.SetActive(true);
-                            break;
-                        case RhinoxHand.Invalid:
-                        default:
-                            Debug.LogWarning($"[{nameof(GRPLTeleport)}] StartedPointing: invalid hand was given");
-                            break;
-                    }
-                }
+            }
+            else if (_hand == RhinoxHand.Invalid)
+            {
+                _hand = hand;
+                _startVisualCoroutine = StartCoroutine(nameof(StartVisualCoRountine));
             }
         }
 
-        private void StoppedPointing(RhinoxHand hand, string gestureName)
+        private void StoppedPointing(RhinoxHand hand)
         {
-            if (_hand == hand && gestureName == "Teleport")
+            if (ShowArc && _hand == hand)
+                _stopVisualCoroutine = StartCoroutine(nameof(StopVisualCoRountine));
+            else if (_hand == hand)
             {
-                _isPointing = false;
-
-                if (_isCharging)
-                {
-                    _stopVisualCoroutine = StartCoroutine(nameof(TryStopVisual));
-                }
-                else
+                _hand = RhinoxHand.Invalid;
+                if (_startVisualCoroutine != null)
                 {
                     StopCoroutine(_startVisualCoroutine);
                     _startVisualCoroutine = null;
-                    _hand = RhinoxHand.Invalid;
-
-                    switch (hand)
-                    {
-                        case RhinoxHand.Left:
-                            _leftHandSensor.SetActive(false);
-                            break;
-                        case RhinoxHand.Right:
-                            _rightHandSensor.SetActive(false);
-                            break;
-                        case RhinoxHand.Invalid:
-                        default:
-                            Debug.LogWarning($"[{nameof(GRPLTeleport)}] StoppedPointing: invalid hand was given");
-                            break;
-                    }
                 }
             }
         }
-
+        #endregion
 
         #region State Logic
         private void TrackingAcquired(RhinoxHand hand) => SetHandEnabled(true, hand);

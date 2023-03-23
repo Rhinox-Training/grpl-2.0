@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.XR;
 using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple
@@ -35,17 +36,65 @@ namespace Rhinox.XR.Grapple
         [JsonProperty(PropertyName = "Rotation threshold")]
         public float RotationThreshold;
 
-        [JsonIgnore] public UnityEvent<RhinoxHand> OnRecognized;
+        [JsonIgnore][SerializeField] private UnityEvent<RhinoxHand> OnRecognized;
 
-        [JsonIgnore] public UnityEvent<RhinoxHand> OnUnrecognized;
-        
+        [JsonIgnore][SerializeField] private UnityEvent<RhinoxHand> OnUnrecognized;
+
         [JsonIgnore]
         private static RhinoxGesture _noGesture;
 
         [JsonIgnore]
         private const int AMOUNTOFJOINTS = 26;
-        
-        
+
+        #region Wrapping Unity events for external code
+        public void AddListenerOnRecognized(UnityAction<RhinoxHand> action)
+        {
+            if (OnRecognized == null)
+                OnRecognized = new UnityEvent<RhinoxHand>();
+
+            OnRecognized.AddListener(action);
+        }
+
+        public void RemoveListenerOnRecognized(UnityAction<RhinoxHand> action)
+        {
+            OnRecognized?.RemoveListener(action);
+        }
+
+        public void RemoveAllListenersOnRecognized()
+        {
+            OnRecognized?.RemoveAllListeners();
+        }
+
+        public void InvokeOnRecognized(RhinoxHand hand)
+        {
+            OnRecognized?.Invoke(hand);
+        }
+
+
+        public void AddListenerOnUnRecognized(UnityAction<RhinoxHand> action)
+        {
+            if (OnUnrecognized == null)
+                OnUnrecognized = new UnityEvent<RhinoxHand>();
+
+            OnUnrecognized.AddListener(action);
+        }
+
+        public void RemoveListenerOnUnRecognized(UnityAction<RhinoxHand> action)
+        {
+            OnUnrecognized?.RemoveListener(action);
+        }
+
+        public void RemoveAllListenersOnUnRecognized()
+        {
+            OnUnrecognized?.RemoveAllListeners();
+        }
+
+        public void InvokeOnUnRecognized(RhinoxHand hand)
+        {
+            OnUnrecognized?.Invoke(hand);
+        }
+        #endregion
+
         /// <remarks>Does not compare the name or events!</remarks>
         public override bool Equals(object obj)
         {
@@ -89,9 +138,9 @@ namespace Rhinox.XR.Grapple
 
         public bool Equals(RhinoxGesture other)
         {
-            if(Equals(other,null))
+            if (Equals(other, null))
                 return false;
-            
+
             return Name == other.Name && Equals(JointData, other.JointData) &&
                    Equals(OnRecognized, other.OnRecognized) && Equals(OnUnrecognized, other.OnUnrecognized);
         }
@@ -121,6 +170,5 @@ namespace Rhinox.XR.Grapple
             }
             return _noGesture;
         }
-        
     }
 }
