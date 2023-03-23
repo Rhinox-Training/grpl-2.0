@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Rhinox.XR.Grapple.It
 {
@@ -17,12 +18,12 @@ namespace Rhinox.XR.Grapple.It
         private void Start()
         {
             Initialize();
-            GRPLInteractable.InteractableCreated?.Invoke(this);
+            InteractableCreated?.Invoke(this);
         }
 
         private void OnDestroy()
         {
-            GRPLInteractable.InteractableDestroyed?.Invoke(this);
+            InteractableDestroyed?.Invoke(this);
             Destroyed();
         }
 
@@ -70,5 +71,13 @@ namespace Rhinox.XR.Grapple.It
         /// <param name="joint">The joint to check with</param>
         /// <returns>Whether the interaction is now happening</returns>
         public abstract bool CheckForInteraction(RhinoxJoint joint);
+
+        /// <summary>
+        /// This function defines which joint should get used when checking for interactions.  <br />
+        /// An example could be a projected distance check, where the joint with the lowest distance gets returned.
+        /// </summary>
+        /// <param name="joints"> A collection of joints to check.</param>
+        /// <returns>The joint that should get used for interaction checks.</returns>
+        public abstract bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint joint);
     }
 }

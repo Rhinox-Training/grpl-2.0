@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Generic;
 using Rhinox.Lightspeed;
-using Rhinox.Perceptor;
 using UnityEngine;
 
 namespace Rhinox.XR.Grapple.It
@@ -56,16 +56,17 @@ namespace Rhinox.XR.Grapple.It
 
         private protected override void ProximityStarted()
         {
-            PLog.Warn<GrappleItLogger>($"Proximity started with {gameObject.name}");
             OnProximityStarted?.Invoke();
         }
 
         private protected override void ProximityStopped()
         {
-            PLog.Warn<GrappleItLogger>($"Proximity ended with {gameObject.name}");
             OnProximityEnded?.Invoke();
         }
 
+        //-----------------------
+        // INHERITED METHODS
+        //-----------------------
         public override bool CheckForInteraction(RhinoxJoint joint)
         {
             if (!gameObject.activeInHierarchy)
@@ -82,16 +83,15 @@ namespace Rhinox.XR.Grapple.It
             if (!InteractableMathUtils.IsPositionInFrontOfPlane(joint.JointPosition, buttonBaseTransform.position,
                     back))
                 return false;
-
+            
             // Check if the projected joint pos is within the button bounding box
             if (!InteractableMathUtils.IsPlaneProjectedPointInBounds(joint.JointPosition, buttonBaseTransform.position,
                     Vector3.back, PressBounds))
                 return false;
 
             // Projects the joint pos onto the normal out of the button and gets the distance
-            float pokeDistance =
-                Vector3.Dot(joint.JointPosition - buttonBaseTransform.position,
-                    back);
+            float pokeDistance = InteractableMathUtils.GetProjectedDistanceFromPointOnNormal(joint.JointPosition,buttonBaseTransform.position,back);
+
 
             pokeDistance -= joint.JointRadius;
             if (pokeDistance < 0f)
@@ -109,12 +109,38 @@ namespace Rhinox.XR.Grapple.It
             return pressPercentage > SelectStartPercentage;
         }
 
-        public void OnDrawGizmosSelected()
+        public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint)
         {
-            Gizmos.matrix = Matrix4x4.identity;
-            Gizmos.color = Color.blue;
-            Gizmos.DrawWireCube(PressBounds.center, PressBounds.size);
-            Gizmos.DrawRay(ButtonBaseTransform.position, -ButtonBaseTransform.forward);
+            outJoint = null;
+            float closestDist = float.MaxValue;
+            
+            var normalPos = ButtonBaseTransform.position;
+            var normal = -ButtonBaseTransform.forward;
+            foreach (var joint in joints)
+            {
+                if (!InteractableMathUtils.IsPlaneProjectedPointInBounds(joint.JointPosition,
+                        normalPos, normal, PressBounds))
+                    continue;
+                
+                var distance =
+                    InteractableMathUtils.GetProjectedDistanceFromPointOnNormal(joint.JointPosition, normalPos, normal);
+                if (distance < closestDist)
+                {
+                    outJoint = joint;
+                    closestDist = distance;
+                }
+            }
+
+            return outJoint != null;
+        }
+
+        //-----------------------
+        // DEBUG DRAW
+        //-----------------------
+        private void OnDrawGizmos()
+        {
+            Gizmos.DrawSphere(InteractableMathUtils._projectedPos,0.01f);
+
         }
     }
 }

@@ -54,7 +54,6 @@ namespace Rhinox.XR.Grapple.It
             GRPLInteractable.InteractableDestroyed += OnInteractableDestroyed;
 
             _interactables = new List<GRPLInteractable>();
-
         }
         
         private void Update()
@@ -62,8 +61,6 @@ namespace Rhinox.XR.Grapple.It
             if(_jointManager == null)
                 return;
             
-            if(!_jointManager.TryGetJointFromHandById(XRHandJointID.IndexTip,RhinoxHand.Right,out var joint))
-                return;
             if(_jointManager.IsLeftHandTracked)
                 HandUpdate(RhinoxHand.Left);         
             
@@ -78,9 +75,8 @@ namespace Rhinox.XR.Grapple.It
             if(!_jointManager.TryGetJointFromHandById(XRHandJointID.Palm,hand,out var palm))
                 return;
             
-            
             // Detect all the current proximates for this hand and invoke their events (if necessary)
-            var proximates = DetectProximates(RhinoxHand.Right, palm.JointPosition);
+            var proximates = DetectProximates(hand, palm.JointPosition);
 
             // Get all the joints of the given hand
             // If it failed to get the joints, return
@@ -90,8 +86,13 @@ namespace Rhinox.XR.Grapple.It
             // For every proximate
             foreach (var proximate in proximates)
             {
-                var isInteracted = proximate.CheckForInteraction(palm);
-
+                // Try to get a valid interactJoint
+                if(!proximate.TryGetCurrentInteractJoint(joints, out var interactJoint))
+                    continue;
+                
+                // Check if an interaction is happening
+                var isInteracted = proximate.CheckForInteraction(interactJoint);
+                
                 if (isInteracted)
                 {
                     if (proximate.State != GRPLInteractionState.Interacted)
@@ -100,8 +101,6 @@ namespace Rhinox.XR.Grapple.It
                 else if (proximate.State == GRPLInteractionState.Interacted)
                     proximate.SetState(GRPLInteractionState.Proximate);
             }
-
-
         }
 
         /// <summary>
@@ -112,7 +111,7 @@ namespace Rhinox.XR.Grapple.It
         /// <param name="referenceJointPos"> A reference point of the given hand. F.e. Wrist joint position.</param>
         /// <returns> An ICollection holding all the proximates</returns>
         /// <remarks>Hand should be RhinoxHand.Left or RhinoxHand.Right!</remarks>
-        private ICollection<GRPLInteractable> DetectProximates(RhinoxHand hand, Vector3 referenceJointPos)
+        private IEnumerable<GRPLInteractable> DetectProximates(RhinoxHand hand, Vector3 referenceJointPos)
         {
             List<GRPLInteractable> currentProximates;
             switch (hand)
@@ -194,11 +193,13 @@ namespace Rhinox.XR.Grapple.It
             return currentProximates;
         }
         
+        //-----------------------
+        // EVENT METHODS
+        //-----------------------
         private void OnDestroy()
         {
             GRPLInteractable.InteractableCreated -= OnInteractableCreated;
             GRPLInteractable.InteractableDestroyed -= OnInteractableDestroyed;
-
         }
 
         private void OnInteractableCreated(GRPLInteractable interactable)
@@ -213,5 +214,6 @@ namespace Rhinox.XR.Grapple.It
             _interactables.Remove(interactable);
             
         }
+        
     }
 }

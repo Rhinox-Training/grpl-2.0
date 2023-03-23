@@ -20,6 +20,7 @@ namespace Rhinox.XR.Grapple.It
             return dotValue >= 0;
         }
 
+        public static Vector3 _projectedPos;
         /// <summary>
         /// Checks whether the projected position of the given point on the plane (defined by
         /// the planePosition and PlaneForward) is within the given bounds.
@@ -36,7 +37,24 @@ namespace Rhinox.XR.Grapple.It
             var projectedPos = Vector3.ProjectOnPlane(point, planeNormal) +
                                Vector3.Dot(planePosition, planeNormal) *
                                planeNormal;
+            _projectedPos = projectedPos;
             return bounds.Contains(projectedPos);
         }
+
+        
+        /// <summary>
+        /// Calculates the projected distance of point "projectPoint" and "normalPoint" along the normal vector "normal".
+        /// </summary>
+        /// <param name="projectPoint">The point to project</param>
+        /// <param name="normalPoint">The reference point on the normal vector</param>
+        /// <param name="normal">The normal vector to project on</param>
+        /// <returns>A scalar float value representing the projected distance</returns>
+        public static float GetProjectedDistanceFromPointOnNormal(Vector3 projectPoint, Vector3 normalPoint,
+            Vector3 normal)
+        {
+            return Vector3.Dot(projectPoint - normalPoint,
+                normal);
+        }
+        
     }
 }
