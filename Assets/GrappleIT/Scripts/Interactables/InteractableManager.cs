@@ -84,10 +84,10 @@ namespace Rhinox.XR.Grapple.It
                            Vector3.back, button.PressBounds))
                         continue;
                     
-                    // Check if the distance is correct
-                    float pokeDistance = Vector3.Distance(joint.JointPosition, buttonBaseTransform.position);
-                    
-                    
+                    // Projects the joint pos onto the normal out of the button and gets the distance
+                    float pokeDistance =
+                        Vector3.Dot(joint.JointPosition - buttonBaseTransform.position,
+                            back);
                     
                     pokeDistance -= joint.JointRadius;
                     if (pokeDistance < 0f)
