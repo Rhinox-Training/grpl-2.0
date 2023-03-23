@@ -13,7 +13,8 @@ namespace Rhinox.XR.Grapple.It
         private IPhysicsService _physicsService = new NullPhysicsService();
 
         [Header("Physics")]
-        public PhysicServices SelectedPhysicsService = PhysicServices.None;
+        //public PhysicServices SelectedPhysicsService = PhysicServices.None;
+        [SerializeField] private bool _enableSocketing = true;
         [Layer][SerializeField] private int _handLayer = 2;
         public int Handlayer => _handLayer;
 
@@ -27,25 +28,30 @@ namespace Rhinox.XR.Grapple.It
             _jointManager.HandLayer = _handLayer;
             _gestureRecognizer = GetComponent<GestureRecognizer>();
 
-            switch (SelectedPhysicsService)
+            //switch (SelectedPhysicsService)
+            //{
+            //    case PhysicServices.Socketing:
+            //        {
+            //            _physicsService = new PhysicsSocketService(_gestureRecognizer, gameObject);
+            //            break;
+            //        }
+            //}
+
+            if (_enableSocketing)
             {
-                case PhysicServices.Socketing:
-                    {
-                        _physicsService = new PhysicsSocketService(_gestureRecognizer, gameObject);
-                        break;
-                    }
+                _physicsService = new PhysicsSocketService(_gestureRecognizer, gameObject);
             }
 
-            if (_physicsService.GetType() == typeof(NullPhysicsService))
+            if (_enableSocketing && _physicsService.GetType() == typeof(NullPhysicsService))
             {
-                Debug.LogError($"{nameof(GrappleManager)} Failed to add {SelectedPhysicsService} service");
+                Debug.LogError($"{nameof(GrappleManager)} Failed to add Socketing service");
             }
 
             if (gameObject.TryGetComponent(out _teleporter))
                 _teleporter.Initialize(_jointManager, _gestureRecognizer);
             else
             {
-                Debug.LogError($"{nameof(GrappleManager)} Failed to find {nameof(GRPLTeleport)}");
+                Debug.LogWarning($"{nameof(GrappleManager)} Failed to find {nameof(GRPLTeleport)}");
                 return;
             }
         }
@@ -57,7 +63,6 @@ namespace Rhinox.XR.Grapple.It
             {
                 _physicsService.Update();
             }
-
         }
     }
 }

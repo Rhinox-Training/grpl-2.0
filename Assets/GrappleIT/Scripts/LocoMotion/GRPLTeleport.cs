@@ -3,18 +3,33 @@ using Rhinox.Lightspeed.Collections;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.XR;
 
 namespace Rhinox.XR.Grapple.It
 {
+    /// The logic of how the teleport code works:
+    /// When a hand makes the teleport gesture it will call the <see cref="StartVisualCoroutine"/> which starts a timer before actualy enabling the teleport logic
+    ///     - If that hand stops making the teleport before the timer finishes the <see cref="StartVisualCoroutine"/> will be stopped
+    ///     - If the other hand makes the teleport visual, nothing will happen.
+    ///     - If the timer is complete, then the teleport arc will be calculated from the hand that made the gesture.
+    ///     
+    /// When the hand that the teleport arc is coming from stops making the teleport gesture the <see cref="StopVisualCoroutine"/> gets called, which starts a timer to stop the teleport logic
+    ///     - If that hand starts making the gesture again before the timer finishes the <see cref="StopVisualCoroutine"/> will be stopped.
+    ///     - If the other hand stops making the teleport visual, nothing will happen.
+    ///     - If the timer is complete, then the teleport arc calculation will be stopped including it being visualized
+    /// 
+    /// When the the other hand enters the trigger on the wrist of the hand emmiting the teleport arc, the teleport location will be confirmed and the player gets teleported.
+    /// This will put the teleport on cooldown, to prevent spamming/accidental teleporting.
+
     public class GRPLTeleport : MonoBehaviour
     {
         //[Header("Visual")]
         [SerializeField] private GameObject _sensorModel = null;
 
         [Header("Arc Visual Settings")]
-        //[SerializeField] public LineRenderer _lineRenderer=null;
+        [SerializeField] public LineRenderer _lineRenderer = null;
         [SerializeField] public float _visualStartDelay = 0.3f;
         [SerializeField] public float _visualStopDelay = 0.5f;
         [SerializeField] public float _teleportCooldown = 1.5f;
@@ -49,7 +64,7 @@ namespace Rhinox.XR.Grapple.It
 
         private JointManager _jointManager = null;
         private GestureRecognizer _gestureRecognizer = null;
-        private LineRenderer _lineRenderer = null;
+        //private LineRenderer _lineRenderer = null;
 
         private RhinoxGesture _teleportGesture = null;
         private bool _isInitialized = false;
@@ -111,11 +126,11 @@ namespace Rhinox.XR.Grapple.It
             _teleportZoneVisual = GameObject.CreatePrimitive(PrimitiveType.Cube);
             _teleportZoneVisual.transform.localScale = new Vector3(.5f, .1f, .5f);
 
-            _lineRenderer = gameObject.AddComponent<LineRenderer>();
-            _lineRenderer.material = UnityEditor.AssetDatabase.GetBuiltinExtraResource<Material>("Default-Line.mat");
-            _lineRenderer.startColor = Color.green;
-            _lineRenderer.endColor = Color.green;
-            _lineRenderer.positionCount = 10;
+            //_lineRenderer = gameObject.AddComponent<LineRenderer>();
+            //_lineRenderer.material = UnityEditor.AssetDatabase.GetBuiltinExtraResource<Material>("Default-Line.mat");
+            //_lineRenderer.startColor = Color.green;
+            //_lineRenderer.endColor = Color.green;
+            //_lineRenderer.positionCount = 10;
             _lineRenderer.widthMultiplier = .05f;
             _lineRenderer.enabled = false;
 
@@ -144,7 +159,7 @@ namespace Rhinox.XR.Grapple.It
         /// <param name="sensorObj">The main object where the sensor script will be placed onto and the sensor model will be childed under</param>
         /// <param name="hand">Mainly to give the sensor <see cref="GameObject"/> the correct name</param>
         /// <param name="proxySensor">The sensor logic to hook into the events</param>
-        void SensorSetup(out GameObject sensorObj, RhinoxHand hand, out GRPLProximitySensor proxySensor)
+        private void SensorSetup(out GameObject sensorObj, RhinoxHand hand, out GRPLProximitySensor proxySensor)
         {
             sensorObj = new GameObject($"{hand}Hand Sensor");
             sensorObj.transform.parent = transform;
@@ -170,7 +185,6 @@ namespace Rhinox.XR.Grapple.It
 
             _teleportGesture.AddListenerOnRecognized(StartedPointing);
             _teleportGesture.AddListenerOnUnRecognized(StoppedPointing);
-
 
             _proxySensorL.AddListenerOnSensorEnter(ConfirmTeleport);
             _proxySensorR.AddListenerOnSensorEnter(ConfirmTeleport);
@@ -226,14 +240,14 @@ namespace Rhinox.XR.Grapple.It
             var aimPosition = startRay.origin;
             var aimDirection = startRay.direction * _initialVelocity;
             var rangeSquared = _maxDistance * _maxDistance;
-            //calculate all points
+            //calculate all points (logic based on the arc calculations from Meta)
             List<Vector3> points = new List<Vector3>();
             do
             {
                 points.Add(aimPosition);
 
                 var aimVector = aimDirection;
-                aimVector.y = aimVector.y + _gravity * 0.0111111111f * _lineSubIterations;//0.0111111111f is constant value i got from ovr TeleportAimHandlerParabolic.cs 
+                aimVector.y = aimVector.y + _gravity * 0.0111111111f * _lineSubIterations;//0.0111111111f is a magic constant I got from ovr TeleportAimHandlerParabolic.cs 
                 aimDirection = aimVector;
                 aimPosition += aimVector;
 
@@ -251,15 +265,27 @@ namespace Rhinox.XR.Grapple.It
 
                 if (Physics.Raycast(currentRay, out var hitInfo, Vector3.Distance(points[indexNextPoint], points[indexNextPoint - 1]), ~LayerMask.GetMask("Hands")))
                 {
-                    intersectPoint = hitInfo.point;
-                    _lineRenderer.startColor = Color.green;
-                    _lineRenderer.endColor = Color.green;
+                    //intersectPoint = hitInfo.point;
+
+                    _teleportPositions.Enqueue(new Vector3(hitInfo.point.x, transform.position.y, hitInfo.point.z));
+
+                    if (!_isOnCooldown)
+                    {
+                        _lineRenderer.startColor = Color.green;
+                        _lineRenderer.endColor = Color.green;
+                    }
                     break;
                 }
             }
 
-            Debug.DrawLine(points[indexNextPoint - 1], new Vector3(intersectPoint.x, _teleportZoneVisual.transform.position.y, intersectPoint.z), Color.cyan, 0f, false);
-            _teleportZoneVisual.transform.position = new Vector3(intersectPoint.x, _teleportZoneVisual.transform.position.y, intersectPoint.z);
+
+            Vector3 avgPos = new Vector3(_teleportPositions.Average(vec => vec.x),
+                                         _teleportPositions.Average(vec => vec.y),
+                                         _teleportPositions.Average(vec => vec.z));
+
+
+            //Debug.DrawLine(points[indexNextPoint - 1], new Vector3(intersectPoint.x, _teleportZoneVisual.transform.position.y, intersectPoint.z), Color.cyan, 0f, false);
+            _teleportZoneVisual.transform.position = new Vector3(avgPos.x, _teleportZoneVisual.transform.position.y, avgPos.z);
 
             //rendering part
             _lineRenderer.positionCount = indexNextPoint + 1;
@@ -269,6 +295,9 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
+        /// <summary>
+        /// When called it will try and teleport the user to the location indicated by the teleport arc visual 
+        /// </summary>
         private void ConfirmTeleport()
         {
             if (_isOnCooldown)
@@ -303,7 +332,13 @@ namespace Rhinox.XR.Grapple.It
         }
 
         #region Handtracking Specific Logic
-        private IEnumerator StartVisualCoRountine()
+        /// <summary>
+        /// After the delay has passed when the function was first called it will:<br></br>
+        /// - Enable/Disable the correct sensor of which arm the visual arc is coming from.<br></br>
+        /// - Set the arc visual to visible.
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator StartVisualCoroutine()
         {
             yield return new WaitForSeconds(_visualStartDelay);
 
@@ -320,14 +355,20 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    Debug.LogWarning($"[{nameof(GRPLTeleport)}] {nameof(StartedPointing)}: invalid hand was given");
+                    Debug.LogWarning($"[{nameof(GRPLTeleport)}] {nameof(StartVisualCoroutine)}: invalid hand was given");
                     break;
             }
 
             ShowArc = true;
         }
 
-        private IEnumerator StopVisualCoRountine()
+        /// <summary>
+        /// After the delay has passed when the function was first called it will:<br></br>
+        /// - Disable the sensor of which arm the visual arc is coming from.<br></br>
+        /// - Reset the current arc hand to invalid, indicating that no hand is trying to teleport.
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator StopVisualCoroutine()
         {
             yield return new WaitForSeconds(_visualStopDelay);
 
@@ -341,7 +382,7 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    Debug.LogWarning($"[{nameof(GRPLTeleport)}] StoppedPointing: invalid hand was given");
+                    Debug.LogWarning($"[{nameof(GRPLTeleport)}] {nameof(StopVisualCoroutine)}: invalid hand was given");
                     break;
             }
 
@@ -350,6 +391,10 @@ namespace Rhinox.XR.Grapple.It
             ShowArc = false;
         }
 
+        /// <summary>
+        /// Gets called when a hand makes the teleport gesture.<br></br>
+        /// </summary>
+        /// <param name="hand">Which hand is triggered the teleport gesture</param>
         private void StartedPointing(RhinoxHand hand)
         {
             if (_hand == hand)
@@ -363,14 +408,18 @@ namespace Rhinox.XR.Grapple.It
             else if (_hand == RhinoxHand.Invalid)
             {
                 _hand = hand;
-                _startVisualCoroutine = StartCoroutine(nameof(StartVisualCoRountine));
+                _startVisualCoroutine = StartCoroutine(nameof(StartVisualCoroutine));
             }
         }
 
+        /// <summary>
+        /// Gets called when a hand stops making the teleport gesture.<br></br>
+        /// </summary>
+        /// <param name="hand">Which hand is triggered the teleport gesture</param>
         private void StoppedPointing(RhinoxHand hand)
         {
             if (ShowArc && _hand == hand)
-                _stopVisualCoroutine = StartCoroutine(nameof(StopVisualCoRountine));
+                _stopVisualCoroutine = StartCoroutine(nameof(StopVisualCoroutine));
             else if (_hand == hand)
             {
                 _hand = RhinoxHand.Invalid;
