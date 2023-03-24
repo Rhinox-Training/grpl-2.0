@@ -3,15 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using Rhinox.Lightspeed;
 using Rhinox.Perceptor;
+using UnityEditor;
 using UnityEngine;
 
 namespace Rhinox.XR.Grapple.It
 {
     public class GRPLButtonInteractable : GRPLInteractable
     {
+        [Header("Debug drawing")]
+        [SerializeField] private bool _drawDebug = false;
+        
         [Header("Poke parameters")] [SerializeField]
         private Transform _interactableBaseTransform;
-
         public Transform ButtonBaseTransform => _interactableBaseTransform;
         [SerializeField] private Transform _interactObject;
         public Transform ButtonSurface => _interactObject;
@@ -20,9 +23,9 @@ namespace Rhinox.XR.Grapple.It
         private float _selectStartPercentage = 0.25f;
 
         [SerializeField] private float _jointBehindButtonStopDelay = 5f;
-
-        private Coroutine _behindInteractedCoroutine;
-
+        
+        private const float _initialInteractOffset = 0.5f;
+        
         public float SelectStartPercentage => _selectStartPercentage;
         private float _maxPressDistance;
         public float MaxPressedDistance => _maxPressDistance;
@@ -67,6 +70,7 @@ namespace Rhinox.XR.Grapple.It
         //-----------------------
         // COROUTINES
         //-----------------------
+        [Obsolete]
         private IEnumerator BehindInteractedCoroutine()
         {
             PLog.Info<GrappleItLogger>($"Joint behind button, waiting for {_jointBehindButtonStopDelay} seconds", this);
@@ -74,7 +78,6 @@ namespace Rhinox.XR.Grapple.It
             yield return new WaitForSecondsRealtime(_jointBehindButtonStopDelay);
             PLog.Warn<GrappleItLogger>("Too long behind button, stopping the interaction");
             SetState(GRPLInteractionState.Proximate);
-            _behindInteractedCoroutine = null;
         }
 
         //-----------------------
@@ -95,17 +98,7 @@ namespace Rhinox.XR.Grapple.It
             // Check if the joint pos is in front of the plane that is defined by the button
             if (!InteractableMathUtils.IsPositionInFrontOfPlane(joint.JointPosition, buttonBaseTransform.position,
                     back))
-            {
-                // If the button is currently interacted
-                // Start a coroutine to check for deactivation
-                // if (State == GRPLInteractionState.Interacted)
-                //     _behindInteractedCoroutine ??= StartCoroutine(BehindInteractedCoroutine());
-                
                 return false;
-            }
-
-            // if(_behindInteractedCoroutine != null)
-            //     StopCoroutine(_behindInteractedCoroutine);
 
             // Check if the projected joint pos is within the button bounding box
             if (!InteractableMathUtils.IsPlaneProjectedPointInBounds(joint.JointPosition, buttonBaseTransform.position,
@@ -158,5 +151,60 @@ namespace Rhinox.XR.Grapple.It
 
             return outJoint != null;
         }
+
+
+        //-----------------------
+        // EDITOR ONLY METHODS
+        //-----------------------
+        #if UNITY_EDITOR
+        /// <summary>
+        /// Creates and links the button surface to the button base transform.
+        /// </summary>
+        /// <warning>Using this method multiple times can result in duplicates of the ButtonBaseTransform and ButtonSurface object</warning>
+        private void Reset()
+        {
+            if (ButtonBaseTransform == null)
+            {
+                var buttonBase = new GameObject("Button base");
+                buttonBase.transform.SetParent(transform,false);
+                _interactableBaseTransform = buttonBase.transform;
+            }
+
+            if (ButtonSurface == null)
+            {
+                var buttonObject = new GameObject("Button press object");
+                buttonObject.transform.SetParent(transform,false);
+                
+                // Set the position of the button press object
+                buttonObject.transform.localPosition -= _initialInteractOffset * ButtonBaseTransform.forward;
+                
+                _interactObject = buttonObject.transform;
+            }
+        }
+
+        private void OnDrawGizmos()
+        {
+            if(!_drawDebug)
+                return;
+            
+            if (ButtonBaseTransform != null)
+            {
+                Gizmos.color = Color.cyan;
+                var pos = ButtonBaseTransform.position;
+                Handles.Label(pos, "Press limit");
+                Gizmos.DrawWireSphere(pos, 0.01f);
+            }
+
+            if (ButtonSurface != null)
+            {
+                Gizmos.color = Color.red;
+                var pos = ButtonSurface.position;
+                Handles.Label(pos, "Press surface");
+                Gizmos.DrawWireSphere(pos, 0.01f);
+            }
+            
+        }
+#endif
+        
     }
 }

@@ -3,16 +3,16 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Events;
 
-public class PokeInteractableUnityWrapper : MonoBehaviour
+public class ButtonInteractableUnityWrapper : MonoBehaviour
 {
+    
     [SerializeField] private GRPLButtonInteractable _interactable;
     
     // Unity events
-    [SerializeField] private UnityEvent _onInteractedStart;
-    [SerializeField] private UnityEvent _onInteractedEnd;
     [SerializeField] private UnityEvent _onProximityStart;
     [SerializeField] private UnityEvent _onProximityEnd;
-
+    [SerializeField] private UnityEvent _onInteractedStart;
+    [SerializeField] private UnityEvent _onInteractedEnd;
     // Unity event props
     public UnityEvent OnInteractedStart => _onInteractedStart;
     public UnityEvent OnInteractedEnd => _onInteractedEnd;
@@ -21,7 +21,7 @@ public class PokeInteractableUnityWrapper : MonoBehaviour
 
     private void OnValidate()
     {
-        Assert.AreNotEqual(_interactable,null,"PokeInteractableUnityWrapper, GRPL Poke Interactible not set");
+        Assert.AreNotEqual(_interactable,null,"ButtonInteractableUnityWrapper, GRPL Poke Interactible not set");
         
     }
 

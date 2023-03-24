@@ -15,6 +15,7 @@ namespace Rhinox.XR.Grapple.It
         [Header("Proximate detection parameters")]
         [SerializeField] private int _maxAmountOfProximatesPerHand = 3;
         [SerializeField] private float _proximateRadius = 1f;
+        [SerializeField] private XRHandJointID _proximateJointID = XRHandJointID.Palm;
         
         private JointManager _jointManager;
         private List<GRPLInteractable> _interactables = null;
@@ -76,13 +77,13 @@ namespace Rhinox.XR.Grapple.It
         /// <param name="hand">Hand to process</param>
         private void HandUpdate(RhinoxHand hand)
         {
-            // Get the palm joint
+            // Get the proximate joint
             // If it failed to get the joint, return
-            if(!_jointManager.TryGetJointFromHandById(XRHandJointID.Palm,hand,out var palm))
+            if(!_jointManager.TryGetJointFromHandById(_proximateJointID,hand,out var proximateJoint))
                 return;
             
             // Detect all the current proximates for this hand and invoke their events (if necessary)
-            var proximates = DetectProximates(hand, palm.JointPosition);
+            var proximates = DetectProximates(hand, proximateJoint.JointPosition);
 
             // Get all the joints of the given hand
             // If it failed to get the joints, return
@@ -93,8 +94,13 @@ namespace Rhinox.XR.Grapple.It
             foreach (var proximate in proximates)
             {
                 // Try to get a valid interactJoint
-                if(!proximate.TryGetCurrentInteractJoint(joints, out var interactJoint))
+                if (!proximate.TryGetCurrentInteractJoint(joints, out var interactJoint))
+                {
+                    if(proximate.State == GRPLInteractionState.Interacted)
+                        proximate.SetState(GRPLInteractionState.Proximate);
                     continue;
+                }
+                
                 
                 // Check if an interaction is happening
                 var isInteracted = proximate.CheckForInteraction(interactJoint);
@@ -128,6 +134,7 @@ namespace Rhinox.XR.Grapple.It
                 case RhinoxHand.Right:
                     currentProximates = _rightHandProximites;
                     break;
+                case RhinoxHand.Invalid:
                 default:
                     PLog.Error<GrappleItLogger>($"[{this.GetType()}:DetectProximates], function called with invalid hand {hand}");
                     return Array.Empty<GRPLInteractable>();
