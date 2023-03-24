@@ -21,7 +21,7 @@ namespace Rhinox.XR.Grapple.It
 
         private List<GRPLInteractable> _leftHandProximites;
         private List<GRPLInteractable> _rightHandProximites;
-
+        
         public void Awake()
         {
             if (Instance == null)
@@ -40,7 +40,11 @@ namespace Rhinox.XR.Grapple.It
             _rightHandProximites = new List<GRPLInteractable>();
         }
 
-        private void OnJointManagerInitialised(JointManager obj) =>_jointManager = obj;
+        private void OnJointManagerInitialised(JointManager obj)
+        {
+            _jointManager = obj;
+            _jointManager.TrackingLost += OnTrackingLost;
+        }
 
         private void Init()
         {
@@ -131,7 +135,7 @@ namespace Rhinox.XR.Grapple.It
             
             
             var newProximateInteractables =
-                new Dictionary<float, GRPLInteractable>();
+                new SortedDictionary<float, GRPLInteractable>();
             float proximateRadiusSqr = _proximateRadius * _proximateRadius;
             foreach (var interactable in _interactables)
             {
@@ -181,6 +185,7 @@ namespace Rhinox.XR.Grapple.It
             // Save a copy of the current proximates as the previousProximates
             var previousProximates = new List<GRPLInteractable>(currentProximates);
             
+            
             // Set the new current proximates
             currentProximates.Clear();
             foreach (var pair in newProximateInteractables)
@@ -204,18 +209,34 @@ namespace Rhinox.XR.Grapple.It
             GRPLInteractable.InteractableDestroyed -= OnInteractableDestroyed;
         }
 
-        private void OnInteractableCreated(GRPLInteractable interactable)
-        {
-            Debug.Log(((GRPLButtonInteractable)interactable).gameObject.name + " Added");
-            _interactables.Add(interactable);
-        }
+        private void OnInteractableCreated(GRPLInteractable interactable)=> _interactables.Add(interactable);
 
-        private void OnInteractableDestroyed(GRPLInteractable interactable)
+        private void OnInteractableDestroyed(GRPLInteractable interactable) => _interactables.Remove(interactable);
+
+        private void OnTrackingLost(RhinoxHand hand)
         {
-            Debug.Log(((GRPLButtonInteractable)interactable).gameObject.name + " Removed");
-            _interactables.Remove(interactable);
+            List<GRPLInteractable> proximates;
+            switch (hand)
+            {
+                case RhinoxHand.Left:
+                    proximates = _leftHandProximites;
+                    break;
+                case RhinoxHand.Right:
+                    proximates = _rightHandProximites;
+                    break;
+                case RhinoxHand.Invalid:
+                default:
+                    PLog.Error<GrappleItLogger>($"[{GetType()}:OnTrackingLost], function called with invalid hand {hand}");
+                    return;
+            }
+
+            foreach (var proximate in proximates)
+            {
+                proximate.SetState(GRPLInteractionState.Active);
+            }
+            proximates.Clear();
             
         }
-        
+
     }
 }

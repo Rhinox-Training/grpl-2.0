@@ -9,13 +9,13 @@ public class PokeInteractableUnityWrapper : MonoBehaviour
     
     // Unity events
     [SerializeField] private UnityEvent _onInteractedStart;
-    [SerializeField] private UnityEvent _OnInteractedEnd;
+    [SerializeField] private UnityEvent _onInteractedEnd;
     [SerializeField] private UnityEvent _onProximityStart;
     [SerializeField] private UnityEvent _onProximityEnd;
 
     // Unity event props
     public UnityEvent OnInteractedStart => _onInteractedStart;
-    public UnityEvent OnInteractedEnd => _OnInteractedEnd;
+    public UnityEvent OnInteractedEnd => _onInteractedEnd;
     public UnityEvent OnProximityStart => _onProximityStart;
     public UnityEvent OnProximityEnd => _onProximityEnd;
 
