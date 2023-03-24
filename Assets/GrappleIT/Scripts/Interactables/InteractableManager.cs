@@ -22,9 +22,6 @@ namespace Rhinox.XR.Grapple.It
         private List<GRPLInteractable> _leftHandProximites;
         private List<GRPLInteractable> _rightHandProximites;
 
-        private GRPLInteractable _currentLeftSelectedObject = null;
-        private GRPLInteractable _currentRightSelectedObject = null;
-        
         public void Awake()
         {
             if (Instance == null)
@@ -68,6 +65,11 @@ namespace Rhinox.XR.Grapple.It
                 HandUpdate(RhinoxHand.Right);
         }
 
+        /// <summary>
+        /// This methods handles all interactable updates for the given hand.  <br />
+        /// It first detects the proximates and then checks those proximates for interactions.
+        /// </summary>
+        /// <param name="hand">Hand to process</param>
         private void HandUpdate(RhinoxHand hand)
         {
             // Get the palm joint

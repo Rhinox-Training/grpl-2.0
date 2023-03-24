@@ -3,6 +3,11 @@ using UnityEngine;
 
 namespace Rhinox.XR.Grapple.It
 {
+    /// <summary>
+    /// This abstract base class is used for Grapple interactables. <br />
+    /// If all pure abstract methods are correctly implemented, the derived interactables should work seamlessly with
+    /// the <see cref="InteractableManager"/>. 
+    /// </summary>
     public abstract class GRPLInteractable : MonoBehaviour
     {
         public delegate void InteractableEvent(GRPLInteractable grappleInteractable);
@@ -77,7 +82,8 @@ namespace Rhinox.XR.Grapple.It
         /// An example could be a projected distance check, where the joint with the lowest distance gets returned.
         /// </summary>
         /// <param name="joints"> A collection of joints to check.</param>
-        /// <returns>The joint that should get used for interaction checks.</returns>
+        /// <param name="joint"> An out parameter for a valid joint, if one was found</param>
+        /// <returns>Whether a valid joint was found.</returns>
         public abstract bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint joint);
     }
 }

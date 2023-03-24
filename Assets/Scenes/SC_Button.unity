@@ -694,6 +694,7 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 2081176553}
   _interactObject: {fileID: 374274496}
   _selectStartPercentage: 0.7
+  _jointBehindButtonStopDelay: 0.75
 --- !u!4 &295786215
 Transform:
   m_ObjectHideFlags: 0
@@ -1027,6 +1028,7 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 1704482927}
   _interactObject: {fileID: 1263746503}
   _selectStartPercentage: 0.7
+  _jointBehindButtonStopDelay: 2.5
 --- !u!4 &384093230
 Transform:
   m_ObjectHideFlags: 0
@@ -1417,6 +1419,7 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 886012642}
   _interactObject: {fileID: 713294823}
   _selectStartPercentage: 0.7
+  _jointBehindButtonStopDelay: 100
 --- !u!114 &447570028
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1620,6 +1623,7 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 347062518}
   _interactObject: {fileID: 39569034}
   _selectStartPercentage: 0.7
+  _jointBehindButtonStopDelay: 0.75
 --- !u!4 &464770830
 Transform:
   m_ObjectHideFlags: 0
@@ -1756,6 +1760,7 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 2032211500}
   _interactObject: {fileID: 863340080}
   _selectStartPercentage: 0.7
+  _jointBehindButtonStopDelay: 0.75
 --- !u!4 &497309448
 Transform:
   m_ObjectHideFlags: 0
@@ -2728,6 +2733,7 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 843355341}
   _interactObject: {fileID: 1269211883}
   _selectStartPercentage: 0.7
+  _jointBehindButtonStopDelay: 0.75
 --- !u!4 &1015200663
 Transform:
   m_ObjectHideFlags: 0
@@ -3106,6 +3112,7 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 588027259}
   _interactObject: {fileID: 1382895958}
   _selectStartPercentage: 0.7
+  _jointBehindButtonStopDelay: 0.75
 --- !u!4 &1174563448
 Transform:
   m_ObjectHideFlags: 0
@@ -3830,6 +3837,7 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 580714594}
   _interactObject: {fileID: 90268559}
   _selectStartPercentage: 0.7
+  _jointBehindButtonStopDelay: 0.75
 --- !u!4 &1429030245
 Transform:
   m_ObjectHideFlags: 0
@@ -3966,6 +3974,7 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 1898703327}
   _interactObject: {fileID: 586303969}
   _selectStartPercentage: 0.7
+  _jointBehindButtonStopDelay: 0.75
 --- !u!4 &1467354054
 Transform:
   m_ObjectHideFlags: 0
