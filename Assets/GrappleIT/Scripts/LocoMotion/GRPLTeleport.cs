@@ -35,7 +35,7 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField] public float _teleportCooldown = 1.5f;
 
         [Range(1, 10)]
-        [SerializeField] private int _destinationSmoothingAmount = 5;//TODO: IMPLEMENT ACTUAL SMOOTHING
+        [SerializeField] private int _destinationSmoothingAmount = 5;
 
         [SerializeField] public float _maxDistance = 50f;
         [SerializeField] public float _lowestHeight = -50f;
@@ -111,11 +111,11 @@ namespace Rhinox.XR.Grapple.It
                 return;
             }
 
-            //if (_lineRenderer == null)
-            //{
-            //    Debug.LogError($"Given {nameof(LineRenderer)} was NULL");
-            //    return;
-            //}
+            if (_lineRenderer == null)
+            {
+                Debug.LogError($"Given {nameof(LineRenderer)} was NULL");
+                return;
+            }
 
             _jointManager.TrackingAcquired += TrackingAcquired;
             _jointManager.TrackingLost += TrackingLost;
@@ -126,12 +126,7 @@ namespace Rhinox.XR.Grapple.It
             _teleportZoneVisual = GameObject.CreatePrimitive(PrimitiveType.Cube);
             _teleportZoneVisual.transform.localScale = new Vector3(.5f, .1f, .5f);
 
-            //_lineRenderer = gameObject.AddComponent<LineRenderer>();
-            //_lineRenderer.material = UnityEditor.AssetDatabase.GetBuiltinExtraResource<Material>("Default-Line.mat");
-            //_lineRenderer.startColor = Color.green;
-            //_lineRenderer.endColor = Color.green;
-            //_lineRenderer.positionCount = 10;
-            _lineRenderer.widthMultiplier = .05f;
+
             _lineRenderer.enabled = false;
 
             _teleportPositions.Limit = _destinationSmoothingAmount;
@@ -287,9 +282,11 @@ namespace Rhinox.XR.Grapple.It
             //Debug.DrawLine(points[indexNextPoint - 1], new Vector3(intersectPoint.x, _teleportZoneVisual.transform.position.y, intersectPoint.z), Color.cyan, 0f, false);
             _teleportZoneVisual.transform.position = new Vector3(avgPos.x, _teleportZoneVisual.transform.position.y, avgPos.z);
 
+            //TODO: Add endpoint of line as last position in the lineredner point array
+
             //rendering part
             _lineRenderer.positionCount = indexNextPoint + 1;
-            for (int index = 0; index < indexNextPoint + 1; index++)
+            for (int index = 0; index < indexNextPoint + 1 && index < points.Count; index++)
             {
                 _lineRenderer.SetPosition(index, points[index]);
             }
@@ -329,6 +326,20 @@ namespace Rhinox.XR.Grapple.It
         private void ResetCooldown()
         {
             _isOnCooldown = false;
+
+            //enable sensor after cooldown
+            switch (_hand)
+            {
+                case RhinoxHand.Left:
+                    _sensorObjL.SetActive(true);
+                    break;
+                case RhinoxHand.Right:
+                    _sensorObjR.SetActive(true);
+                    break;
+                case RhinoxHand.Invalid:
+                default:
+                    break;
+            }
         }
 
         #region Handtracking Specific Logic
