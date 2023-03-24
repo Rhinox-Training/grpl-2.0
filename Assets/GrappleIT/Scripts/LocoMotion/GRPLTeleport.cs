@@ -1,10 +1,13 @@
+using Rhinox.GUIUtils.Attributes;
 using Rhinox.Lightspeed.Collections;
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.PackageManager;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.XR;
 
 namespace Rhinox.XR.Grapple.It
@@ -25,7 +28,7 @@ namespace Rhinox.XR.Grapple.It
 
     public class GRPLTeleport : MonoBehaviour
     {
-        //[Header("Visual")]
+        [Header("Sensor Visual")]
         [SerializeField] private GameObject _sensorModel = null;
 
         [Header("Arc Visual Settings")]
@@ -34,22 +37,27 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField] public float _visualStopDelay = 0.5f;
         [SerializeField] public float _teleportCooldown = 1.5f;
 
+        [Header("Arc General Settings")]
         [Range(1, 10)]
         [SerializeField] private int _destinationSmoothingAmount = 5;
-
         [SerializeField] public float _maxDistance = 50f;
         [SerializeField] public float _lowestHeight = -50f;
         [SerializeField] public float _initialVelocity = 1f;
-        private const float _gravity = -9.81f;
-
         [Range(0.001f, 2f)]
         [SerializeField] private float _lineSubIterations = 1f;
 
+        [Header("Snapping")]
+        [SerializeField] private bool _enableSnapping = true;
+        [SerializeField] private float _maxSnapDistance = 2.5f;
+
+        [Header("Miscellaneous Settings")]
+
+        //[SerializeField] private 
         //[Header("Fade Settings")]
         //[SerializeField] public float FadeDuration = .15f;
-        //[Header("Snapping")]
-        //public float SnapAmount = .15f;
 
+
+        private const float _gravity = -9.81f;
 
         public bool IsInitialized => _isInitialized;
 
@@ -59,7 +67,11 @@ namespace Rhinox.XR.Grapple.It
         public bool ShowArc
         {
             get { return _lineRenderer.enabled; }
-            set { _lineRenderer.enabled = value; }
+            set
+            {
+                _lineRenderer.enabled = value;
+                _teleportZoneVisual.SetActive(value);
+            }
         }
 
         private JointManager _jointManager = null;
@@ -90,6 +102,7 @@ namespace Rhinox.XR.Grapple.It
         private bool _isEnabledL = false;
         private bool _isEnabledR = false;
 
+        #region Initialization and Setup
         public void Initialize(JointManager jointManager, GestureRecognizer gestureRecognizer)
         {
             _jointManager = jointManager;
@@ -125,7 +138,7 @@ namespace Rhinox.XR.Grapple.It
 
             _teleportZoneVisual = GameObject.CreatePrimitive(PrimitiveType.Cube);
             _teleportZoneVisual.transform.localScale = new Vector3(.5f, .1f, .5f);
-
+            Destroy(_teleportZoneVisual.GetComponent<BoxCollider>());
 
             _lineRenderer.enabled = false;
 
@@ -134,9 +147,12 @@ namespace Rhinox.XR.Grapple.It
             _isInitialized = true;
         }
 
+        /// <summary>
+        /// getting the teleport gesture and linking the <see cref="StartedPointing"/> and <see cref="StoppedPointing"/> events
+        /// </summary>
+        /// <returns>Did it succeed in finding the gesture and linking the events</returns>
         private bool TrySetupTeleportGesture()
         {
-            //getting the teleport gesture and linking events
             _teleportGesture = _gestureRecognizer.Gestures.Find(x => x.Name == "Teleport");
             if (_teleportGesture != null)
             {
@@ -169,6 +185,7 @@ namespace Rhinox.XR.Grapple.It
             proxySensor.HandLayer = LayerMask.NameToLayer("Hands");
             proxySensor.AddListenerOnSensorEnter(ConfirmTeleport);
         }
+        #endregion
 
         private void OnEnable()
         {
@@ -242,7 +259,7 @@ namespace Rhinox.XR.Grapple.It
                 points.Add(aimPosition);
 
                 var aimVector = aimDirection;
-                aimVector.y = aimVector.y + _gravity * 0.0111111111f * _lineSubIterations;//0.0111111111f is a magic constant I got from ovr TeleportAimHandlerParabolic.cs 
+                aimVector.y += _gravity * 0.0111111111f * _lineSubIterations;//0.0111111111f is a magic constant I got from ovr TeleportAimHandlerParabolic.cs 
                 aimDirection = aimVector;
                 aimPosition += aimVector;
 
@@ -251,18 +268,34 @@ namespace Rhinox.XR.Grapple.It
 
             //calc ground intersection point
             Vector3 intersectPoint = Vector3.negativeInfinity;
-            int indexNextPoint = 1;
             _lineRenderer.startColor = Color.red;
             _lineRenderer.endColor = Color.red;
+            bool isValidTeleportPoint = false;
+
+            int indexNextPoint = 1;
             for (; indexNextPoint < points.Count; indexNextPoint++)
             {
                 Ray currentRay = new Ray(points[indexNextPoint - 1], points[indexNextPoint] - points[indexNextPoint - 1]);
 
+                //check which segment of the arc intersects with the ground
                 if (Physics.Raycast(currentRay, out var hitInfo, Vector3.Distance(points[indexNextPoint], points[indexNextPoint - 1]), ~LayerMask.GetMask("Hands")))
                 {
-                    //intersectPoint = hitInfo.point;
+                    //if it was a collider, check if it has a teleportanchor
+                    if (_enableSnapping && hitInfo.collider.TryGetComponent<GRPLTeleportAnchor>(out var teleportAnchor))
+                    {
+                        if (Vector3.Distance(teleportAnchor.transform.position, hitInfo.point) <= _maxSnapDistance)
+                        {
+                            _teleportPositions.Clear();
+                            _teleportPositions.Enqueue(teleportAnchor.AnchorTransform.transform.position);
+                            isValidTeleportPoint = true;
+                        }
+                        else
+                            isValidTeleportPoint = CheckAndAddIfPointOnNavmesh(hitInfo.point);
+                    }
+                    else
+                        isValidTeleportPoint = CheckAndAddIfPointOnNavmesh(hitInfo.point);
 
-                    _teleportPositions.Enqueue(new Vector3(hitInfo.point.x, transform.position.y, hitInfo.point.z));
+                    intersectPoint = hitInfo.point;
 
                     if (!_isOnCooldown)
                     {
@@ -274,22 +307,47 @@ namespace Rhinox.XR.Grapple.It
             }
 
 
-            Vector3 avgPos = new Vector3(_teleportPositions.Average(vec => vec.x),
-                                         _teleportPositions.Average(vec => vec.y),
-                                         _teleportPositions.Average(vec => vec.z));
+            if (_teleportPositions.Count > 0)
+            {
+                Vector3 avgPos = new Vector3(_teleportPositions.Average(vec => vec.x),
+                                             _teleportPositions.Average(vec => vec.y),
+                                             _teleportPositions.Average(vec => vec.z));
 
-
-            //Debug.DrawLine(points[indexNextPoint - 1], new Vector3(intersectPoint.x, _teleportZoneVisual.transform.position.y, intersectPoint.z), Color.cyan, 0f, false);
-            _teleportZoneVisual.transform.position = new Vector3(avgPos.x, _teleportZoneVisual.transform.position.y, avgPos.z);
-
-            //TODO: Add endpoint of line as last position in the lineredner point array
+                if (isValidTeleportPoint)
+                {
+                    _teleportZoneVisual.SetActive(true);
+                    _teleportZoneVisual.transform.position = avgPos;// new Vector3(avgPos.x, _teleportZoneVisual.transform.position.y, avgPos.z);
+                }
+                else
+                {
+                    _lineRenderer.startColor = Color.red;
+                    _lineRenderer.endColor = Color.red;
+                    _teleportZoneVisual.SetActive(false);
+                }
+            }
 
             //rendering part
-            _lineRenderer.positionCount = indexNextPoint + 1;
-            for (int index = 0; index < indexNextPoint + 1 && index < points.Count; index++)
+            _lineRenderer.positionCount = indexNextPoint + 1;//index to count
+            for (int index = 0; index < _lineRenderer.positionCount; index++)// && index < points.Count; index++)
             {
                 _lineRenderer.SetPosition(index, points[index]);
             }
+
+            Debug.Log($"LineRendere: {_lineRenderer.positionCount}\r\nPoints {points.Count}");
+
+            _lineRenderer.SetPosition(indexNextPoint, intersectPoint);
+        }
+
+        private bool CheckAndAddIfPointOnNavmesh(Vector3 pos)
+        {
+            //adding .5f to the y axis to avoid the problem of the position is at the same level as the navmesh making the navmesh raycast fail
+            if (NavMesh.SamplePosition(new Vector3(pos.x, pos.y + .5f, pos.z), out var info, 1f, 1 << NavMesh.GetAreaFromName("Teleportable")))
+            {
+                //_teleportPositions.Enqueue(new Vector3(pos.x, transform.position.y, pos.z));
+                _teleportPositions.Enqueue(pos);
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -300,7 +358,7 @@ namespace Rhinox.XR.Grapple.It
             if (_isOnCooldown)
                 return;
 
-            gameObject.transform.position = new Vector3(_teleportZoneVisual.transform.position.x, gameObject.transform.position.y, _teleportZoneVisual.transform.position.z);
+            gameObject.transform.position = _teleportZoneVisual.transform.position; //new Vector3(_teleportZoneVisual.transform.position.x, gameObject.transform.position.y, _teleportZoneVisual.transform.position.z);
 
             _lineRenderer.startColor = Color.red;
             _lineRenderer.endColor = Color.red;
