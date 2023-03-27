@@ -2069,7 +2069,7 @@ MonoBehaviour:
   _lineRenderer: {fileID: 1843942443}
   _visualStartDelay: 0.3
   _visualStopDelay: 0.5
-  _teleportCooldown: 1.5
+  _teleportCooldown: 0.75
   _destinationSmoothingAmount: 7
   _maxDistance: 50
   _lowestHeight: -25
