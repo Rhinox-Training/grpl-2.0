@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Test
+  m_Name: LightButtonRoundedBackdrop
   m_Shader: {fileID: 4800000, guid: 410a6658095ab0d4698da85d499f4e2c, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -70,14 +70,14 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Radius: 0.25
+    - _Radius: 0.18
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
-    - _Width: 0.96
+    - _Width: 1
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.3490564, g: 0.31744376, b: 0.31744376, a: 0.38431373}
+    - _Color: {r: 0.7169812, g: 0.7169812, b: 0.7169812, a: 0.49019608}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []

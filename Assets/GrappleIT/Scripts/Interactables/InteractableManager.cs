@@ -140,7 +140,6 @@ namespace Rhinox.XR.Grapple.It
                     return Array.Empty<GRPLInteractable>();
             }
             
-            
             var newProximateInteractables =
                 new SortedDictionary<float, GRPLInteractable>();
             float proximateRadiusSqr = _proximateRadius * _proximateRadius;
