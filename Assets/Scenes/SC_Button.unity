@@ -132,7 +132,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 26352020}
-  - component: {fileID: 26352019}
   - component: {fileID: 26352021}
   m_Layer: 0
   m_Name: InteractibleManager
@@ -141,18 +140,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &26352019
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 26352018}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00c5a44f641a7ef47bc0497bc4478ad7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &26352020
 Transform:
   m_ObjectHideFlags: 0
@@ -181,9 +168,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Instance: {fileID: 0}
-  _maxAmountOfProximatesPerHand: 5
-  _proximateRadius: 0.5
+  _maxAmountOfProximatesPerHand: 9
+  _proximateRadius: 0.25
   _proximateJointID: 12
+  _interactibleGroups:
+  - {fileID: 1110593844}
 --- !u!1 &37698822
 GameObject:
   m_ObjectHideFlags: 0
@@ -491,7 +480,6 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 370884511}
   _interactObject: {fileID: 951720752}
   _selectStartPercentage: 0.25
-  _jointBehindButtonStopDelay: 5
 --- !u!1 &112914399
 GameObject:
   m_ObjectHideFlags: 0
@@ -697,6 +685,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 130702485}
+  - component: {fileID: 130702486}
   m_Layer: 0
   m_Name: Panel
   m_TagString: Untagged
@@ -721,6 +710,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &130702486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 130702484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6bb231319f3c394bb839bc738a4636d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &137069409
 GameObject:
   m_ObjectHideFlags: 0
@@ -1154,11 +1155,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ac7812c106125c4a87a301f554ab8f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _drawDebug: 1
+  _drawDebug: 0
   _interactableBaseTransform: {fileID: 1037444920}
   _interactObject: {fileID: 359091173}
-  _selectStartPercentage: 0.55
-  _jointBehindButtonStopDelay: 5
+  _selectStartPercentage: 0.4
 --- !u!1 &293357098
 GameObject:
   m_ObjectHideFlags: 0
@@ -1209,7 +1209,6 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 1159259492}
   _interactObject: {fileID: 1020492204}
   _selectStartPercentage: 0.25
-  _jointBehindButtonStopDelay: 5
 --- !u!1 &322234718
 GameObject:
   m_ObjectHideFlags: 0
@@ -1882,11 +1881,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ac7812c106125c4a87a301f554ab8f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _drawDebug: 1
+  _drawDebug: 0
   _interactableBaseTransform: {fileID: 389455320}
   _interactObject: {fileID: 978374384}
-  _selectStartPercentage: 0.55
-  _jointBehindButtonStopDelay: 5
+  _selectStartPercentage: 0.4
 --- !u!1 &525805204
 GameObject:
   m_ObjectHideFlags: 0
@@ -1965,11 +1963,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ac7812c106125c4a87a301f554ab8f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _drawDebug: 1
+  _drawDebug: 0
   _interactableBaseTransform: {fileID: 525805205}
   _interactObject: {fileID: 972641877}
-  _selectStartPercentage: 0.55
-  _jointBehindButtonStopDelay: 5
+  _selectStartPercentage: 0.4
 --- !u!1 &562608182
 GameObject:
   m_ObjectHideFlags: 0
@@ -2020,7 +2017,6 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 1804658658}
   _interactObject: {fileID: 1937194935}
   _selectStartPercentage: 0.25
-  _jointBehindButtonStopDelay: 5
 --- !u!1 &569410262
 GameObject:
   m_ObjectHideFlags: 0
@@ -2399,11 +2395,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ac7812c106125c4a87a301f554ab8f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _drawDebug: 1
+  _drawDebug: 0
   _interactableBaseTransform: {fileID: 457007123}
   _interactObject: {fileID: 937249146}
-  _selectStartPercentage: 0.55
-  _jointBehindButtonStopDelay: 5
+  _selectStartPercentage: 0.4
 --- !u!1 &698182270
 GameObject:
   m_ObjectHideFlags: 0
@@ -2618,7 +2613,6 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 1840236698}
   _interactObject: {fileID: 1350784501}
   _selectStartPercentage: 0.25
-  _jointBehindButtonStopDelay: 5
 --- !u!1 &772312374
 GameObject:
   m_ObjectHideFlags: 0
@@ -3379,11 +3373,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ac7812c106125c4a87a301f554ab8f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _drawDebug: 1
+  _drawDebug: 0
   _interactableBaseTransform: {fileID: 1106942693}
   _interactObject: {fileID: 1157747501}
-  _selectStartPercentage: 0.55
-  _jointBehindButtonStopDelay: 5
+  _selectStartPercentage: 0.4
 --- !u!1 &930219973
 GameObject:
   m_ObjectHideFlags: 0
@@ -3910,6 +3903,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1039238250}
+  - component: {fileID: 1039238251}
   m_Layer: 0
   m_Name: Buttons
   m_TagString: Untagged
@@ -3941,6 +3935,18 @@ Transform:
   m_Father: {fileID: 130702485}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1039238251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1039238249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6bb231319f3c394bb839bc738a4636d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1052780471
 GameObject:
   m_ObjectHideFlags: 0
@@ -4115,6 +4121,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1110593843}
+  - component: {fileID: 1110593844}
   m_Layer: 0
   m_Name: UI BUTTONS
   m_TagString: Untagged
@@ -4130,7 +4137,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1110593842}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.175, y: 0.75022644, z: -2.888}
+  m_LocalPosition: {x: 0.217, y: 0.75022644, z: -2.888}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4146,6 +4153,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1110593844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1110593842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6bb231319f3c394bb839bc738a4636d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1157747500
 GameObject:
   m_ObjectHideFlags: 0
@@ -4256,11 +4275,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ac7812c106125c4a87a301f554ab8f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _drawDebug: 1
+  _drawDebug: 0
   _interactableBaseTransform: {fileID: 1823643136}
   _interactObject: {fileID: 182884049}
-  _selectStartPercentage: 0.55
-  _jointBehindButtonStopDelay: 5
+  _selectStartPercentage: 0.4
 --- !u!1 &1303199164
 GameObject:
   m_ObjectHideFlags: 0
@@ -4668,7 +4686,6 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 2006563335}
   _interactObject: {fileID: 2138547903}
   _selectStartPercentage: 0.25
-  _jointBehindButtonStopDelay: 5
 --- !u!1 &1498657494
 GameObject:
   m_ObjectHideFlags: 0
@@ -4830,11 +4847,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ac7812c106125c4a87a301f554ab8f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _drawDebug: 1
+  _drawDebug: 0
   _interactableBaseTransform: {fileID: 576468128}
   _interactObject: {fileID: 772312375}
-  _selectStartPercentage: 0.55
-  _jointBehindButtonStopDelay: 5
+  _selectStartPercentage: 0.4
 --- !u!1 &1551564765
 GameObject:
   m_ObjectHideFlags: 0
@@ -4885,7 +4901,6 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 1107230079}
   _interactObject: {fileID: 821127323}
   _selectStartPercentage: 0.25
-  _jointBehindButtonStopDelay: 5
 --- !u!1 &1589986581
 GameObject:
   m_ObjectHideFlags: 0
@@ -5628,11 +5643,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ac7812c106125c4a87a301f554ab8f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _drawDebug: 1
+  _drawDebug: 0
   _interactableBaseTransform: {fileID: 1499235477}
   _interactObject: {fileID: 746334589}
-  _selectStartPercentage: 0.55
-  _jointBehindButtonStopDelay: 5
+  _selectStartPercentage: 0.4
 --- !u!1 &1816746467
 GameObject:
   m_ObjectHideFlags: 0
@@ -5683,7 +5697,6 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 961948665}
   _interactObject: {fileID: 63877137}
   _selectStartPercentage: 0.25
-  _jointBehindButtonStopDelay: 5
 --- !u!1 &1823643135
 GameObject:
   m_ObjectHideFlags: 0
@@ -6522,7 +6535,6 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 394207465}
   _interactObject: {fileID: 42276286}
   _selectStartPercentage: 0.25
-  _jointBehindButtonStopDelay: 5
 --- !u!1 &2138547902
 GameObject:
   m_ObjectHideFlags: 0
@@ -6673,7 +6685,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: _selectStartPercentage
-      value: 0.55
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935802, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: m_Name
@@ -6688,6 +6700,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5210042141153954088, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
+      propertyPath: _drawDebug
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5210042141153954089, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
       propertyPath: m_Name
       value: Square button

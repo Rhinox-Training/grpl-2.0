@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Rhinox.XR.Grapple.It;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -47,22 +44,22 @@ public class ButtonMaterialChanger : MonoBehaviour
       Assert.AreNotEqual(_interactedMaterial, null, "[ButtonMaterialChanger,OnValidate], _interactedMaterial not set!");
    }
 
-   private void OnProximityStarted()
+   private void OnProximityStarted(GRPLInteractable obj)
    {
       _target.material = _proximityMaterial;
    }
 
-   private void OnProximityEnded()
+   private void OnProximityEnded(GRPLInteractable obj)
    {
       _target.material = _defaultMaterial;
    }
 
-   private void OnInteractedStarted()
+   private void OnInteractedStarted(GRPLInteractable obj)
    {
       _target.material = _interactedMaterial;
    }
 
-   private void OnInteractedEnded()
+   private void OnInteractedEnded(GRPLInteractable obj)
    {
       _target.material = _defaultMaterial;
    }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Rhinox.XR.Grapple.It
@@ -14,6 +15,11 @@ namespace Rhinox.XR.Grapple.It
         public static InteractableEvent InteractableCreated = null;
         public static InteractableEvent InteractableDestroyed = null;
 
+        public event Action<GRPLInteractable> OnInteractStarted;
+        public event Action<GRPLInteractable> OnInteractEnded;
+        public event Action<GRPLInteractable> OnProximityStarted;
+        public event Action<GRPLInteractable> OnProximityEnded;
+        
         protected virtual void Initialize() { }
         protected virtual void Destroyed() { }
 
@@ -64,11 +70,11 @@ namespace Rhinox.XR.Grapple.It
             _state = newState;
         }
 
-        private protected virtual void InteractStarted() {}
-        private protected virtual void InteractStopped() {}
+        private protected virtual void InteractStarted() => OnInteractStarted?.Invoke(this);
+        private protected virtual void InteractStopped() => OnInteractEnded?.Invoke(this);
 
-        private protected virtual void ProximityStarted() {}
-        private protected virtual void ProximityStopped() {}
+        private protected virtual void ProximityStarted() => OnProximityStarted?.Invoke(this);
+        private protected virtual void ProximityStopped() => OnProximityEnded?.Invoke(this);
 
         /// <summary>
         /// Check whether the given joint activates the interaction for this interactable.
@@ -85,5 +91,20 @@ namespace Rhinox.XR.Grapple.It
         /// <param name="joint"> An out parameter for a valid joint, if one was found</param>
         /// <returns>Whether a valid joint was found.</returns>
         public abstract bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint joint);
+
+
+        /// <summary>
+        /// Checks if point p1 is closer to the interactible than point p2.
+        /// </summary>
+        /// <param name="p1">The main point</param>
+        /// <param name="p2">The other point</param>
+        /// <returns>A boolean representing whether the point is closer or not.</returns>
+        public virtual bool IsPointCloserThanOtherPoint(Vector3 p1, Vector3 p2)
+        {
+            var position = transform.position;
+            float distanceSqr1 = (position - p1).sqrMagnitude;
+            float distanceSqr2 = (position - p2).sqrMagnitude;
+            return distanceSqr1 < distanceSqr2;
+        }
     }
 }

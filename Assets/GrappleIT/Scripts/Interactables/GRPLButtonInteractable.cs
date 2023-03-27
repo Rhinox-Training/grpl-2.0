@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Rhinox.Lightspeed;
-using Rhinox.Perceptor;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,31 +9,24 @@ namespace Rhinox.XR.Grapple.It
     public class GRPLButtonInteractable : GRPLInteractable
     {
         [Header("Debug drawing")]
-        [SerializeField] private bool _drawDebug = false;
+        [SerializeField] private bool _drawDebug;
         
         [Header("Poke parameters")] [SerializeField]
         private Transform _interactableBaseTransform;
-        public Transform ButtonBaseTransform => _interactableBaseTransform;
+
+        private Transform ButtonBaseTransform => _interactableBaseTransform;
         [SerializeField] private Transform _interactObject;
-        public Transform ButtonSurface => _interactObject;
+        private Transform ButtonSurface => _interactObject;
 
         [Header("Activation parameters")] [SerializeField] [Range(0f, 1f)]
         private float _selectStartPercentage = 0.25f;
-
-        [SerializeField] private float _jointBehindButtonStopDelay = 5f;
-        
         private const float INITIAL_INTERACT_OFFSET = 0.25f;
         
         public float SelectStartPercentage => _selectStartPercentage;
         private float _maxPressDistance;
         public float MaxPressedDistance => _maxPressDistance;
 
-        public event Action OnInteractStarted;
-        public event Action OnInteractEnded;
-        public event Action OnProximityStarted;
-        public event Action OnProximityEnded;
-
-        public Bounds PressBounds { get; private set; }
+        private Bounds PressBounds { get; set; }
 
         protected override void Initialize()
         {
@@ -56,30 +47,20 @@ namespace Rhinox.XR.Grapple.It
         //-----------------------
         // INHERITED EVENTS
         //-----------------------
-        private protected override void InteractStarted() => OnInteractStarted?.Invoke();
         private protected override void InteractStopped()
         {
-            OnInteractEnded?.Invoke();
             ButtonSurface.transform.position = ButtonBaseTransform.position +
                                                _maxPressDistance * ButtonBaseTransform.forward;
+            base.InteractStopped();
         }
 
-        private protected override void ProximityStarted() => OnProximityStarted?.Invoke();
-        private protected override void ProximityStopped() => OnProximityEnded?.Invoke();
-
-        //-----------------------
-        // COROUTINES
-        //-----------------------
-        [Obsolete]
-        private IEnumerator BehindInteractedCoroutine()
+        private protected override void ProximityStopped()
         {
-            PLog.Info<GrappleItLogger>($"Joint behind button, waiting for {_jointBehindButtonStopDelay} seconds", this);
-
-            yield return new WaitForSecondsRealtime(_jointBehindButtonStopDelay);
-            PLog.Warn<GrappleItLogger>("Too long behind button, stopping the interaction");
-            SetState(GRPLInteractionState.Proximate);
+            ButtonSurface.transform.position = ButtonBaseTransform.position +
+                                               _maxPressDistance * ButtonBaseTransform.forward;
+            base.ProximityStopped();
         }
-
+        
         //-----------------------
         // INHERITED METHODS
         //-----------------------
@@ -151,7 +132,6 @@ namespace Rhinox.XR.Grapple.It
 
             return outJoint != null;
         }
-
 
         //-----------------------
         // EDITOR ONLY METHODS

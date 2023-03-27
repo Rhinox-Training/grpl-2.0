@@ -42,8 +42,8 @@ public class ButtonInteractableUnityWrapper : MonoBehaviour
         _interactable.OnProximityEnded -= OnInteractableProximityEnded;
    }
 
-    private void OnInteractableInteractStarted() => OnInteractedStart.Invoke();
-    private void OnInteractableEnded() => OnInteractedEnd.Invoke();
-    private void OnInteractableProximityStarted() => OnProximityStart.Invoke();
-    private void OnInteractableProximityEnded() => OnProximityEnd.Invoke();
+    private void OnInteractableInteractStarted(GRPLInteractable obj) => OnInteractedStart.Invoke();
+    private void OnInteractableEnded(GRPLInteractable obj) => OnInteractedEnd.Invoke();
+    private void OnInteractableProximityStarted(GRPLInteractable obj) => OnProximityStart.Invoke();
+    private void OnInteractableProximityEnded(GRPLInteractable obj) => OnProximityEnd.Invoke();
 }
