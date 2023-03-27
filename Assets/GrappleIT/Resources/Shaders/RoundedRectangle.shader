@@ -76,7 +76,8 @@ Shader "Grapple/RoundedRectangle"
                 i.uv = abs(i.uv) - float2(i.width, i.height) + i.radius;
                 float d = length(max(0, i.uv)) / i.radius;
                 float alpha = saturate((1 - d) / fwidth(d));
-                i.color.a = alpha - i.color.a;
+                // i.color.a = alpha - i.color.a;
+                i.color.a = alpha - (1-i.color.a);
                 i.color.a = saturate(i.color.a);
                 return i.color;
             }

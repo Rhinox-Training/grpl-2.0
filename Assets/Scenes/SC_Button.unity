@@ -1157,7 +1157,7 @@ MonoBehaviour:
   _drawDebug: 1
   _interactableBaseTransform: {fileID: 1037444920}
   _interactObject: {fileID: 359091173}
-  _selectStartPercentage: 0.25
+  _selectStartPercentage: 0.55
   _jointBehindButtonStopDelay: 5
 --- !u!1 &293357098
 GameObject:
@@ -1885,7 +1885,7 @@ MonoBehaviour:
   _drawDebug: 1
   _interactableBaseTransform: {fileID: 389455320}
   _interactObject: {fileID: 978374384}
-  _selectStartPercentage: 0.25
+  _selectStartPercentage: 0.55
   _jointBehindButtonStopDelay: 5
 --- !u!1 &525805204
 GameObject:
@@ -1968,7 +1968,7 @@ MonoBehaviour:
   _drawDebug: 1
   _interactableBaseTransform: {fileID: 525805205}
   _interactObject: {fileID: 972641877}
-  _selectStartPercentage: 0.25
+  _selectStartPercentage: 0.55
   _jointBehindButtonStopDelay: 5
 --- !u!1 &562608182
 GameObject:
@@ -2070,8 +2070,8 @@ MonoBehaviour:
   _interactable: {fileID: 1240554639}
   _target: {fileID: 569410265}
   _defaultMaterial: {fileID: 2100000, guid: 7c3739c0b150cf14cb1410d9fd9b5a92, type: 2}
-  _proximityMaterial: {fileID: 2100000, guid: a9c42cdc7a531ae4db01524243049661, type: 2}
-  _interactedMaterial: {fileID: 2100000, guid: 5ba3957a77df2d6469a8c3f99430b787, type: 2}
+  _proximityMaterial: {fileID: 2100000, guid: 5ba3957a77df2d6469a8c3f99430b787, type: 2}
+  _interactedMaterial: {fileID: 2100000, guid: a9c42cdc7a531ae4db01524243049661, type: 2}
 --- !u!23 &569410265
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2203,8 +2203,8 @@ MonoBehaviour:
   _interactable: {fileID: 501944372}
   _target: {fileID: 651526238}
   _defaultMaterial: {fileID: 2100000, guid: 7c3739c0b150cf14cb1410d9fd9b5a92, type: 2}
-  _proximityMaterial: {fileID: 2100000, guid: a9c42cdc7a531ae4db01524243049661, type: 2}
-  _interactedMaterial: {fileID: 2100000, guid: 5ba3957a77df2d6469a8c3f99430b787, type: 2}
+  _proximityMaterial: {fileID: 2100000, guid: 5ba3957a77df2d6469a8c3f99430b787, type: 2}
+  _interactedMaterial: {fileID: 2100000, guid: a9c42cdc7a531ae4db01524243049661, type: 2}
 --- !u!23 &651526238
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2402,7 +2402,7 @@ MonoBehaviour:
   _drawDebug: 1
   _interactableBaseTransform: {fileID: 457007123}
   _interactObject: {fileID: 937249146}
-  _selectStartPercentage: 0.25
+  _selectStartPercentage: 0.55
   _jointBehindButtonStopDelay: 5
 --- !u!1 &698182270
 GameObject:
@@ -2912,8 +2912,8 @@ MonoBehaviour:
   _interactable: {fileID: 918214739}
   _target: {fileID: 823707130}
   _defaultMaterial: {fileID: 2100000, guid: 7c3739c0b150cf14cb1410d9fd9b5a92, type: 2}
-  _proximityMaterial: {fileID: 2100000, guid: a9c42cdc7a531ae4db01524243049661, type: 2}
-  _interactedMaterial: {fileID: 2100000, guid: 5ba3957a77df2d6469a8c3f99430b787, type: 2}
+  _proximityMaterial: {fileID: 2100000, guid: 5ba3957a77df2d6469a8c3f99430b787, type: 2}
+  _interactedMaterial: {fileID: 2100000, guid: a9c42cdc7a531ae4db01524243049661, type: 2}
 --- !u!23 &823707130
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3382,7 +3382,7 @@ MonoBehaviour:
   _drawDebug: 1
   _interactableBaseTransform: {fileID: 1106942693}
   _interactObject: {fileID: 1157747501}
-  _selectStartPercentage: 0.25
+  _selectStartPercentage: 0.55
   _jointBehindButtonStopDelay: 5
 --- !u!1 &930219973
 GameObject:
@@ -3785,8 +3785,8 @@ MonoBehaviour:
   _interactable: {fileID: 290944532}
   _target: {fileID: 980601847}
   _defaultMaterial: {fileID: 2100000, guid: 7c3739c0b150cf14cb1410d9fd9b5a92, type: 2}
-  _proximityMaterial: {fileID: 2100000, guid: a9c42cdc7a531ae4db01524243049661, type: 2}
-  _interactedMaterial: {fileID: 2100000, guid: 5ba3957a77df2d6469a8c3f99430b787, type: 2}
+  _proximityMaterial: {fileID: 2100000, guid: 5ba3957a77df2d6469a8c3f99430b787, type: 2}
+  _interactedMaterial: {fileID: 2100000, guid: a9c42cdc7a531ae4db01524243049661, type: 2}
 --- !u!23 &980601847
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3990,8 +3990,8 @@ MonoBehaviour:
   _interactable: {fileID: 538265432}
   _target: {fileID: 1052780474}
   _defaultMaterial: {fileID: 2100000, guid: 7c3739c0b150cf14cb1410d9fd9b5a92, type: 2}
-  _proximityMaterial: {fileID: 2100000, guid: a9c42cdc7a531ae4db01524243049661, type: 2}
-  _interactedMaterial: {fileID: 2100000, guid: 5ba3957a77df2d6469a8c3f99430b787, type: 2}
+  _proximityMaterial: {fileID: 2100000, guid: 5ba3957a77df2d6469a8c3f99430b787, type: 2}
+  _interactedMaterial: {fileID: 2100000, guid: a9c42cdc7a531ae4db01524243049661, type: 2}
 --- !u!23 &1052780474
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4259,7 +4259,7 @@ MonoBehaviour:
   _drawDebug: 1
   _interactableBaseTransform: {fileID: 1823643136}
   _interactObject: {fileID: 182884049}
-  _selectStartPercentage: 0.25
+  _selectStartPercentage: 0.55
   _jointBehindButtonStopDelay: 5
 --- !u!1 &1303199164
 GameObject:
@@ -4465,8 +4465,8 @@ MonoBehaviour:
   _interactable: {fileID: 668690399}
   _target: {fileID: 1395519225}
   _defaultMaterial: {fileID: 2100000, guid: 7c3739c0b150cf14cb1410d9fd9b5a92, type: 2}
-  _proximityMaterial: {fileID: 2100000, guid: a9c42cdc7a531ae4db01524243049661, type: 2}
-  _interactedMaterial: {fileID: 2100000, guid: 5ba3957a77df2d6469a8c3f99430b787, type: 2}
+  _proximityMaterial: {fileID: 2100000, guid: 5ba3957a77df2d6469a8c3f99430b787, type: 2}
+  _interactedMaterial: {fileID: 2100000, guid: a9c42cdc7a531ae4db01524243049661, type: 2}
 --- !u!23 &1395519225
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4833,7 +4833,7 @@ MonoBehaviour:
   _drawDebug: 1
   _interactableBaseTransform: {fileID: 576468128}
   _interactObject: {fileID: 772312375}
-  _selectStartPercentage: 0.25
+  _selectStartPercentage: 0.55
   _jointBehindButtonStopDelay: 5
 --- !u!1 &1551564765
 GameObject:
@@ -5631,7 +5631,7 @@ MonoBehaviour:
   _drawDebug: 1
   _interactableBaseTransform: {fileID: 1499235477}
   _interactObject: {fileID: 746334589}
-  _selectStartPercentage: 0.25
+  _selectStartPercentage: 0.55
   _jointBehindButtonStopDelay: 5
 --- !u!1 &1816746467
 GameObject:
@@ -6236,8 +6236,8 @@ MonoBehaviour:
   _interactable: {fileID: 1528005280}
   _target: {fileID: 2047894753}
   _defaultMaterial: {fileID: 2100000, guid: 7c3739c0b150cf14cb1410d9fd9b5a92, type: 2}
-  _proximityMaterial: {fileID: 2100000, guid: a9c42cdc7a531ae4db01524243049661, type: 2}
-  _interactedMaterial: {fileID: 2100000, guid: 5ba3957a77df2d6469a8c3f99430b787, type: 2}
+  _proximityMaterial: {fileID: 2100000, guid: 5ba3957a77df2d6469a8c3f99430b787, type: 2}
+  _interactedMaterial: {fileID: 2100000, guid: a9c42cdc7a531ae4db01524243049661, type: 2}
 --- !u!23 &2047894753
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -6420,8 +6420,8 @@ MonoBehaviour:
   _interactable: {fileID: 1806656413}
   _target: {fileID: 2104096028}
   _defaultMaterial: {fileID: 2100000, guid: 7c3739c0b150cf14cb1410d9fd9b5a92, type: 2}
-  _proximityMaterial: {fileID: 2100000, guid: a9c42cdc7a531ae4db01524243049661, type: 2}
-  _interactedMaterial: {fileID: 2100000, guid: 5ba3957a77df2d6469a8c3f99430b787, type: 2}
+  _proximityMaterial: {fileID: 2100000, guid: 5ba3957a77df2d6469a8c3f99430b787, type: 2}
+  _interactedMaterial: {fileID: 2100000, guid: a9c42cdc7a531ae4db01524243049661, type: 2}
 --- !u!23 &2104096028
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -6619,6 +6619,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1110593843}
     m_Modifications:
+    - target: {fileID: 4117710423132112227, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
+      propertyPath: _proximityMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 5ba3957a77df2d6469a8c3f99430b787, type: 2}
+    - target: {fileID: 4117710423132112227, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
+      propertyPath: _interactedMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: a9c42cdc7a531ae4db01524243049661, type: 2}
     - target: {fileID: 4117710423721935796, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -6662,6 +6670,10 @@ PrefabInstance:
     - target: {fileID: 4117710423721935796, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
+      propertyPath: _selectStartPercentage
+      value: 0.55
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935802, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: m_Name
