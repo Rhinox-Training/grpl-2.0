@@ -11,6 +11,7 @@ public class InteractibleGroup : MonoBehaviour
 
     private void Awake()
     {
+        _interactables = new List<GRPLInteractable>();
         foreach (var interactable in transform.GetComponentsInChildren<GRPLInteractable>())
             _interactables.Add(interactable);
     }
@@ -41,19 +42,11 @@ public class InteractibleGroup : MonoBehaviour
     private void OnInteractedStarted(GRPLInteractable interactable)
     {
         _currentInteractedObject = interactable;
-        Debug.Log("START");
     }
 
     private void OnInteractedEnded(GRPLInteractable interactable)
     {
         _currentInteractedObject = null;
-        Debug.Log("END");
-
-    }
-
-    private void Update()
-    {
-        // Debug.Log(_currentInteractedObject);
     }
 
     /// <summary>
@@ -76,6 +69,5 @@ public class InteractibleGroup : MonoBehaviour
                 interactable.SetState(GRPLInteractionState.Active);                
             }
         }
-        Debug.Log("");
     }
 }
