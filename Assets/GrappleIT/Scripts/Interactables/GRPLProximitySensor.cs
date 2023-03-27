@@ -20,6 +20,16 @@ namespace Rhinox.XR.Grapple.It
         [Space(10f)]
         [SerializeField] private UnityEvent OnSensorExit = null;
 
+        public void SetIgnoreList(RhinoxJointCapsule[] rhinoxJoinCapsules)
+        {
+            Collider proximityCollider = GetComponent<Collider>();
+            foreach (var jointCapsule in rhinoxJoinCapsules)
+            {
+                if (jointCapsule != null)
+                    Physics.IgnoreCollision(proximityCollider, jointCapsule.JointCollider);
+            }
+        }
+
 
         private void OnTriggerEnter(Collider other)
         {
