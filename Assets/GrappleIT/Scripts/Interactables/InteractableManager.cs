@@ -15,7 +15,7 @@ namespace Rhinox.XR.Grapple.It
         [Header("Proximate detection parameters")]
         [SerializeField] private int _maxAmountOfProximatesPerHand = 3;
         [SerializeField] private float _proximateRadius = 1f;
-        [SerializeField] private XRHandJointID _proximateJointID = XRHandJointID.Palm;
+        [SerializeField] private XRHandJointID _proximateJointID = XRHandJointID.MiddleMetacarpal;
         
         private JointManager _jointManager;
         private List<GRPLInteractable> _interactables = null;
@@ -185,9 +185,11 @@ namespace Rhinox.XR.Grapple.It
             
             // Detect which proximates are new
             // Do this by selecting all the pairs that the currentProximates list does not contain
-            var newProximates = newProximateInteractables.Where(x => currentProximates.Contains(x.Value) == false);
-            foreach (var pair in newProximates)
-                pair.Value.SetState(GRPLInteractionState.Proximate);
+            // var newProximates = newProximateInteractables.Where(x => currentProximates.Contains(x.Value) == false);
+            // foreach (var pair in newProximates)
+            //     pair.Value.SetState(GRPLInteractionState.Proximate);
+            foreach (var pair in newProximateInteractables)
+                    pair.Value.SetState(GRPLInteractionState.Proximate);
 
             // Save a copy of the current proximates as the previousProximates
             var previousProximates = new List<GRPLInteractable>(currentProximates);
