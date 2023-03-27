@@ -1,4 +1,5 @@
 using Rhinox.GUIUtils.Attributes;
+using Rhinox.Perceptor;
 using UnityEditor.SceneManagement;
 using UnityEditor.SearchService;
 using UnityEngine;
@@ -54,6 +55,8 @@ namespace Rhinox.XR.Grapple.It
                 Debug.LogWarning($"{nameof(GrappleManager)} Failed to find {nameof(GRPLTeleport)}");
                 return;
             }
+            
+     
         }
 
         // Update is called once per frame

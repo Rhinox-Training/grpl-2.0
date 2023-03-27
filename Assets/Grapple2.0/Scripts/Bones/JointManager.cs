@@ -7,6 +7,7 @@ using UnityEngine.XR.Management;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Rhinox.GUIUtils.Attributes;
+using Rhinox.Lightspeed;
 using UnityEngine.UIElements;
 
 namespace Rhinox.XR.Grapple
@@ -143,6 +144,7 @@ namespace Rhinox.XR.Grapple
             if (activeLoader == null)
             {
                 Debug.Log("Instance of XrLoader could not be acquired.");
+                return;
             }
 
             //Load the subsystem if possible
@@ -922,6 +924,31 @@ namespace Rhinox.XR.Grapple
         }
 
         /// <summary>
+        /// Gets all joints with XRHandJointID "jointID" from both hands.
+        /// </summary>
+        /// <param name="jointID">The desired joint ID</param>
+        /// <returns> An ICollection holding all the RhinoxJoints corresponding with jointID</returns>
+        public ICollection<RhinoxJoint> GetJointsFromBothHand(XRHandJointID jointID)
+        {
+            ICollection<RhinoxJoint> returnVal = new List<RhinoxJoint>();
+            
+            // Create compare local function
+            bool Match(RhinoxJoint joint) => joint.JointID == jointID;
+            
+            // If the left hand is being tracked,
+            // Get all instances in the left hand
+            if (IsLeftHandTracked)
+                returnVal.AddRange(_leftHandJoints.FindAll(Match));
+
+            // If the right hand is being tracked,
+            // Get all instances in the right hand
+            if (IsRightHandTracked)
+                returnVal.AddRange(_rightHandJoints.FindAll(Match));
+            
+            return returnVal.Count == 0 ? Array.Empty<RhinoxJoint>() : returnVal;
+        }
+
+        /// <summary>
         /// Gets all the XRHandJointIds from the given finger. 
         /// </summary>
         /// <param name="finger"></param>
@@ -974,6 +1001,8 @@ namespace Rhinox.XR.Grapple
             return returnValue;
         }
 
+        
+        
         #endregion
 
         /// <summary>
