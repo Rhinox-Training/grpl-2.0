@@ -522,8 +522,12 @@ namespace Rhinox.XR.Grapple
                 case RhinoxHand.Left:
                     {
                         var rootPose = _subsystem.leftHand.rootPose;
-                        _leftHandJoints[0].JointPosition = rootPose.position + transform.position;
-                        _leftHandJoints[0].JointRotation = rootPose.rotation * transform.rotation;
+
+                        var worldPose = rootPose.GetTransformedBy(new Pose(transform.position, transform.rotation));
+
+
+                        _leftHandJoints[0].JointPosition = worldPose.position;
+                        _leftHandJoints[0].JointRotation = worldPose.rotation;//transform.rotation;//rootPose.rotation;// * transform.rotation;
                         _leftHandJoints[0].Forward = rootPose.forward;
 
                         if (_subsystem.leftHand.GetJoint(XRHandJointID.Wrist).TryGetRadius(out var radius))
@@ -533,8 +537,13 @@ namespace Rhinox.XR.Grapple
                 case RhinoxHand.Right:
                     {
                         var rootPose = _subsystem.rightHand.rootPose;
-                        _rightHandJoints[0].JointPosition = rootPose.position + transform.position;
-                        _rightHandJoints[0].JointRotation = rootPose.rotation * transform.rotation;
+
+
+                        var worldPose = rootPose.GetTransformedBy(new Pose(transform.position, transform.rotation));
+
+
+                        _rightHandJoints[0].JointPosition = worldPose.position;
+                        _rightHandJoints[0].JointRotation = worldPose.rotation;//transform.rotation;// rootPose.rotation;// * transform.rotation;
                         _rightHandJoints[0].Forward = rootPose.forward;
 
                         if (_subsystem.rightHand.GetJoint(XRHandJointID.Wrist).TryGetRadius(out var radius))
@@ -600,8 +609,10 @@ namespace Rhinox.XR.Grapple
                 if (!subsystemJoint.TryGetPose(out var pose))
                     return;
 
-                currentJoint.JointPosition = pose.position + rigPos;
-                currentJoint.JointRotation = pose.rotation * rigRot;
+                var worldPose = pose.GetTransformedBy(new Pose(rigPos, rigRot));
+
+                currentJoint.JointPosition = worldPose.position;
+                currentJoint.JointRotation = worldPose.rotation;// pose.rotation;// * rigRot;
                 currentJoint.Forward = pose.forward;
 
                 if (subsystemJoint.TryGetRadius(out var radius))

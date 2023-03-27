@@ -150,7 +150,7 @@ namespace Rhinox.XR.Grapple.It
             _isInitialized = true;
         }
 
-        //The RhinoxJointColliders only get initialized when the hand
+        //The RhinoxJointColliders only get initialized when the hand goes in view for the first time in the fixedUpdate
         private void InitializeIgnoreList(RhinoxHand handedness)
         {
             switch (handedness)
@@ -342,7 +342,7 @@ namespace Rhinox.XR.Grapple.It
                 if (_isValidTeleportPoint)
                 {
                     _teleportZoneVisual.SetActive(true);
-                    _teleportZoneVisual.transform.position = avgPos;// new Vector3(avgPos.x, _teleportZoneVisual.transform.position.y, avgPos.z);
+                    _teleportZoneVisual.transform.position = avgPos;
                 }
                 else
                 {
@@ -352,8 +352,6 @@ namespace Rhinox.XR.Grapple.It
                 }
             }
 
-            //indexNextPoint=indexNextPoint >= points.Count? indexNextPoint
-
             //rendering part
             _lineRenderer.positionCount = indexNextPoint;
             for (int index = 0; index < indexNextPoint - 1; index++)// && index < points.Count; index++)
@@ -361,11 +359,7 @@ namespace Rhinox.XR.Grapple.It
                 _lineRenderer.SetPosition(index, points[index]);
             }
 
-            //Debug.Log($"LineRendere: {_lineRenderer.positionCount}\r\nPoints {points.Count}");
-            //if (_isValidTeleportPoint)
-            //intersectPoint.AnyIsNaN
-            //if (intersectPoint.AnyIsNegativeInfinity())
-            if (!(float.IsNegativeInfinity(intersectPoint.x) || float.IsNegativeInfinity(intersectPoint.y) || float.IsNegativeInfinity(intersectPoint.z)))
+            if (!intersectPoint.AnyIsNegativeInfinity())
                 _lineRenderer.SetPosition(indexNextPoint - 1, intersectPoint);
         }
 
