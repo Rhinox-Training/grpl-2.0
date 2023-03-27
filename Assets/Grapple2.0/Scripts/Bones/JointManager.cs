@@ -13,28 +13,6 @@ namespace Rhinox.XR.Grapple
 {
     public class JointManager : MonoBehaviour
     {
-        private XRHandSubsystem _subsystem;
-
-        private List<RhinoxJoint> _leftHandJoints = new List<RhinoxJoint>();
-        private List<RhinoxJoint> _rightHandJoints = new List<RhinoxJoint>();
-
-        private RhinoxJointCapsule[] _leftHandCapsules;
-        private RhinoxJointCapsule[] _rightHandCapsules;
-
-        private GameObject _leftHandCollidersParent;
-        private GameObject _rightHandCollidersParent;
-        public bool AreJointsInitialised { get; private set; } = false;
-
-        public bool HandTrackingProviderContainsCapsules = false;
-
-        public float ColliderActivationDelay = 1.5f;
-
-        // As it is impossible for the joints to fully touch each other, this value represents a total bend
-        public float BendDistMin = 0.3f;
-
-        // As it is almost impossible for a finger to be fully stretched, this value represents a total stretch
-        public float StretchDistMin = 0.9f;
-
         public bool JointCollisionsEnabled
         {
             get => _jointCollisionsEnabled;
@@ -58,7 +36,35 @@ namespace Rhinox.XR.Grapple
         public event Action<RhinoxHand> OnHandsUpdated;
 
         public event Action Initialized;
+        public event Action<RhinoxHand> OnJointCapsulesInitialized;
         public static event Action<JointManager> GlobalInitialized;
+        public bool AreJointsInitialised { get; private set; } = false;
+
+        public bool HandTrackingProviderContainsCapsules = false;
+
+        public float ColliderActivationDelay = 1.5f;
+
+        // As it is impossible for the joints to fully touch each other, this value represents a total bend
+        public float BendDistMin = 0.3f;
+
+        // As it is almost impossible for a finger to be fully stretched, this value represents a total stretch
+        public float StretchDistMin = 0.9f;
+
+
+        public RhinoxJointCapsule[] LeftHandCapsules => _leftHandCapsules;
+        public RhinoxJointCapsule[] RightHandCapsules => _rightHandCapsules;
+
+        private XRHandSubsystem _subsystem;
+
+        private List<RhinoxJoint> _leftHandJoints = new List<RhinoxJoint>();
+        private List<RhinoxJoint> _rightHandJoints = new List<RhinoxJoint>();
+
+        private RhinoxJointCapsule[] _leftHandCapsules;
+        private RhinoxJointCapsule[] _rightHandCapsules;
+
+        private GameObject _leftHandCollidersParent;
+        private GameObject _rightHandCollidersParent;
+
 
         private bool _fixedUpdateAfterTrackingLeftFound = false;
         private bool _fixedUpdateAfterTrackingRightFound = false;
@@ -205,6 +211,7 @@ namespace Rhinox.XR.Grapple
                         if (_leftHandCollidersParent)
                             break;
                         _leftHandCollidersParent = new GameObject($"{handedness}_Capsules");
+                        //_leftHandCollidersParent.tag = handedness.ToString();
                         Transform parentTransform = _leftHandCollidersParent.transform;
                         parentTransform.SetParent(transform, false);
                         parentTransform.localPosition = Vector3.zero;
@@ -216,6 +223,7 @@ namespace Rhinox.XR.Grapple
                         if (_rightHandCollidersParent)
                             break;
                         _rightHandCollidersParent = new GameObject($"{handedness}_Capsules");
+                        //_rightHandCollidersParent.tag = handedness.ToString();
                         Transform parentTransform = _rightHandCollidersParent.transform;
                         parentTransform.SetParent(transform, false);
                         parentTransform.localPosition = Vector3.zero;
@@ -251,6 +259,8 @@ namespace Rhinox.XR.Grapple
             }
 
             InitializeCapsulesForHand(handedness, parent, capsules, joints);
+
+            OnJointCapsulesInitialized?.Invoke(handedness);
         }
 
         /// <summary>
@@ -287,6 +297,7 @@ namespace Rhinox.XR.Grapple
                 // Get the game object of the rigidbody and the component
                 // Disable the rigidbody to prevent scene explosions
                 var rbGo = jointCapsule.JointRigidbody.gameObject;
+                //rbGo.tag = hand.ToString();
                 var rbTransform = rbGo.transform;
                 rbGo.layer = HandLayer;
                 rbTransform.SetParent(parent.transform, false);

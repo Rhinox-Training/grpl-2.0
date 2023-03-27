@@ -94,7 +94,7 @@ namespace Rhinox.XR.Grapple
         {
             if (currentGesture != null)
             {
-                currentGesture.OnUnrecognized.Invoke(rhinoxHand);
+                currentGesture.InvokeOnRecognized(rhinoxHand);// .OnUnrecognized.Invoke(rhinoxHand);
                 OnGestureUnrecognized.Invoke(rhinoxHand, currentGesture.Name);
                 lastGesture = null;
                 currentGesture = null;
@@ -283,9 +283,9 @@ namespace Rhinox.XR.Grapple
             
             if (currentGesture != lastGesture)
             {
-                lastGesture?.OnUnrecognized?.Invoke(handedness);
+                lastGesture?.InvokeOnUnRecognized(handedness);// .OnUnrecognized?.Invoke(handedness);
                 OnGestureUnrecognized?.Invoke(handedness, lastGesture?.Name);
-                currentGesture?.OnRecognized?.Invoke(handedness);
+                currentGesture?.InvokeOnRecognized(handedness);// .OnRecognized?.Invoke(handedness);
                 if (currentGesture != null) OnGestureRecognized?.Invoke(handedness, currentGesture.Name);
             }
         }

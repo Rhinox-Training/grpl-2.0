@@ -4,7 +4,7 @@ namespace Rhinox.XR.Grapple.It
     {
         None,
         Socketing,
-        KinematicProxy
+        //KinematicProxy
     }
 
     public interface IPhysicsService

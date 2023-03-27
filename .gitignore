@@ -82,3 +82,6 @@ crashlytics-build.properties
 
 # Merge Tool generated files
 *.orig
+
+# VS editor config file
+.editorconfig

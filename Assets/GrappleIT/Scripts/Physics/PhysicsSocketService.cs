@@ -46,7 +46,7 @@ namespace Rhinox.XR.Grapple.It
         public PhysicsSocketService(GestureRecognizer gestureRecognizer, GameObject parentObject)
         {
             JointManager.GlobalInitialized += Initialize;
-            
+
             _gestureRecognizer = gestureRecognizer;
 
             //creates gameobjects that follow each hand and have a collider on them to know if an object is in grabbing range.
@@ -57,8 +57,10 @@ namespace Rhinox.XR.Grapple.It
                 _colliderObjL = new GameObject("Collider Obj LEFT");
                 _colliderObjL.transform.parent = parentObject.transform;
 
+
                 _socketObjL = new GameObject("Socket Left");
                 _socketObjL.transform.parent = _colliderObjL.transform;
+
                 //needs to be rotate 90°, otherwise object would go through handpalm and this one is rotate antoher 180°, because it's the opposite of left hand
                 _socketObjL.transform.SetLocalPositionAndRotation(_handSocketAndColliderOffset, Quaternion.Euler(0f, 0f, 270f));
 
@@ -78,8 +80,10 @@ namespace Rhinox.XR.Grapple.It
                 _colliderObjR = new GameObject("Collider Obj RIGHT");
                 _colliderObjR.transform.parent = parentObject.transform;
 
+
                 _socketObjR = new GameObject("Socket Right");
                 _socketObjR.transform.parent = _colliderObjR.transform;
+
                 //needs to be rotate 90°, otherwise object would go through handpalm.
                 _socketObjR.transform.SetLocalPositionAndRotation(_handSocketAndColliderOffset, Quaternion.Euler(0f, 0f, 90f));
 
@@ -112,8 +116,8 @@ namespace Rhinox.XR.Grapple.It
 
             if (_grabGesture != null)
             {
-                _grabGesture.OnRecognized.RemoveAllListeners();
-                _grabGesture.OnUnrecognized.RemoveAllListeners();
+                _grabGesture.RemoveListenerOnRecognized(TryGrab);// OnRecognized.RemoveAllListeners();
+                _grabGesture.RemoveListenerOnUnRecognized(TryDrop);// .OnUnrecognized.RemoveAllListeners();
             }
 
             var colliderEventsL = _colliderObjL.GetComponent<PhysicsEventHandler>();
@@ -133,12 +137,16 @@ namespace Rhinox.XR.Grapple.It
 
         public void Initialize(JointManager jointManager)
         {
-            if(_isInitialized || jointManager == null)
+            if (_isInitialized || jointManager == null)
                 return;
             _jointManager = jointManager;
             _jointManager.TrackingAcquired += TrackingAcquired;
             _jointManager.TrackingLost += TrackingLost;
 
+            _colliderObjL.layer = _jointManager.HandLayer;
+            _socketObjL.layer = _jointManager.HandLayer;
+            _colliderObjR.layer = _jointManager.HandLayer;
+            _socketObjR.layer = _jointManager.HandLayer;
 
             // Add these function as listeners
             // This assured that the grabbing of objects and hand colliders don't have weird behaviour
@@ -153,8 +161,8 @@ namespace Rhinox.XR.Grapple.It
                 _grabGesture = _gestureRecognizer.Gestures.Find(x => x.Name == "Grab");
                 if (_grabGesture != null)
                 {
-                    _grabGesture.OnRecognized.AddListener(TryGrab);
-                    _grabGesture.OnUnrecognized.AddListener(TryDrop);
+                    _grabGesture.AddListenerOnRecognized(TryGrab);// .OnRecognized.AddListener(TryGrab);
+                    _grabGesture.AddListenerOnUnRecognized(TryDrop);// .OnUnrecognized.AddListener(TryDrop);
                 }
             }
 
