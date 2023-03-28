@@ -14,7 +14,6 @@ namespace Rhinox.XR.Grapple.It
         private IPhysicsService _physicsService = new NullPhysicsService();
 
         [Header("Physics")]
-        //public PhysicServices SelectedPhysicsService = PhysicServices.None;
         [SerializeField] private bool _enableSocketing = true;
         [Layer][SerializeField] private int _handLayer = 2;
         public int Handlayer => _handLayer;
@@ -29,34 +28,20 @@ namespace Rhinox.XR.Grapple.It
             _jointManager.HandLayer = _handLayer;
             _gestureRecognizer = GetComponent<GestureRecognizer>();
 
-            //switch (SelectedPhysicsService)
-            //{
-            //    case PhysicServices.Socketing:
-            //        {
-            //            _physicsService = new PhysicsSocketService(_gestureRecognizer, gameObject);
-            //            break;
-            //        }
-            //}
-
             if (_enableSocketing)
-            {
                 _physicsService = new PhysicsSocketService(_gestureRecognizer, gameObject);
-            }
 
             if (_enableSocketing && _physicsService.GetType() == typeof(NullPhysicsService))
-            {
-                Debug.LogError($"{nameof(GrappleManager)} Failed to add Socketing service");
-            }
+                PLog.Error<GrappleItLogger>($"{nameof(GrappleManager)} Failed to add Socketing service", this);
+
 
             if (gameObject.TryGetComponent(out _teleporter))
                 _teleporter.Initialize(_jointManager, _gestureRecognizer);
             else
             {
-                Debug.LogWarning($"{nameof(GrappleManager)} Failed to find {nameof(GRPLTeleport)}");
+                PLog.Warn<GrappleItLogger>($"{nameof(GrappleManager)} Failed to find {nameof(GRPLTeleport)}", this);
                 return;
             }
-            
-     
         }
 
         // Update is called once per frame

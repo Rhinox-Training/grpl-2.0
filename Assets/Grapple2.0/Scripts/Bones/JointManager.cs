@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Rhinox.GUIUtils.Attributes;
 using Rhinox.Lightspeed;
-using UnityEngine.UIElements;
 
 namespace Rhinox.XR.Grapple
 {

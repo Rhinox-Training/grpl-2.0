@@ -1,12 +1,8 @@
 using UnityEngine;
 using UnityEngine.XR.Hands;
 
-
 namespace Rhinox.XR.Grapple
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class RhinoxJoint
     {
         public readonly XRHandJointID JointID;

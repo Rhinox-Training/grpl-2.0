@@ -1,7 +1,6 @@
-using System;
+using Rhinox.Perceptor;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.XR;
 using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple.It
@@ -221,8 +220,8 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    Debug.LogError(
-                        $"{nameof(PhysicsSocketService)} - {nameof(TryGrab)}, function called with incorrect Hand {hand}. Only left or right is supported!");
+                    PLog.Error<GrappleItLogger>($"{nameof(PhysicsSocketService)} - {nameof(TryGrab)}, " +
+                        $"function called with incorrect Hand {hand}. Only left or right is supported!");
                     break;
             }
         }
@@ -244,8 +243,8 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    Debug.LogError(
-                        $"{nameof(PhysicsSocketService)} - {nameof(TryDrop)}, function called with incorrect hand {hand}. Only left or right is supported!");
+                    PLog.Error<GrappleItLogger>($"{nameof(PhysicsSocketService)} - {nameof(TryDrop)}, " +
+                        $"function called with incorrect hand {hand}. Only left or right is supported!");
                     break;
             }
         }

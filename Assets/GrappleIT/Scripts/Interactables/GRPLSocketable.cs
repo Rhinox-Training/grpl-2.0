@@ -1,4 +1,5 @@
 using Rhinox.Lightspeed;
+using Rhinox.Perceptor;
 using UnityEngine;
 
 namespace Rhinox.XR.Grapple.It
@@ -10,7 +11,7 @@ namespace Rhinox.XR.Grapple.It
         public void OnValidate()
         {
             if (Socket == null)
-                Debug.LogError($"{nameof(GRPLSocketable)} Socket was not set.");
+                PLog.Error<GrappleItLogger>($"{nameof(GRPLSocketable)} Socket was not set.", this);
         }
 
         public override void Grabbed(GameObject parent, RhinoxHand rhinoxHand)

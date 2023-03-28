@@ -1,4 +1,6 @@
 using Rhinox.Lightspeed;
+using Rhinox.Perceptor;
+using Rhinox.XR.Grapple.It;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,10 +22,10 @@ public class ChangeMaterial : MonoBehaviour
             if (tempList.Count > 0)
                 _material = tempList[0];
             else
-                Debug.LogError("No mat found");
+                PLog.Error<GrappleItLogger>("No mat found", this);
         }
         else
-            Debug.LogError("no meshrendere");
+            PLog.Error<GrappleItLogger>("No meshrendere found", this);
 
     }
 

@@ -1,16 +1,13 @@
 using Rhinox.GUIUtils.Attributes;
 using Rhinox.Lightspeed;
 using Rhinox.Lightspeed.Collections;
-
+using Rhinox.Perceptor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.XR;
-using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple.It
 {
@@ -53,15 +50,19 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField] private float _maxSnapDistance = 2.5f;
 
         [Header("Miscellaneous Settings")]
-
+        [NavMeshArea(true)][SerializeField] private int _teleportableNavMeshAreas;
         //[SerializeField] private 
         //[Header("Fade Settings")]
         //[SerializeField] public float FadeDuration = .15f;
 
+        public bool IsInitialized => _isInitialized;
+        public bool IsValidTeleportPoint => _isValidTeleportPoint;
+        public Vector3 TeleportPoint => _avgTeleportPoint;
+
+
+        private Vector3 _avgTeleportPoint = Vector3.zero;
 
         private const float _gravity = -9.81f;
-
-        public bool IsInitialized => _isInitialized;
 
         /// <summary>
         /// Enable or disable the line rendering
@@ -94,7 +95,6 @@ namespace Rhinox.XR.Grapple.It
         private GRPLProximitySensor _proxySensorL = null;
         private GRPLProximitySensor _proxySensorR = null;
 
-
         private Vector3 _sensorOffset = new Vector3(0f, 0f, -0.05f);
         private Vector3 _sensorSize = new Vector3(0.08f, 0.08f, 0.08f);
 
@@ -105,30 +105,42 @@ namespace Rhinox.XR.Grapple.It
         private bool _isEnabledR = false;
 
         #region Initialization and Setup
+        /// <summary>
+        /// Initializes the Teleport system by hooking up to the <see cref="JointManager"/> events and to the <see cref="GestureRecognizer"/> teleport gesture.<br></br>
+        /// This also sets up the proximity sensor to the correct location and to only trigger on the the other hand. 
+        /// </summary>
+        /// <remarks>
+        /// Both <see cref="JointManager"/> AND <see cref="GestureRecognizer"/>should be initialized before calling this.
+        /// </remarks>
+        /// <param name="jointManager"> reference to the Jointmanager</param>
+        /// <param name="gestureRecognizer">reference to the GestureRecognizer</param>
         public void Initialize(JointManager jointManager, GestureRecognizer gestureRecognizer)
         {
+            if (_isInitialized)
+                return;
+
             _jointManager = jointManager;
             if (_jointManager == null)
             {
-                Debug.LogError($"{nameof(JointManager)} was NULL");
+                PLog.Error<GrappleItLogger>($"{nameof(JointManager)} was NULL", this);
                 return;
             }
             _gestureRecognizer = gestureRecognizer;
             if (_gestureRecognizer == null)
             {
-                Debug.LogError($"{nameof(GestureRecognizer)} was NULL");
+                PLog.Error<GrappleItLogger>($"{nameof(GestureRecognizer)} was NULL", this);
                 return;
             }
 
             if (!TrySetupTeleportGesture())
             {
-                Debug.LogError($"no \"Teleport\" gesture was found inside {nameof(GestureRecognizer)}");
+                PLog.Error<GrappleItLogger>($"no \"Teleport\" gesture was found inside {nameof(GestureRecognizer)}", this);
                 return;
             }
 
             if (_lineRenderer == null)
             {
-                Debug.LogError($"Given {nameof(LineRenderer)} was NULL");
+                PLog.Error<GrappleItLogger>($"Given {nameof(LineRenderer)} was NULL", this);
                 return;
             }
 
@@ -150,7 +162,10 @@ namespace Rhinox.XR.Grapple.It
             _isInitialized = true;
         }
 
-        //The RhinoxJointColliders only get initialized when the hand goes in view for the first time in the fixedUpdate
+        /// <summary>
+        /// The RhinoxJointColliders only get initialized when the hand goes in view for the first time in the fixedUpdate
+        /// </summary>
+        /// <param name="handedness">The hand that triggered the colliderInitialize</param>
         private void InitializeIgnoreList(RhinoxHand handedness)
         {
             switch (handedness)
@@ -162,9 +177,9 @@ namespace Rhinox.XR.Grapple.It
                     _proxySensorR.SetIgnoreList(_jointManager.RightHandCapsules);
                     break;
                 default:
-                    Debug.LogError(
+                    PLog.Error<GrappleItLogger>(
                         $"{nameof(GRPLTeleport)} - {nameof(InitializeIgnoreList)}" +
-                        $", function called with incorrect rhinoxHand {handedness}. Only left or right supported!");
+                        $", function called with incorrect rhinoxHand {handedness}. Only left or right supported!", this);
                     break;
             }
         }
@@ -216,6 +231,7 @@ namespace Rhinox.XR.Grapple.It
 
             _jointManager.TrackingAcquired += TrackingAcquired;
             _jointManager.TrackingLost += TrackingLost;
+            _jointManager.OnJointCapsulesInitialized += InitializeIgnoreList;
 
             _teleportGesture.AddListenerOnRecognized(StartedPointing);
             _teleportGesture.AddListenerOnUnRecognized(StoppedPointing);
@@ -229,11 +245,12 @@ namespace Rhinox.XR.Grapple.It
             if (!_isInitialized)
                 return;
 
-            _teleportGesture.RemoveListenerOnRecognized(StartedPointing);
-            _teleportGesture.RemoveListenerOnUnRecognized(StoppedPointing);
-
             _jointManager.TrackingAcquired -= TrackingAcquired;
             _jointManager.TrackingLost -= TrackingLost;
+            _jointManager.OnJointCapsulesInitialized -= InitializeIgnoreList;
+
+            _teleportGesture.RemoveListenerOnRecognized(StartedPointing);
+            _teleportGesture.RemoveListenerOnUnRecognized(StoppedPointing);
 
             _proxySensorL.RemoveListenerOnSensorEnter(ConfirmTeleport);
             _proxySensorR.RemoveListenerOnSensorEnter(ConfirmTeleport);
@@ -270,7 +287,9 @@ namespace Rhinox.XR.Grapple.It
         }
 
         /// <summary>
-        /// TODO: Write summary of CalculateTeleportLocation
+        /// Calculates and visualizes the points of the teleportation arc, aswell as the interersect point with the ground and if this is valid.<br></br>
+        /// The valid points are put into a limited queue and the average of that is put into <c>TeleportPoint</c><br></br>
+        /// If the intersect point is either on a teleport anchor point or valid navmesh location the <c>IsValidTeleportPoint</c> will be set to <see langword="true"/>
         /// </summary>
         /// <param name="startRay">Ray that gives a start point and direction the teleport arc should go in</param>
         public void CalculateTeleportLocation(Ray startRay)
@@ -278,8 +297,9 @@ namespace Rhinox.XR.Grapple.It
             var aimPosition = startRay.origin;
             var aimDirection = startRay.direction * _initialVelocity;
             var rangeSquared = _maxDistance * _maxDistance;
-            //calculate all points (logic based on the arc calculations from Meta)
             List<Vector3> points = new List<Vector3>();
+
+            //calculate all points (logic based on the arc calculations from Meta)
             do
             {
                 points.Add(aimPosition);
@@ -332,29 +352,27 @@ namespace Rhinox.XR.Grapple.It
                 }
             }
 
-
-            if (_teleportPositions.Count > 0)
+            //if it valid calculate the avg, if not reset and hide
+            if (_isValidTeleportPoint)
             {
-                Vector3 avgPos = new Vector3(_teleportPositions.Average(vec => vec.x),
+                _avgTeleportPoint = new Vector3(_teleportPositions.Average(vec => vec.x),
                                              _teleportPositions.Average(vec => vec.y),
                                              _teleportPositions.Average(vec => vec.z));
 
-                if (_isValidTeleportPoint)
-                {
-                    _teleportZoneVisual.SetActive(true);
-                    _teleportZoneVisual.transform.position = avgPos;
-                }
-                else
-                {
-                    _lineRenderer.startColor = Color.red;
-                    _lineRenderer.endColor = Color.red;
-                    _teleportZoneVisual.SetActive(false);
-                }
+                _teleportZoneVisual.transform.position = _avgTeleportPoint;
+                _teleportZoneVisual.SetActive(true);
+            }
+            else
+            {
+                _lineRenderer.startColor = Color.red;
+                _lineRenderer.endColor = Color.red;
+                _teleportZoneVisual.SetActive(false);
+                _teleportPositions.Clear();
             }
 
             //rendering part
             _lineRenderer.positionCount = indexNextPoint;
-            for (int index = 0; index < indexNextPoint - 1; index++)// && index < points.Count; index++)
+            for (int index = 0; index < indexNextPoint - 1; index++)
             {
                 _lineRenderer.SetPosition(index, points[index]);
             }
@@ -363,12 +381,16 @@ namespace Rhinox.XR.Grapple.It
                 _lineRenderer.SetPosition(indexNextPoint - 1, intersectPoint);
         }
 
+        /// <summary>
+        /// Checks if the point is on the navmesh, and if so add it to the positionList.
+        /// </summary>
+        /// <param name="pos"> The position to check on the navmesh</param>
+        /// <returns>Returns <see langword="true"/> if the given point is on the navmesh</returns>
         private bool CheckAndAddIfPointOnNavmesh(Vector3 pos)
         {
             //adding .5f to the y axis to avoid the problem of the position is at the same level as the navmesh making the navmesh raycast fail
-            if (NavMesh.SamplePosition(new Vector3(pos.x, pos.y + .5f, pos.z), out var info, 1f, 1 << NavMesh.GetAreaFromName("Teleportable")))
+            if (NavMesh.SamplePosition(new Vector3(pos.x, pos.y + .5f, pos.z), out var info, 1f, _teleportableNavMeshAreas))//1 << NavMesh.GetAreaFromName("Teleportable")))
             {
-                //_teleportPositions.Enqueue(new Vector3(pos.x, transform.position.y, pos.z));
                 _teleportPositions.Enqueue(pos);
                 return true;
             }
@@ -383,10 +405,11 @@ namespace Rhinox.XR.Grapple.It
             if (_isOnCooldown || !_isValidTeleportPoint)
                 return;//could call even for failed teleport
 
-            gameObject.transform.position = _teleportZoneVisual.transform.position; //new Vector3(_teleportZoneVisual.transform.position.x, gameObject.transform.position.y, _teleportZoneVisual.transform.position.z);
+            gameObject.transform.position = _teleportZoneVisual.transform.position;
 
             _lineRenderer.startColor = Color.red;
             _lineRenderer.endColor = Color.red;
+            _teleportPositions.Clear();
             _isOnCooldown = true;
 
             Invoke(nameof(ResetCooldown), _teleportCooldown);
@@ -449,7 +472,7 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    Debug.LogWarning($"[{nameof(GRPLTeleport)}] {nameof(StartVisualCoroutine)}: invalid hand was given");
+                    PLog.Warn<GrappleItLogger>($"[{nameof(GRPLTeleport)}] {nameof(StartVisualCoroutine)}: invalid hand was given", this);
                     break;
             }
 
@@ -476,7 +499,7 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    Debug.LogWarning($"[{nameof(GRPLTeleport)}] {nameof(StopVisualCoroutine)}: invalid hand was given");
+                    PLog.Warn<GrappleItLogger>($"[{nameof(GRPLTeleport)}] {nameof(StopVisualCoroutine)}: invalid hand was given", this);
                     break;
             }
 
