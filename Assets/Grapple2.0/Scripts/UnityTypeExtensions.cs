@@ -41,6 +41,19 @@ public static class UnityTypeExtensions
         return new Vector3() { x = -v.x, y = v.y, z = v.z };
     }
 
+    public static string ToPrefix(this RhinoxHand hand)
+    {
+        switch (hand)
+        {
+            case RhinoxHand.Left:
+                return "L_";
+            case RhinoxHand.Right:
+                return "R_";
+            case RhinoxHand.Invalid:
+            default:
+                return "";        }
+    }
+    
     public static void SubscribeAndActivateAsset(InputActionReference reference,
         Action<InputAction.CallbackContext> performed = null,
         Action<InputAction.CallbackContext> canceled = null)
