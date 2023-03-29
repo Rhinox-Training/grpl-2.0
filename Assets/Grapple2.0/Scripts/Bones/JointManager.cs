@@ -65,6 +65,8 @@ namespace Rhinox.XR.Grapple
         private GameObject _leftHandCollidersParent;
         private GameObject _rightHandCollidersParent;
 
+        private GameObject _leftHandParent;
+        private GameObject _rightHandParent;
 
         private bool _fixedUpdateAfterTrackingLeftFound = false;
         private bool _fixedUpdateAfterTrackingRightFound = false;
@@ -363,7 +365,9 @@ namespace Rhinox.XR.Grapple
                 SetFullStretchDistance(finger, fullStretchDistance);
             }
         }
-
+        
+        
+        
         #endregion
 
         #region Collision Setters

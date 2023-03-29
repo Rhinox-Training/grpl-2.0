@@ -6429,6 +6429,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _screen: {fileID: 1244138467}
+  _sliderInteractable: {fileID: 631241998}
 --- !u!1 &1909893078
 GameObject:
   m_ObjectHideFlags: 0
