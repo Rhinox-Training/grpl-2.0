@@ -528,8 +528,8 @@ namespace Rhinox.XR.Grapple
                     {
                         var rootPose = _subsystem.leftHand.rootPose;
 
-                        var worldPose = rootPose.GetTransformedBy(new Pose(transform.position, transform.rotation));
-
+                        var transform1 = transform;
+                        var worldPose = rootPose.GetTransformedBy(new Pose(transform1.position, transform1.rotation));
 
                         _leftHandJoints[0].JointPosition = worldPose.position;
                         _leftHandJoints[0].JointRotation = worldPose.rotation;//transform.rotation;//rootPose.rotation;// * transform.rotation;
