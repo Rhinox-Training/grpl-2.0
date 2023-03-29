@@ -2077,6 +2077,7 @@ MonoBehaviour:
   _lineSubIterations: 0.5
   _enableSnapping: 1
   _maxSnapDistance: 2.5
+  _teleportableNavMeshAreas: 9
 --- !u!4 &2104654938 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8313335731158778048, guid: 02f4dc48e2f14a8458a323bc9c6ba4ef, type: 3}
