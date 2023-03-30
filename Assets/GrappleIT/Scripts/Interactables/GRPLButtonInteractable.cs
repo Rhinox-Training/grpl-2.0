@@ -25,6 +25,8 @@ namespace Rhinox.XR.Grapple.It
         public float SelectStartPercentage => _selectStartPercentage;
         private float _maxPressDistance;
         public float MaxPressedDistance => _maxPressDistance;
+        
+        private RhinoxJoint _previousInteractJoint;
 
         private Bounds PressBounds { get; set; }
 
@@ -105,7 +107,13 @@ namespace Rhinox.XR.Grapple.It
 
             float pressPercentage = 1 - (closestDistance / MaxPressedDistance);
 
-            return pressPercentage > SelectStartPercentage;
+            if (pressPercentage > _selectStartPercentage)
+            {
+                _previousInteractJoint = joint;
+                return true;    
+            }
+            
+            return false;
         }
 
         public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint)
@@ -132,6 +140,25 @@ namespace Rhinox.XR.Grapple.It
 
             return outJoint != null;
         }
+
+        public override bool ShouldInteractionCheckStop(RhinoxJoint interactJoint)
+        {
+            if (State != GRPLInteractionState.Interacted)
+                return false;
+
+            // Check if the joint pos is in front of the plane that is defined by the button
+            if (!InteractableMathUtils.IsPositionInFrontOfPlane(_previousInteractJoint.JointPosition,
+                    ButtonBaseTransform.position,
+                    ButtonBaseTransform.forward))
+            {
+                CanInteractCheck = false;
+                return true;
+            }
+
+            CanInteractCheck = true;
+            return false;
+        }
+
 
         //-----------------------
         // EDITOR ONLY METHODS
