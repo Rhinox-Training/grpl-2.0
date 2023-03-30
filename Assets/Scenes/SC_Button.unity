@@ -9146,7 +9146,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5210042141153954088, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
       propertyPath: _interactDelay
-      value: 5
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 5210042141153954089, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
       propertyPath: m_Name
