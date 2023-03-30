@@ -7,12 +7,12 @@ using UnityEngine.UI;
 
 namespace Rhinox.XR.Grapple.It
 {
-    public class GRPLSliderInteractable : GRPLInteractable
+    public class GrplUiSliderInteractable : GRPLInteractable
     {
         public Slider.Direction SliderDirection => _sliderDirection;
         public float SliderValue => _slider.value;
+
         private Slider.Direction _sliderDirection = Slider.Direction.LeftToRight;
-        //[SerializeField] private SliderDirections _sliderDirection = SliderDirections.LeftToRight;
         private Bounds _pressBounds;
         private Slider _slider;
 
@@ -21,7 +21,7 @@ namespace Rhinox.XR.Grapple.It
         protected override void Initialize()
         {
             if (!TryGetComponent(out _slider))
-                PLog.Error<GrappleItLogger>($"[{nameof(GRPLSliderInteractable)}] {nameof(Initialize)}: " +
+                PLog.Error<GrappleItLogger>($"[{nameof(GrplUiSliderInteractable)}] {nameof(Initialize)}: " +
                     $"No slider Component was found!", this);
 
             _sliderDirection = _slider.direction;
@@ -121,7 +121,7 @@ namespace Rhinox.XR.Grapple.It
                 case Slider.Direction.TopToBottom:
                     return jointPos.y.Map(sliderPos.y - (_pressBounds.extents.y / 2f), sliderPos.y + (_pressBounds.extents.y / 2f), 1f, 0f);
                 default:
-                    PLog.Error($"[{nameof(GRPLSliderInteractable)}] {nameof(CalculateSliderValueFromSliderDirection)}: " +
+                    PLog.Error($"[{nameof(GrplUiSliderInteractable)}] {nameof(CalculateSliderValueFromSliderDirection)}: " +
                     $"SliderDirection: {_sliderDirection} was not valid!", this);
                     break;
             }

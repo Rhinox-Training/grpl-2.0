@@ -24,6 +24,7 @@ namespace Rhinox.XR.Grapple.It
     /// 
     /// When the the other hand enters the trigger on the wrist of the hand emmiting the teleport arc, the teleport location will be confirmed and the player gets teleported.
     /// This will put the teleport on cooldown, to prevent spamming/accidental teleporting.
+    /// <depends>sdfsdfsd</depends>
 
     public class GRPLTeleport : MonoBehaviour
     {
@@ -31,17 +32,17 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField] private GameObject _sensorModel = null;
 
         [Header("Arc Visual Settings")]
-        [SerializeField] public LineRenderer _lineRenderer = null;
-        [SerializeField] public float _visualStartDelay = 0.3f;
-        [SerializeField] public float _visualStopDelay = 0.5f;
-        [SerializeField] public float _teleportCooldown = 1.5f;
+        [SerializeField] private LineRenderer _lineRenderer = null;
+        [SerializeField] private float _visualStartDelay = 0.3f;
+        [SerializeField] private float _visualStopDelay = 0.5f;
+        [SerializeField] private float _teleportCooldown = 1.5f;
 
         [Header("Arc General Settings")]
         [Range(1, 10)]
         [SerializeField] private int _destinationSmoothingAmount = 5;
-        [SerializeField] public float _maxDistance = 50f;
-        [SerializeField] public float _lowestHeight = -50f;
-        [SerializeField] public float _initialVelocity = 1f;
+        [SerializeField] private float _maxDistance = 50f;
+        [SerializeField] private float _lowestHeight = -50f;
+        [SerializeField] private float _initialVelocity = 1f;
         [Range(0.001f, 2f)]
         [SerializeField] private float _lineSubIterations = 1f;
 
@@ -92,8 +93,8 @@ namespace Rhinox.XR.Grapple.It
         private LimitedQueue<Vector3> _teleportPositions = new LimitedQueue<Vector3>(5);
         private GameObject _sensorObjL = null;
         private GameObject _sensorObjR = null;
-        private GRPLProximitySensor _proxySensorL = null;
-        private GRPLProximitySensor _proxySensorR = null;
+        private GRPLTriggerSensor _proxySensorL = null;
+        private GRPLTriggerSensor _proxySensorR = null;
 
         private Vector3 _sensorOffset = new Vector3(0f, 0f, -0.05f);
         private Vector3 _sensorSize = new Vector3(0.08f, 0.08f, 0.08f);
@@ -151,6 +152,7 @@ namespace Rhinox.XR.Grapple.It
             SensorSetup(out _sensorObjL, RhinoxHand.Left, out _proxySensorL);
             SensorSetup(out _sensorObjR, RhinoxHand.Right, out _proxySensorR);
 
+            //TODO: instead of using a primitive use a nice recticle visual
             _teleportZoneVisual = GameObject.CreatePrimitive(PrimitiveType.Cube);
             _teleportZoneVisual.transform.localScale = new Vector3(.5f, .1f, .5f);
             Destroy(_teleportZoneVisual.GetComponent<BoxCollider>());
@@ -185,7 +187,7 @@ namespace Rhinox.XR.Grapple.It
         }
 
         /// <summary>
-        /// getting the teleport gesture and linking the <see cref="StartedPointing"/> and <see cref="StoppedPointing"/> events
+        /// Getting the teleport gesture and linking the <see cref="StartedPointing"/> and <see cref="StoppedPointing"/> events
         /// </summary>
         /// <returns>Boolean return if it succeeded in finding the gesture and linking the events</returns>
         private bool TrySetupTeleportGesture()
@@ -207,7 +209,7 @@ namespace Rhinox.XR.Grapple.It
         /// <param name="sensorObj">The main object where the sensor script will be placed onto and the sensor model will be childed under</param>
         /// <param name="hand">Mainly to give the sensor <see cref="GameObject"/> the correct name</param>
         /// <param name="proxySensor">The sensor logic to hook into the events</param>
-        private void SensorSetup(out GameObject sensorObj, RhinoxHand hand, out GRPLProximitySensor proxySensor)
+        private void SensorSetup(out GameObject sensorObj, RhinoxHand hand, out GRPLTriggerSensor proxySensor)
         {
             sensorObj = new GameObject($"{hand}Hand Sensor");
             sensorObj.transform.parent = transform;
@@ -218,7 +220,7 @@ namespace Rhinox.XR.Grapple.It
             sensCollider.isTrigger = true;
             sensCollider.center = _sensorOffset;
             sensCollider.size = _sensorSize;
-            proxySensor = sensorObj.AddComponent<GRPLProximitySensor>();
+            proxySensor = sensorObj.AddComponent<GRPLTriggerSensor>();
             proxySensor.HandLayer = LayerMask.NameToLayer("Hands");
             proxySensor.AddListenerOnSensorEnter(ConfirmTeleport);
         }

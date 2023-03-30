@@ -9,16 +9,17 @@ namespace Rhinox.XR.Grapple.It
     {
         public string Message { get; set; }
         public MessageType MessageType { get; set; }
-        
+
         public InfoBoxAttribute(string message)
         {
             Message = message;
             MessageType = MessageType.Info;
         }
 
-        public InfoBoxAttribute(string message,MessageType messageType)
+        public InfoBoxAttribute(string message, MessageType messageType)
         {
             Message = message;
+            MessageType = messageType;
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Rhinox.XR.Grapple
     public class GestureRecognizer : MonoBehaviour
     {
         #region Gesture import fields
-        public bool ImportOnPlay = true;
+        public bool ImportOnPlay = false;
         public string ImportFilePath = "";
         public bool OverwriteGesturesOnImport;
         #endregion

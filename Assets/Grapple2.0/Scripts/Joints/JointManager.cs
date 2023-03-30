@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Rhinox.GUIUtils.Attributes;
 using Rhinox.Lightspeed;
+using Rhinox.Perceptor;
 
 namespace Rhinox.XR.Grapple
 {
@@ -35,7 +36,7 @@ namespace Rhinox.XR.Grapple
         public event Action<RhinoxHand> TrackingLost;
         public event Action<RhinoxHand> OnHandsUpdated;
 
-        public event Action Initialized;
+        private event Action Initialized;
         public event Action<RhinoxHand> OnJointCapsulesInitialized;
         public static event Action<JointManager> GlobalInitialized;
         public bool AreJointsInitialised { get; private set; } = false;
@@ -201,7 +202,8 @@ namespace Rhinox.XR.Grapple
         {
             if (HandTrackingProviderContainsCapsules)
             {
-                Debug.LogError("RhinoxHand tracking provider has it's own capsules, don't create them manually");
+                PLog.Error<GrappleLogger>($"[JointManager:InitializeJointCapsules]," +
+                    $"NOT IMPLEMENTED", this);
                 return;
             }
 
@@ -214,7 +216,6 @@ namespace Rhinox.XR.Grapple
                         if (_leftHandCollidersParent)
                             break;
                         _leftHandCollidersParent = new GameObject($"{handedness}_Capsules");
-                        //_leftHandCollidersParent.tag = handedness.ToString();
                         Transform parentTransform = _leftHandCollidersParent.transform;
                         parentTransform.SetParent(transform, false);
                         parentTransform.localPosition = Vector3.zero;
@@ -226,7 +227,6 @@ namespace Rhinox.XR.Grapple
                         if (_rightHandCollidersParent)
                             break;
                         _rightHandCollidersParent = new GameObject($"{handedness}_Capsules");
-                        //_rightHandCollidersParent.tag = handedness.ToString();
                         Transform parentTransform = _rightHandCollidersParent.transform;
                         parentTransform.SetParent(transform, false);
                         parentTransform.localPosition = Vector3.zero;
@@ -234,9 +234,9 @@ namespace Rhinox.XR.Grapple
                         break;
                     }
                 default:
-                    Debug.LogError(
-                        $"{nameof(JointManager)} - {nameof(InitializeJointCapsules)}" +
-                        $", function called with incorrect rhinoxHand {handedness}. Only left or right supported!");
+                    PLog.Error<GrappleLogger>(
+                        $"[JointManager:InitializeJointCapsules]," +
+                        $", function called with incorrect rhinoxHand {handedness}. Only left or right supported!", this);
                     return;
             }
 
@@ -276,7 +276,7 @@ namespace Rhinox.XR.Grapple
         private void InitializeCapsulesForHand(RhinoxHand hand, GameObject parent, RhinoxJointCapsule[] capsules,
             List<RhinoxJoint> joints)
         {
-            //Loop over the capsules and process them
+            //Loop over the capsules and process them (from tip to wrist)
             for (var index = capsules.Length - 1; index > 0; index--)
             {
                 // Get the current joint and get/create its corresponding capsule
@@ -365,9 +365,9 @@ namespace Rhinox.XR.Grapple
                 SetFullStretchDistance(finger, fullStretchDistance);
             }
         }
-        
-        
-        
+
+
+
         #endregion
 
         #region Collision Setters
@@ -934,10 +934,10 @@ namespace Rhinox.XR.Grapple
         public ICollection<RhinoxJoint> GetJointsFromBothHand(XRHandJointID jointID)
         {
             ICollection<RhinoxJoint> returnVal = new List<RhinoxJoint>();
-            
+
             // Create compare local function
             bool Match(RhinoxJoint joint) => joint.JointID == jointID;
-            
+
             // If the left hand is being tracked,
             // Get all instances in the left hand
             if (IsLeftHandTracked)
@@ -947,7 +947,7 @@ namespace Rhinox.XR.Grapple
             // Get all instances in the right hand
             if (IsRightHandTracked)
                 returnVal.AddRange(_rightHandJoints.FindAll(Match));
-            
+
             return returnVal.Count == 0 ? Array.Empty<RhinoxJoint>() : returnVal;
         }
 
@@ -1004,8 +1004,8 @@ namespace Rhinox.XR.Grapple
             return returnValue;
         }
 
-        
-        
+
+
         #endregion
 
         /// <summary>

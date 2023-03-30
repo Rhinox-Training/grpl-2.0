@@ -6,7 +6,7 @@ using UnityEngine.Events;
 namespace Rhinox.XR.Grapple.It
 {
     [RequireComponent(typeof(Collider))]
-    public class GRPLProximitySensor : MonoBehaviour
+    public class GRPLTriggerSensor : MonoBehaviour
     {
         [Layer][SerializeField] private int _handLayer = 3;
         public int HandLayer
