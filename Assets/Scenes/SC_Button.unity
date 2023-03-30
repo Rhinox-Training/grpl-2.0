@@ -268,6 +268,8 @@ MonoBehaviour:
   _proximateJointID: 12
   _interactibleGroups:
   - {fileID: 1110593844}
+  _checkForMeshBaking: 1
+  _meshBaker: {fileID: 0}
 --- !u!1 &42276285
 GameObject:
   m_ObjectHideFlags: 0
@@ -565,6 +567,8 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 370884511}
   _interactObject: {fileID: 951720752}
   _selectStartPercentage: 0.25
+  _useInteractDelay: 1
+  _interactDelay: 0.25
 --- !u!1 &130702484
 GameObject:
   m_ObjectHideFlags: 0
@@ -918,6 +922,8 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 1159259492}
   _interactObject: {fileID: 1020492204}
   _selectStartPercentage: 0.25
+  _useInteractDelay: 1
+  _interactDelay: 0.25
 --- !u!1 &299344882
 GameObject:
   m_ObjectHideFlags: 0
@@ -2784,6 +2790,8 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 1804658658}
   _interactObject: {fileID: 1937194935}
   _selectStartPercentage: 0.25
+  _useInteractDelay: 1
+  _interactDelay: 0.25
 --- !u!1 &664261957
 GameObject:
   m_ObjectHideFlags: 0
@@ -3068,6 +3076,8 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 1840236698}
   _interactObject: {fileID: 1350784501}
   _selectStartPercentage: 0.25
+  _useInteractDelay: 1
+  _interactDelay: 0.25
 --- !u!1 &779751958
 GameObject:
   m_ObjectHideFlags: 0
@@ -5330,6 +5340,8 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 2006563335}
   _interactObject: {fileID: 2138547903}
   _selectStartPercentage: 0.25
+  _useInteractDelay: 1
+  _interactDelay: 0.25
 --- !u!1 &1498657494
 GameObject:
   m_ObjectHideFlags: 0
@@ -5635,6 +5647,8 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 1107230079}
   _interactObject: {fileID: 821127323}
   _selectStartPercentage: 0.25
+  _useInteractDelay: 1
+  _interactDelay: 0.25
 --- !u!114 &1552088985 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
@@ -7654,6 +7668,8 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 961948665}
   _interactObject: {fileID: 63877137}
   _selectStartPercentage: 0.25
+  _useInteractDelay: 1
+  _interactDelay: 0.25
 --- !u!1 &1830872212
 GameObject:
   m_ObjectHideFlags: 0
@@ -8349,6 +8365,8 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 2080736830}
   _interactObject: {fileID: 1650147529}
   _selectStartPercentage: 0.25
+  _useInteractDelay: 1
+  _interactDelay: 0.25
 --- !u!1 &2065498542
 GameObject:
   m_ObjectHideFlags: 0
@@ -8860,6 +8878,8 @@ MonoBehaviour:
   _interactableBaseTransform: {fileID: 394207465}
   _interactObject: {fileID: 42276286}
   _selectStartPercentage: 0.25
+  _useInteractDelay: 1
+  _interactDelay: 0.25
 --- !u!1001 &2122865063
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9124,6 +9144,10 @@ PrefabInstance:
       propertyPath: _drawDebug
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5210042141153954088, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
+      propertyPath: _interactDelay
+      value: 0.25
+      objectReference: {fileID: 0}
     - target: {fileID: 5210042141153954089, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
       propertyPath: m_Name
       value: Square button
@@ -9138,11 +9162,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5210042141153954091, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.8459546
+      value: 1.07
       objectReference: {fileID: 0}
     - target: {fileID: 5210042141153954091, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.039
+      value: -3.171
       objectReference: {fileID: 0}
     - target: {fileID: 5210042141153954091, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
       propertyPath: m_LocalRotation.w

@@ -20,7 +20,6 @@ namespace Rhinox.XR.Grapple.It
             return dotValue >= 0;
         }
 
-        public static Vector3 _projectedPos;
         /// <summary>
         /// Checks whether the projected position of the given point on the plane (defined by
         /// the planePosition and PlaneForward) is within the given bounds.
@@ -37,7 +36,6 @@ namespace Rhinox.XR.Grapple.It
             var projectedPos = Vector3.ProjectOnPlane(point, planeNormal) +
                                Vector3.Dot(planePosition, planeNormal) *
                                planeNormal;
-            _projectedPos = projectedPos;
             return bounds.Contains(projectedPos);
         }
 
