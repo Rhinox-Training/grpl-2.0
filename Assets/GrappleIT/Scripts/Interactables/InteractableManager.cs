@@ -199,9 +199,8 @@ namespace Rhinox.XR.Grapple.It
             float proximateRadiusSqr = _proximateRadius * _proximateRadius;
             foreach (var interactable in _interactables)
             {
-                // Ask senior
-                // Is it worth to do a raycast to determine if nothing is blocking the object?
-                // => would add a lot of calculations if there are many buttons
+                if(interactable.State == GRPLInteractionState.Disabled)
+                    continue;
 
 
                 // Calculate the vector from th joint to the interactable
