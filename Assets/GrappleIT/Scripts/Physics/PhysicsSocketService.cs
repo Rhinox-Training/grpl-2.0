@@ -18,7 +18,7 @@ namespace Rhinox.XR.Grapple.It
 
 
         private bool _isInitialized = false;
-        private JointManager _jointManager;
+        private GRPLJointManager _jointManager;
         private GestureRecognizer _gestureRecognizer;
 
         private RhinoxGesture _grabGesture;
@@ -44,7 +44,7 @@ namespace Rhinox.XR.Grapple.It
 
         public PhysicsSocketService(GestureRecognizer gestureRecognizer, GameObject parentObject)
         {
-            JointManager.GlobalInitialized += Initialize;
+            GRPLJointManager.GlobalInitialized += Initialize;
 
             _gestureRecognizer = gestureRecognizer;
 
@@ -134,7 +134,7 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
-        public void Initialize(JointManager jointManager)
+        public void Initialize(GRPLJointManager jointManager)
         {
             if (_isInitialized || jointManager == null)
                 return;
@@ -220,7 +220,7 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    PLog.Error<GrappleItLogger>($"{nameof(PhysicsSocketService)} - {nameof(TryGrab)}, " +
+                    PLog.Error<GRPLITLogger>($"{nameof(PhysicsSocketService)} - {nameof(TryGrab)}, " +
                         $"function called with incorrect Hand {hand}. Only left or right is supported!");
                     break;
             }
@@ -243,7 +243,7 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    PLog.Error<GrappleItLogger>($"{nameof(PhysicsSocketService)} - {nameof(TryDrop)}, " +
+                    PLog.Error<GRPLITLogger>($"{nameof(PhysicsSocketService)} - {nameof(TryDrop)}, " +
                         $"function called with incorrect hand {hand}. Only left or right is supported!");
                     break;
             }

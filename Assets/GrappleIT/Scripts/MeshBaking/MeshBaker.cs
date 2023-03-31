@@ -31,7 +31,7 @@ namespace Rhinox.XR.Grapple.It
                 _handVisualizer = _jointManager.GetComponent<GRPLHandVisualizer>();
                 if (_handVisualizer == null)
                 {
-                    PLog.Warn<GRPLItLogger>("[MeshBaker:OnJointManagerInitialized] Could not find GRPLHandVisualizer component, disabling mesh baker");
+                    PLog.Warn<GRPLITLogger>("[MeshBaker:OnJointManagerInitialized] Could not find GRPLHandVisualizer component, disabling mesh baker");
                     enabled = false;
                 }
                 else
@@ -69,7 +69,7 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    PLog.Error<GRPLItLogger>($"[MeshBaker:BakeMesh], function called with invalid RhinoxHand: {hand}");
+                    PLog.Error<GRPLITLogger>($"[MeshBaker:BakeMesh], function called with invalid RhinoxHand: {hand}");
                     return;
             }
         }
@@ -113,7 +113,7 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    PLog.Error<GRPLItLogger>("[MeshBaker:DestroyBakedObjects], function called with invalid hand value: {hand}");
+                    PLog.Error<GRPLITLogger>("[MeshBaker:DestroyBakedObjects], function called with invalid hand value: {hand}");
                     return;
             }
         }

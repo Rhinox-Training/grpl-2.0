@@ -9,7 +9,7 @@ namespace Rhinox.XR.Grapple.It
     [RequireComponent(typeof(GestureRecognizer))]
     public class GrappleManager : MonoBehaviour
     {
-        private JointManager _jointManager = null;
+        private GRPLJointManager _jointManager = null;
 
         private IPhysicsService _physicsService = new NullPhysicsService();
 
@@ -24,7 +24,7 @@ namespace Rhinox.XR.Grapple.It
 
         private void Start()
         {
-            _jointManager = gameObject.AddComponent<JointManager>();
+            _jointManager = gameObject.AddComponent<GRPLJointManager>();
             _jointManager.HandLayer = _handLayer;
             _gestureRecognizer = GetComponent<GestureRecognizer>();
 
@@ -32,14 +32,14 @@ namespace Rhinox.XR.Grapple.It
                 _physicsService = new PhysicsSocketService(_gestureRecognizer, gameObject);
 
             if (_enableSocketing && _physicsService.GetType() == typeof(NullPhysicsService))
-                PLog.Error<GrappleItLogger>($"{nameof(GrappleManager)} Failed to add Socketing service", this);
+                PLog.Error<GRPLITLogger>($"{nameof(GrappleManager)} Failed to add Socketing service", this);
 
 
             if (gameObject.TryGetComponent(out _teleporter))
                 _teleporter.Initialize(_jointManager, _gestureRecognizer);
             else
             {
-                PLog.Warn<GrappleItLogger>($"{nameof(GrappleManager)} Failed to find {nameof(GRPLTeleport)}", this);
+                PLog.Warn<GRPLITLogger>($"{nameof(GrappleManager)} Failed to find {nameof(GRPLTeleport)}", this);
                 return;
             }
         }

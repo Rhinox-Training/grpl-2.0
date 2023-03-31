@@ -54,7 +54,7 @@ namespace Rhinox.XR.Grapple
 
         #endregion
 
-        private JointManager _jointManager;
+        private GRPLJointManager _jointManager;
 
         private bool _isInitialized;
 
@@ -62,7 +62,7 @@ namespace Rhinox.XR.Grapple
         /// As the bone manager is an integral part of gesture recognition, this should always be called when creating this component! 
         /// </summary>
         /// <param name="jointManager"></param>
-        private void Initialize(JointManager jointManager)
+        private void Initialize(GRPLJointManager jointManager)
         {
             _jointManager = jointManager;
             _jointManager.TrackingLost += OnTrackingLost;
@@ -76,7 +76,7 @@ namespace Rhinox.XR.Grapple
                 ReadGesturesFromJson();
 #endif
             //Subscribe to the global initialized event of the joint manager
-            JointManager.GlobalInitialized += Initialize;
+            GRPLJointManager.GlobalInitialized += Initialize;
         }
 
         private void OnTrackingLost(RhinoxHand rhinoxHand)

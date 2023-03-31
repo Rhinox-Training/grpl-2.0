@@ -13,7 +13,7 @@ namespace Rhinox.XR.Grapple
         [SerializeField] private GameObject _rightHandPrefab;
         [SerializeField] private Material _handMaterial;
         public Material HandMaterial => _handMaterial;
-        private JointManager _jointManager;
+        private GRPLJointManager _jointManager;
 
         private List<GameObject> _leftJoints = new List<GameObject>();
         private List<GameObject> _rightJoints = new List<GameObject>();
@@ -28,7 +28,7 @@ namespace Rhinox.XR.Grapple
 
         private void Awake()
         {
-            JointManager.GlobalInitialized += OnJointManagerInitialized;
+            GRPLJointManager.GlobalInitialized += OnJointManagerInitialized;
 
             _leftHandRoot = new GameObject("Left Hand");
             _leftHandRoot.transform.parent = _xrOrigin;
@@ -42,7 +42,7 @@ namespace Rhinox.XR.Grapple
                 out _rightHandRenderer);
         }
 
-        private void OnJointManagerInitialized(JointManager obj)
+        private void OnJointManagerInitialized(GRPLJointManager obj)
         {
             _jointManager = obj;
             _jointManager.OnHandsUpdated += OnHandUpdated;

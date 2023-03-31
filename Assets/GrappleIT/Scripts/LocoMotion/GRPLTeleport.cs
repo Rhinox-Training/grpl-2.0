@@ -77,7 +77,7 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
-        private JointManager _jointManager = null;
+        private GRPLJointManager _jointManager = null;
         private GestureRecognizer _gestureRecognizer = null;
 
         private RhinoxGesture _teleportGesture = null;
@@ -106,15 +106,15 @@ namespace Rhinox.XR.Grapple.It
 
         #region Initialization and Setup
         /// <summary>
-        /// Initializes the Teleport system by hooking up to the <see cref="JointManager"/> events and to the <see cref="GestureRecognizer"/> teleport gesture.<br></br>
+        /// Initializes the Teleport system by hooking up to the <see cref="GRPLJointManager"/> events and to the <see cref="GestureRecognizer"/> teleport gesture.<br></br>
         /// This also sets up the proximity sensor to the correct location and to only trigger on the the other hand. 
         /// </summary>
         /// <remarks>
-        /// Both <see cref="JointManager"/> AND <see cref="GestureRecognizer"/>should be initialized before calling this.
+        /// Both <see cref="GRPLJointManager"/> AND <see cref="GestureRecognizer"/>should be initialized before calling this.
         /// </remarks>
         /// <param name="jointManager"> reference to the Jointmanager</param>
         /// <param name="gestureRecognizer">reference to the GestureRecognizer</param>
-        public void Initialize(JointManager jointManager, GestureRecognizer gestureRecognizer)
+        public void Initialize(GRPLJointManager jointManager, GestureRecognizer gestureRecognizer)
         {
             if (_isInitialized)
                 return;
@@ -122,25 +122,25 @@ namespace Rhinox.XR.Grapple.It
             _jointManager = jointManager;
             if (_jointManager == null)
             {
-                PLog.Error<GrappleItLogger>($"{nameof(JointManager)} was NULL", this);
+                PLog.Error<GRPLITLogger>($"{nameof(GRPLJointManager)} was NULL", this);
                 return;
             }
             _gestureRecognizer = gestureRecognizer;
             if (_gestureRecognizer == null)
             {
-                PLog.Error<GrappleItLogger>($"{nameof(GestureRecognizer)} was NULL", this);
+                PLog.Error<GRPLITLogger>($"{nameof(GestureRecognizer)} was NULL", this);
                 return;
             }
 
             if (!TrySetupTeleportGesture())
             {
-                PLog.Error<GrappleItLogger>($"no \"Teleport\" gesture was found inside {nameof(GestureRecognizer)}", this);
+                PLog.Error<GRPLITLogger>($"no \"Teleport\" gesture was found inside {nameof(GestureRecognizer)}", this);
                 return;
             }
 
             if (_lineRenderer == null)
             {
-                PLog.Error<GrappleItLogger>($"Given {nameof(LineRenderer)} was NULL", this);
+                PLog.Error<GRPLITLogger>($"Given {nameof(LineRenderer)} was NULL", this);
                 return;
             }
 
@@ -177,7 +177,7 @@ namespace Rhinox.XR.Grapple.It
                     _proxySensorR.SetIgnoreList(_jointManager.RightHandCapsules);
                     break;
                 default:
-                    PLog.Error<GrappleItLogger>(
+                    PLog.Error<GRPLITLogger>(
                         $"{nameof(GRPLTeleport)} - {nameof(InitializeIgnoreList)}" +
                         $", function called with incorrect rhinoxHand {handedness}. Only left or right supported!", this);
                     break;
@@ -472,7 +472,7 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    PLog.Warn<GrappleItLogger>($"[{nameof(GRPLTeleport)}] {nameof(StartVisualCoroutine)}: invalid hand was given", this);
+                    PLog.Warn<GRPLITLogger>($"[{nameof(GRPLTeleport)}] {nameof(StartVisualCoroutine)}: invalid hand was given", this);
                     break;
             }
 
@@ -499,7 +499,7 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    PLog.Warn<GrappleItLogger>($"[{nameof(GRPLTeleport)}] {nameof(StopVisualCoroutine)}: invalid hand was given", this);
+                    PLog.Warn<GRPLITLogger>($"[{nameof(GRPLTeleport)}] {nameof(StopVisualCoroutine)}: invalid hand was given", this);
                     break;
             }
 

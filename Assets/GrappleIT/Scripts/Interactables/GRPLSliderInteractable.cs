@@ -21,7 +21,7 @@ namespace Rhinox.XR.Grapple.It
         protected override void Initialize()
         {
             if (!TryGetComponent(out _slider))
-                PLog.Error<GrappleItLogger>($"[{nameof(GRPLSliderInteractable)}] {nameof(Initialize)}: " +
+                PLog.Error<GRPLITLogger>($"[{nameof(GRPLSliderInteractable)}] {nameof(Initialize)}: " +
                     $"No slider Component was found!", this);
 
             _sliderDirection = _slider.direction;
