@@ -20,7 +20,7 @@ namespace Rhinox.XR.Grapple.It
     /// <remarks />
     /// <dependencies>
     /// - <see cref="GRPLJointManager"/>
-    /// - <see cref="GestureRecognizer"/>
+    /// - <see cref="GRPLGestureRecognizer"/>
     /// </dependencies>
     public class GRPLTeleport : MonoBehaviour
     {
@@ -72,7 +72,7 @@ namespace Rhinox.XR.Grapple.It
 
 
         private GRPLJointManager _jointManager = null;
-        private GestureRecognizer _gestureRecognizer = null;
+        private GRPLGestureRecognizer _gestureRecognizer = null;
 
         private RhinoxGesture _teleportGesture = null;
         private bool _isInitialized = false;
@@ -116,15 +116,15 @@ namespace Rhinox.XR.Grapple.It
         /// This will put the teleport on cooldown, to prevent spamming/accidental teleporting.
 
         /// <summary>
-        /// Initializes the Teleport system by hooking up to the <see cref="GRPLJointManager"/> events and to the <see cref="GestureRecognizer"/> teleport gesture.<br></br>
+        /// Initializes the Teleport system by hooking up to the <see cref="GRPLJointManager"/> events and to the <see cref="GRPLGestureRecognizer"/> teleport gesture.<br></br>
         /// This also sets up the proximity sensor to the correct location and to only trigger on the the other hand. 
         /// </summary>
         /// <remarks>
-        /// Both <see cref="GRPLJointManager"/> AND <see cref="GestureRecognizer"/>should be initialized before calling this.
+        /// Both <see cref="GRPLJointManager"/> AND <see cref="GRPLGestureRecognizer"/>should be initialized before calling this.
         /// </remarks>
         /// <param name="jointManager"> reference to the Jointmanager</param>
-        /// <param name="gestureRecognizer">reference to the GestureRecognizer</param>
-        public void Initialize(GRPLJointManager jointManager, GestureRecognizer gestureRecognizer)
+        /// <param name="gestureRecognizer">reference to the GRPLGestureRecognizer</param>
+        public void Initialize(GRPLJointManager jointManager, GRPLGestureRecognizer gestureRecognizer)
         {
             if (_isInitialized)
                 return;
@@ -138,13 +138,13 @@ namespace Rhinox.XR.Grapple.It
             _gestureRecognizer = gestureRecognizer;
             if (_gestureRecognizer == null)
             {
-                PLog.Error<GRPLItLogger>($"{nameof(GestureRecognizer)} was NULL", this);
+                PLog.Error<GRPLItLogger>($"{nameof(GRPLGestureRecognizer)} was NULL", this);
                 return;
             }
 
             if (!TrySetupTeleportGesture())
             {
-                PLog.Error<GRPLItLogger>($"no \"Teleport\" gesture was found inside {nameof(GestureRecognizer)}", this);
+                PLog.Error<GRPLItLogger>($"no \"Teleport\" gesture was found inside {nameof(GRPLGestureRecognizer)}", this);
                 return;
             }
 

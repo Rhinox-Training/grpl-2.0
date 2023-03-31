@@ -9,9 +9,6 @@ namespace Rhinox.XR.Grapple.It
 {
     public class GRPLInteractableManager :  MonoBehaviour
     {
-        [HideInInspector]
-        public GRPLInteractableManager Instance;
-
         [Header("Proximate detection parameters")]
         [SerializeField] private int _maxAmountOfProximatesPerHand = 3;
         [SerializeField] private float _proximateRadius = 1f;
@@ -20,6 +17,9 @@ namespace Rhinox.XR.Grapple.It
         [Header("Interactible Groups")]
         [SerializeField] private List<GRPLInteractibleGroup> _interactibleGroups;
         
+        [HideInInspector]
+        public GRPLInteractableManager Instance;
+
         private GRPLJointManager _jointManager;
         private List<GRPLInteractable> _interactables = null;
 

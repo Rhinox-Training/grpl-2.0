@@ -5,9 +5,8 @@ using UnityEngine.Events;
 
 public class GRPLButtonInteractableUnityWrapper : MonoBehaviour
 {
-    
     [SerializeField] private GRPLButtonInteractable _interactable;
-    
+
     // Unity events
     [SerializeField] private UnityEvent _onProximityStart;
     [SerializeField] private UnityEvent _onProximityEnd;
@@ -21,13 +20,12 @@ public class GRPLButtonInteractableUnityWrapper : MonoBehaviour
 
     private void OnValidate()
     {
-        Assert.AreNotEqual(_interactable,null,"GRPLButtonInteractableUnityWrapper, GRPL Poke Interactible not set");
-        
+        Assert.AreNotEqual(_interactable, null, "GRPLButtonInteractableUnityWrapper, GRPL Poke Interactible not set");
     }
 
     private void OnEnable()
     {
-        
+
         _interactable.OnInteractStarted += OnInteractableInteractStarted;
         _interactable.OnInteractEnded += OnInteractableEnded;
         _interactable.OnProximityStarted += OnInteractableProximityStarted;
@@ -40,7 +38,7 @@ public class GRPLButtonInteractableUnityWrapper : MonoBehaviour
         _interactable.OnInteractEnded -= OnInteractableEnded;
         _interactable.OnProximityStarted -= OnInteractableProximityStarted;
         _interactable.OnProximityEnded -= OnInteractableProximityEnded;
-   }
+    }
 
     private void OnInteractableInteractStarted(GRPLInteractable obj) => OnInteractedStart.Invoke();
     private void OnInteractableEnded(GRPLInteractable obj) => OnInteractedEnd.Invoke();

@@ -16,7 +16,6 @@ namespace Rhinox.XR.Grapple.It
     public class GRPLUISliderInteractable : GRPLInteractable
     {
         public event Action<float> OnValueUpdate;
-
         public Slider.Direction SliderDirection => _sliderDirection;
         public float SliderValue => _slider.value;
 

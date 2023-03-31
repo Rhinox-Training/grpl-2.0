@@ -12,15 +12,11 @@ namespace Rhinox.XR.Grapple
     /// This class implements the behaviour to detect gestures. These gestures can be imported from a json or recording during play mode.
     /// There is also the possibility to export the gestures in a (new) json file.
     /// </summary>
-    public class GestureRecognizer : MonoBehaviour
+    public class GRPLGestureRecognizer : MonoBehaviour
     {
-        #region Gesture import fields
         public bool ImportOnPlay = false;
         public string ImportFilePath = "";
         public bool OverwriteGesturesOnImport;
-        #endregion
-
-        #region Gesture Saving fields
 
         public bool ExportOnDestroy = false;
         public string ExportFilePath = "";
@@ -35,9 +31,6 @@ namespace Rhinox.XR.Grapple
         public float GestureDistanceThreshold = 0.02f;
         public float GestureForwardThreshold = 0.5f;
 
-        #endregion
-
-        #region Recognizer fields
         public List<RhinoxGesture> Gestures = new List<RhinoxGesture>();
 
         private RhinoxGesture _currentLeftGesture;
@@ -48,7 +41,6 @@ namespace Rhinox.XR.Grapple
 
         public UnityEvent<RhinoxHand, string> OnGestureRecognized;
         public UnityEvent<RhinoxHand, string> OnGestureUnrecognized;
-        #endregion
 
         private GRPLJointManager _jointManager;
 
@@ -79,7 +71,7 @@ namespace Rhinox.XR.Grapple
         {
             if (rhinoxHand == RhinoxHand.Invalid)
             {
-                Debug.LogError($"{nameof(GestureRecognizer)} - {nameof(OnTrackingLost)}, " +
+                Debug.LogError($"{nameof(GRPLGestureRecognizer)} - {nameof(OnTrackingLost)}, " +
                                $"function called with unsupported rhinoxHand value : {rhinoxHand}");
                 return;
             }
@@ -114,7 +106,7 @@ namespace Rhinox.XR.Grapple
 #if UNITY_EDITOR
 
             if (RecordActionReference == null)
-                Debug.LogWarning("GestureRecognizer.cs, Record action reference not set!");
+                Debug.LogWarning("GRPLGestureRecognizer.cs, Record action reference not set!");
 
             UnityTypeExtensions.SubscribeAndActivateAsset(RecordActionReference, SaveGesture);
 #endif
@@ -165,7 +157,7 @@ namespace Rhinox.XR.Grapple
             _jointManager.TryGetJointFromHandById(XRHandJointID.Wrist, RhinoxHandToRecord, out var wristJoint);
             if (wristJoint == null)
             {
-                Debug.LogError($"GestureRecognizer.cs - SaveGesture({RhinoxHandToRecord}), no wrist joint found.");
+                Debug.LogError($"GRPLGestureRecognizer.cs - SaveGesture({RhinoxHandToRecord}), no wrist joint found.");
                 return;
             }
 
@@ -200,7 +192,7 @@ namespace Rhinox.XR.Grapple
             if (duplicateGestures.Count > 0)
             {
                 Debug.LogWarning(
-                    $"GestureRecognizer.cs - SaveGesture({RhinoxHandToRecord}), list with {RhinoxHandToRecord} gestures already contains {duplicateGestures.Count} gestures with the same name, adding duplicate.");
+                    $"GRPLGestureRecognizer.cs - SaveGesture({RhinoxHandToRecord}), list with {RhinoxHandToRecord} gestures already contains {duplicateGestures.Count} gestures with the same name, adding duplicate.");
                 newGesture.Name = SavedGestureName + "_Dupe";
             }
 
@@ -229,7 +221,7 @@ namespace Rhinox.XR.Grapple
             _jointManager.TryGetJointFromHandById(XRHandJointID.Wrist, handedness, out var wristJoint);
             if (wristJoint == null)
             {
-                Debug.LogError($"GestureRecognizer.cs - SaveGesture({handedness}), no wrist joint found.");
+                Debug.LogError($"GRPLGestureRecognizer.cs - SaveGesture({handedness}), no wrist joint found.");
                 return;
             }
 
@@ -315,7 +307,7 @@ namespace Rhinox.XR.Grapple
                 if (!newDir.Exists)
                 {
                     Debug.LogError(
-                        $"GestureRecognizer.cs - {nameof(WriteGesturesToJson)}, could not create new directory:  \"{finalPath}\"!");
+                        $"GRPLGestureRecognizer.cs - {nameof(WriteGesturesToJson)}, could not create new directory:  \"{finalPath}\"!");
                     return;
                 }
             }
@@ -356,7 +348,7 @@ namespace Rhinox.XR.Grapple
             if (!Directory.Exists(path.Substring(0, pathIndex)))
             {
                 Debug.LogError(
-                    $"GestureRecognizer.cs - {nameof(ReadGesturesFromJson)}, could not find directory:  \"{path}\"!");
+                    $"GRPLGestureRecognizer.cs - {nameof(ReadGesturesFromJson)}, could not find directory:  \"{path}\"!");
             }
 
             if (!File.Exists(path))

@@ -10,23 +10,23 @@ namespace Rhinox.XR.Grapple.It
     {
         [Header("Debug drawing")]
         [SerializeField] private bool _drawDebug;
-        
-        [Header("Poke parameters")] [SerializeField]
-        private Transform _interactableBaseTransform;
 
-        private Transform ButtonBaseTransform => _interactableBaseTransform;
+        [Header("Poke parameters")]
+        [SerializeField] private Transform _interactableBaseTransform;
         [SerializeField] private Transform _interactObject;
-        private Transform ButtonSurface => _interactObject;
 
-        [Header("Activation parameters")] [SerializeField] [Range(0f, 1f)]
-        private float _selectStartPercentage = 0.25f;
-        private const float INITIAL_INTERACT_OFFSET = 0.25f;
-        
+        [Header("Activation parameters")]
+        [Range(0f, 1f)][SerializeField] private float _selectStartPercentage = 0.25f;
+        public Bounds PressBounds { get; private set; }
+
+        public Transform ButtonBaseTransform => _interactableBaseTransform;
+        public Transform ButtonSurface => _interactObject;
         public float SelectStartPercentage => _selectStartPercentage;
-        private float _maxPressDistance;
         public float MaxPressedDistance => _maxPressDistance;
 
-        private Bounds PressBounds { get; set; }
+
+        private float _maxPressDistance;
+        private const float INITIAL_INTERACT_OFFSET = 0.25f;
 
         protected override void Initialize()
         {
@@ -60,7 +60,7 @@ namespace Rhinox.XR.Grapple.It
                                                _maxPressDistance * ButtonBaseTransform.forward;
             base.ProximityStopped();
         }
-        
+
         //-----------------------
         // INHERITED METHODS
         //-----------------------
@@ -136,7 +136,7 @@ namespace Rhinox.XR.Grapple.It
         //-----------------------
         // EDITOR ONLY METHODS
         //-----------------------
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         /// <summary>
         /// Creates and links the button surface to the button base transform.
         /// </summary>
@@ -146,27 +146,27 @@ namespace Rhinox.XR.Grapple.It
             if (ButtonBaseTransform == null)
             {
                 var buttonBase = new GameObject("Button base");
-                buttonBase.transform.SetParent(transform,false);
+                buttonBase.transform.SetParent(transform, false);
                 _interactableBaseTransform = buttonBase.transform;
             }
 
             if (ButtonSurface == null)
             {
                 var buttonObject = new GameObject("Button press object");
-                buttonObject.transform.SetParent(transform,false);
-                
+                buttonObject.transform.SetParent(transform, false);
+
                 // Set the position of the button press object
                 buttonObject.transform.localPosition = INITIAL_INTERACT_OFFSET * ButtonBaseTransform.forward;
-                
+
                 _interactObject = buttonObject.transform;
             }
         }
 
         private void OnDrawGizmos()
         {
-            if(!_drawDebug)
+            if (!_drawDebug)
                 return;
-            
+
             if (ButtonBaseTransform != null)
             {
                 Gizmos.color = Color.cyan;
@@ -182,9 +182,9 @@ namespace Rhinox.XR.Grapple.It
                 Handles.Label(pos, "Press surface");
                 Gizmos.DrawWireSphere(pos, 0.01f);
             }
-            
+
         }
-        #endif
-        
+#endif
+
     }
 }

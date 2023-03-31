@@ -1,32 +1,28 @@
 using Rhinox.GUIUtils.Attributes;
 using Rhinox.Perceptor;
-using UnityEditor.SceneManagement;
-using UnityEditor.SearchService;
 using UnityEngine;
 
 namespace Rhinox.XR.Grapple.It
 {
-    [RequireComponent(typeof(GestureRecognizer))]
+    [RequireComponent(typeof(GRPLGestureRecognizer))]
     public class GRPLManager : MonoBehaviour
     {
-        private GRPLJointManager _jointManager = null;
-
-        private IPhysicsService _physicsService = new NullPhysicsService();
-
         [Header("Physics")]
         [SerializeField] private bool _enableSocketing = true;
         [Layer][SerializeField] private int _handLayer = 2;
         public int Handlayer => _handLayer;
 
-        private GestureRecognizer _gestureRecognizer = null;
 
+        private GRPLJointManager _jointManager = null;
+        private IPhysicsService _physicsService = new NullPhysicsService();
+        private GRPLGestureRecognizer _gestureRecognizer = null;
         private GRPLTeleport _teleporter = null;
 
         private void Start()
         {
             _jointManager = gameObject.AddComponent<GRPLJointManager>();
             _jointManager.HandLayer = _handLayer;
-            _gestureRecognizer = GetComponent<GestureRecognizer>();
+            _gestureRecognizer = GetComponent<GRPLGestureRecognizer>();
 
             if (_enableSocketing)
                 _physicsService = new GRPLPhysicsSocketService(_gestureRecognizer, gameObject);

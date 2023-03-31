@@ -11,7 +11,7 @@ namespace Rhinox.XR.Grapple.It
     /// <remarks />
     /// <dependencies>
     /// - <see cref="GRPLJointManager"/>
-    /// - <see cref="GestureRecognizer"/>
+    /// - <see cref="GRPLGestureRecognizer"/>
     /// </dependencies>
     public class GRPLPhysicsSocketService : IPhysicsService
     {
@@ -25,7 +25,7 @@ namespace Rhinox.XR.Grapple.It
 
 
         private GRPLJointManager _jointManager;
-        private GestureRecognizer _gestureRecognizer;
+        private GRPLGestureRecognizer _gestureRecognizer;
 
         private bool _isInitialized = false;
 
@@ -50,7 +50,7 @@ namespace Rhinox.XR.Grapple.It
         private GameObject _grabbedItemL = null;
         private GameObject _grabbedItemR = null;
 
-        public GRPLPhysicsSocketService(GestureRecognizer gestureRecognizer, GameObject parentObject)
+        public GRPLPhysicsSocketService(GRPLGestureRecognizer gestureRecognizer, GameObject parentObject)
         {
             GRPLJointManager.GlobalInitialized += Initialize;
 

@@ -5,18 +5,18 @@ namespace Rhinox.XR.Grapple.It
 {
     public class MeshBaker : MonoBehaviour
     {
-        private SkinnedMeshRenderer _leftHandRenderer;
-        private SkinnedMeshRenderer _rightHandRenderer;
         [SerializeField] private GRPLHandVisualizer _handVisualizer;
-        
         [SerializeField] private Material _bakedMeshMaterial;
         [SerializeField] private Material _handAfterBakeMaterial;
 
         private GRPLJointManager _jointManager;
 
+        private SkinnedMeshRenderer _leftHandRenderer;
+        private SkinnedMeshRenderer _rightHandRenderer;
+
         private GameObject _leftBakedMeshObject;
         private GameObject _rightBakedMeshObject;
-        
+
         private void Awake()
         {
             GRPLJointManager.GlobalInitialized += OnJointManagerInitialized;
@@ -51,12 +51,12 @@ namespace Rhinox.XR.Grapple.It
             switch (hand)
             {
                 case RhinoxHand.Left:
-                    if(!_jointManager.IsLeftHandTracked)
+                    if (!_jointManager.IsLeftHandTracked)
                         return;
                     if (_leftBakedMeshObject == null)
                         _leftBakedMeshObject = new GameObject("Left Baked meshes");
                     _leftHandRenderer.enabled = !disableRenderer;
-                    BakeMeshDelegate(_leftHandRenderer,_leftBakedMeshObject);
+                    BakeMeshDelegate(_leftHandRenderer, _leftBakedMeshObject);
                     break;
                 case RhinoxHand.Right:
                     if (!_jointManager.IsRightHandTracked)
@@ -81,15 +81,15 @@ namespace Rhinox.XR.Grapple.It
             var bakeChild = new GameObject("Baked mesh");
             bakeRenderer = bakeChild.AddComponent<MeshRenderer>();
             bakeFilter = bakeChild.AddComponent<MeshFilter>();
-            
+
             bakeRenderer.material = _bakedMeshMaterial;
             meshRenderer.BakeMesh(bakeFilter.mesh);
-            
+
             meshRenderer.material = _handAfterBakeMaterial;
             var transform1 = meshRenderer.transform;
             bakeChild.transform.position = transform1.position;
             bakeChild.transform.rotation = transform1.rotation;
-            bakeChild.transform.SetParent(parent.transform,true);
+            bakeChild.transform.SetParent(parent.transform, true);
         }
 
         /// <summary>
