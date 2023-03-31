@@ -8,7 +8,7 @@ namespace Rhinox.XR.Grapple.It
     {
         private SkinnedMeshRenderer _leftHandRenderer;
         private SkinnedMeshRenderer _rightHandRenderer;
-        [SerializeField] private GRPLHandVisualizer _handVisualizer;
+        private GRPLHandVisualizer _handVisualizer;
         
         [SerializeField] private Material _bakedMeshMaterial;
         [SerializeField] private Material _handAfterBakeMaterial;
