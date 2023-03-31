@@ -7,10 +7,10 @@ using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple.It
 {
-    public class InteractableManager :  MonoBehaviour
+    public class GRPLInteractableManager :  MonoBehaviour
     {
         [HideInInspector]
-        public InteractableManager Instance;
+        public GRPLInteractableManager Instance;
 
         [Header("Proximate detection parameters")]
         [SerializeField] private int _maxAmountOfProximatesPerHand = 3;
@@ -18,9 +18,9 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField] private XRHandJointID _proximateJointID = XRHandJointID.MiddleMetacarpal;
         
         [Header("Interactible Groups")]
-        [SerializeField] private List<InteractibleGroup> _interactibleGroups;
+        [SerializeField] private List<GRPLInteractibleGroup> _interactibleGroups;
         
-        private JointManager _jointManager;
+        private GRPLJointManager _jointManager;
         private List<GRPLInteractable> _interactables = null;
 
         private List<GRPLInteractable> _leftHandProximates;
@@ -38,13 +38,13 @@ namespace Rhinox.XR.Grapple.It
                 Destroy(this);
             }
 
-            JointManager.GlobalInitialized += OnJointManagerInitialised;
+            GRPLJointManager.GlobalInitialized += OnJointManagerInitialised;
 
             _leftHandProximates = new List<GRPLInteractable>();
             _rightHandProximates = new List<GRPLInteractable>();
         }
 
-        private void OnJointManagerInitialised(JointManager obj)
+        private void OnJointManagerInitialised(GRPLJointManager obj)
         {
             _jointManager = obj;
             _jointManager.TrackingLost += OnTrackingLost;
@@ -138,7 +138,7 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    PLog.Error<GrappleItLogger>($"[{this.GetType()}:DetectProximates], function called with invalid hand {hand}");
+                    PLog.Error<GRPLItLogger>($"[{this.GetType()}:DetectProximates], function called with invalid hand {hand}");
                     return Array.Empty<GRPLInteractable>();
             }
             
@@ -242,7 +242,7 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    PLog.Error<GrappleItLogger>($"[{GetType()}:OnTrackingLost], function called with invalid hand {hand}");
+                    PLog.Error<GRPLItLogger>($"[{GetType()}:OnTrackingLost], function called with invalid hand {hand}");
                     return;
             }
 

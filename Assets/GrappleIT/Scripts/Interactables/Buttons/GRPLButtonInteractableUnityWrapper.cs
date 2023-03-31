@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Events;
 
-public class ButtonInteractableUnityWrapper : MonoBehaviour
+public class GRPLButtonInteractableUnityWrapper : MonoBehaviour
 {
     
     [SerializeField] private GRPLButtonInteractable _interactable;
@@ -21,7 +21,7 @@ public class ButtonInteractableUnityWrapper : MonoBehaviour
 
     private void OnValidate()
     {
-        Assert.AreNotEqual(_interactable,null,"ButtonInteractableUnityWrapper, GRPL Poke Interactible not set");
+        Assert.AreNotEqual(_interactable,null,"GRPLButtonInteractableUnityWrapper, GRPL Poke Interactible not set");
         
     }
 

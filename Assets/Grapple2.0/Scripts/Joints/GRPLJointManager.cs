@@ -12,7 +12,12 @@ using Rhinox.Perceptor;
 
 namespace Rhinox.XR.Grapple
 {
-    public class JointManager : MonoBehaviour
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <remarks />
+    /// <dependencies />
+    public class GRPLJointManager : MonoBehaviour
     {
         public bool JointCollisionsEnabled
         {
@@ -38,7 +43,7 @@ namespace Rhinox.XR.Grapple
 
         private event Action Initialized;
         public event Action<RhinoxHand> OnJointCapsulesInitialized;
-        public static event Action<JointManager> GlobalInitialized;
+        public static event Action<GRPLJointManager> GlobalInitialized;
         public bool AreJointsInitialised { get; private set; } = false;
 
         public bool HandTrackingProviderContainsCapsules = false;
@@ -77,9 +82,7 @@ namespace Rhinox.XR.Grapple
         // Finger bend fields
         //-----------------------------
         [Header("Bend Thresholds")]
-        [SerializeField]
-        public float ThumbBendThreshold = 0.75f;
-
+        [SerializeField] public float ThumbBendThreshold = 0.75f;
         [SerializeField] public float IndexBendThreshold = 0.3f;
         [SerializeField] public float MiddleBendThreshold = 0.25f;
         [SerializeField] public float RingBendThreshold = 0.3f;
@@ -202,7 +205,7 @@ namespace Rhinox.XR.Grapple
         {
             if (HandTrackingProviderContainsCapsules)
             {
-                PLog.Error<GrappleLogger>($"[JointManager:InitializeJointCapsules]," +
+                PLog.Error<GrappleLogger>($"[GRPLJointManager:InitializeJointCapsules]," +
                     $"NOT IMPLEMENTED", this);
                 return;
             }
@@ -235,7 +238,7 @@ namespace Rhinox.XR.Grapple
                     }
                 default:
                     PLog.Error<GrappleLogger>(
-                        $"[JointManager:InitializeJointCapsules]," +
+                        $"[GRPLJointManager:InitializeJointCapsules]," +
                         $", function called with incorrect rhinoxHand {handedness}. Only left or right supported!", this);
                     return;
             }
@@ -415,7 +418,7 @@ namespace Rhinox.XR.Grapple
                     break;
                 default:
                     Debug.LogError(
-                        $"{nameof(JointManager)} - {nameof(SetHandCollisions)}, function called with invalid rhinoxHand value: {rhinoxHand}");
+                        $"{nameof(GRPLJointManager)} - {nameof(SetHandCollisions)}, function called with invalid rhinoxHand value: {rhinoxHand}");
                     break;
             }
         }
@@ -438,7 +441,7 @@ namespace Rhinox.XR.Grapple
                     break;
                 default:
                     Debug.LogError(
-                        $"{nameof(JointManager)} - {nameof(OnTrackingAcquired)}, function called with incorrect rhinoxHand {hand}. Only left or right supported!");
+                        $"{nameof(GRPLJointManager)} - {nameof(OnTrackingAcquired)}, function called with incorrect rhinoxHand {hand}. Only left or right supported!");
                     break;
             }
 
@@ -463,7 +466,7 @@ namespace Rhinox.XR.Grapple
                     break;
                 default:
                     Debug.LogError(
-                        $"{nameof(JointManager)} - {nameof(OnTrackingLost)}, function called with incorrect rhinoxHand {hand}. Only left or right supported!");
+                        $"{nameof(GRPLJointManager)} - {nameof(OnTrackingLost)}, function called with incorrect rhinoxHand {hand}. Only left or right supported!");
                     break;
             }
 
@@ -557,7 +560,7 @@ namespace Rhinox.XR.Grapple
                     }
                 default:
                     Debug.LogError(
-                        $"{nameof(JointManager)} - {nameof(UpdateRootPose)}, function called with incorrect rhinoxHand {hand}. Only left or right supported!");
+                        $"{nameof(GRPLJointManager)} - {nameof(UpdateRootPose)}, function called with incorrect rhinoxHand {hand}. Only left or right supported!");
                     break;
             }
         }
@@ -584,7 +587,7 @@ namespace Rhinox.XR.Grapple
                 case RhinoxHand.Invalid:
                 default:
                     Debug.LogError(
-                        $"{nameof(JointManager)} - {nameof(UpdateJoints)}, function called with incorrect rhinoxHand {hand}. Only left or right supported!");
+                        $"{nameof(GRPLJointManager)} - {nameof(UpdateJoints)}, function called with incorrect rhinoxHand {hand}. Only left or right supported!");
                     return;
             }
 
@@ -780,7 +783,7 @@ namespace Rhinox.XR.Grapple
                     return IsRightHandTracked && joint != null;
                 default:
                     Debug.LogError(
-                        $"{nameof(JointManager)} - {nameof(TryGetJointFromHandById)}, " +
+                        $"{nameof(GRPLJointManager)} - {nameof(TryGetJointFromHandById)}, " +
                         $"function called with incorrect rhinoxHand {rhinoxHand}. Only left or right supported!");
                     joint = null;
                     return false;

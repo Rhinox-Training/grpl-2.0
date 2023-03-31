@@ -1,9 +1,8 @@
-using System;
 using System.Collections.Generic;
 using Rhinox.XR.Grapple.It;
 using UnityEngine;
 
-public class InteractibleGroup : MonoBehaviour
+public class GRPLInteractibleGroup : MonoBehaviour
 {
     private List<GRPLInteractable> _interactables;
 
