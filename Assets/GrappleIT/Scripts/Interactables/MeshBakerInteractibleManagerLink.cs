@@ -6,7 +6,7 @@ namespace Rhinox.XR.Grapple.It
 {
     public class MeshBakerInteractibleManagerLink : MonoBehaviour
     {
-        [SerializeField] private InteractableManager _interactableManager;
+        [SerializeField] private GRPLInteractableManager _interactableManager;
         [SerializeField] private MeshBaker _meshBaker;
 
         private List<GRPLInteractable> _pausedInteractables = new List<GRPLInteractable>();
@@ -30,7 +30,7 @@ namespace Rhinox.XR.Grapple.It
 
             if (_interactableManager == null)
             {
-                _interactableManager = obj.GetComponent<InteractableManager>();
+                _interactableManager = obj.GetComponent<GRPLInteractableManager>();
                 if (_interactableManager == null)
                 {
                     PLog.Error<GRPLITLogger>(

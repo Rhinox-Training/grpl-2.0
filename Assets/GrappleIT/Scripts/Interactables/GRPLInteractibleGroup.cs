@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Rhinox.XR.Grapple.It
 {
-    public class InteractibleGroup : MonoBehaviour
+    public class GRPLInteractibleGroup : MonoBehaviour
     {
         [Header("Delayed activation parameters")] [SerializeField]
         private bool _delayInteractibleReactivation = true;

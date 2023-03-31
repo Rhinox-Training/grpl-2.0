@@ -92,8 +92,8 @@ namespace Rhinox.XR.Grapple.It
         private LimitedQueue<Vector3> _teleportPositions = new LimitedQueue<Vector3>(5);
         private GameObject _sensorObjL = null;
         private GameObject _sensorObjR = null;
-        private GRPLProximitySensor _proxySensorL = null;
-        private GRPLProximitySensor _proxySensorR = null;
+        private GRPLTriggerSensor _proxySensorL = null;
+        private GRPLTriggerSensor _proxySensorR = null;
 
         private Vector3 _sensorOffset = new Vector3(0f, 0f, -0.05f);
         private Vector3 _sensorSize = new Vector3(0.08f, 0.08f, 0.08f);
@@ -207,7 +207,7 @@ namespace Rhinox.XR.Grapple.It
         /// <param name="sensorObj">The main object where the sensor script will be placed onto and the sensor model will be childed under</param>
         /// <param name="hand">Mainly to give the sensor <see cref="GameObject"/> the correct name</param>
         /// <param name="proxySensor">The sensor logic to hook into the events</param>
-        private void SensorSetup(out GameObject sensorObj, RhinoxHand hand, out GRPLProximitySensor proxySensor)
+        private void SensorSetup(out GameObject sensorObj, RhinoxHand hand, out GRPLTriggerSensor proxySensor)
         {
             sensorObj = new GameObject($"{hand}Hand Sensor");
             sensorObj.transform.parent = transform;
@@ -218,7 +218,7 @@ namespace Rhinox.XR.Grapple.It
             sensCollider.isTrigger = true;
             sensCollider.center = _sensorOffset;
             sensCollider.size = _sensorSize;
-            proxySensor = sensorObj.AddComponent<GRPLProximitySensor>();
+            proxySensor = sensorObj.AddComponent<GRPLTriggerSensor>();
             proxySensor.HandLayer = LayerMask.NameToLayer("Hands");
             proxySensor.AddListenerOnSensorEnter(ConfirmTeleport);
         }
