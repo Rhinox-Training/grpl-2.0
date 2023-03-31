@@ -183,6 +183,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
+      propertyPath: _drawDebug
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: _selectStartPercentage
       value: 0.4
       objectReference: {fileID: 0}
@@ -228,6 +232,7 @@ GameObject:
   m_Component:
   - component: {fileID: 26352020}
   - component: {fileID: 26352021}
+  - component: {fileID: 26352022}
   m_Layer: 0
   m_Name: InteractibleManager
   m_TagString: Untagged
@@ -268,7 +273,19 @@ MonoBehaviour:
   _proximateJointID: 12
   _interactibleGroups:
   - {fileID: 1110593844}
-  _checkForMeshBaking: 1
+--- !u!114 &26352022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 26352018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e9fbccb7570e0841a3fb60540b513f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _interactableManager: {fileID: 26352021}
   _meshBaker: {fileID: 0}
 --- !u!1 &42276285
 GameObject:
@@ -615,6 +632,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6bb231319f3c394bb839bc738a4636d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _delayInteractibleReactivation: 1
+  _delayInteractibleReactivationTime: 0.25
 --- !u!1 &137069409
 GameObject:
   m_ObjectHideFlags: 0
@@ -1236,6 +1255,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935796, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
+      propertyPath: _drawDebug
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
@@ -4000,6 +4023,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6bb231319f3c394bb839bc738a4636d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _delayInteractibleReactivation: 1
+  _delayInteractibleReactivationTime: 0.25
 --- !u!1 &1068034386
 GameObject:
   m_ObjectHideFlags: 0
@@ -4357,6 +4382,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6bb231319f3c394bb839bc738a4636d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _delayInteractibleReactivation: 1
+  _delayInteractibleReactivationTime: 0.25
 --- !u!1 &1159259491
 GameObject:
   m_ObjectHideFlags: 0
@@ -4446,6 +4473,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935796, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
+      propertyPath: _drawDebug
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
@@ -4848,6 +4879,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935796, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
+      propertyPath: _drawDebug
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
@@ -7039,6 +7074,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
+      propertyPath: _drawDebug
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: _selectStartPercentage
       value: 0.4
       objectReference: {fileID: 0}
@@ -7275,6 +7314,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935796, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
+      propertyPath: _drawDebug
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
@@ -7863,6 +7906,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
+      propertyPath: _drawDebug
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: _selectStartPercentage
       value: 0.4
       objectReference: {fileID: 0}
@@ -7955,6 +8002,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935796, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
+      propertyPath: _drawDebug
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
@@ -8940,6 +8991,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
+      propertyPath: _drawDebug
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: _selectStartPercentage
       value: 0.4
       objectReference: {fileID: 0}
@@ -9121,6 +9176,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935796, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
+      propertyPath: _drawDebug
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
