@@ -53,6 +53,6 @@ namespace Rhinox.XR.Grapple.It
         {
             return Vector3.Dot(projectPoint - normalPoint,
                 normal);
-        }        
+        }
     }
 }

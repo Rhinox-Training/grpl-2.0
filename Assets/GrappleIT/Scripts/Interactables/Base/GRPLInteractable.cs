@@ -26,6 +26,8 @@ namespace Rhinox.XR.Grapple.It
         private GRPLInteractionState _state = GRPLInteractionState.Active;
         public GRPLInteractionState State => _state;
         
+        public bool ShouldPerformInteractCheck { set; get; } = true;
+        
         private void Start()
         {
             Initialize();
@@ -70,11 +72,17 @@ namespace Rhinox.XR.Grapple.It
             _state = newState;
         }
 
-        private protected virtual void InteractStarted() => OnInteractStarted?.Invoke(this);
-        private protected virtual void InteractStopped() => OnInteractEnded?.Invoke(this);
+        protected virtual void InteractStarted() => OnInteractStarted?.Invoke(this);
+        protected virtual void InteractStopped() => OnInteractEnded?.Invoke(this);
 
-        private protected virtual void ProximityStarted() => OnProximityStarted?.Invoke(this);
-        private protected virtual void ProximityStopped() => OnProximityEnded?.Invoke(this);
+        protected virtual void ProximityStarted() => OnProximityStarted?.Invoke(this);
+        protected virtual void ProximityStopped() => OnProximityEnded?.Invoke(this);
+
+        /// <summary>
+        /// Check, when currently interacting. If the interaction should not get checked anymore.
+        /// I.e. When the previous interact joint is now behind the button press object.
+        /// </summary>
+        public virtual bool ShouldInteractionCheckStop() => false;
 
         /// <summary>
         /// Check whether the given joint activates the interaction for this interactable.

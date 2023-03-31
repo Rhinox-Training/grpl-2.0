@@ -220,7 +220,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 26352020}
-  - component: {fileID: 26352021}
+  - component: {fileID: 26352022}
   m_Layer: 0
   m_Name: InteractibleManager
   m_TagString: Untagged
@@ -243,7 +243,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &26352021
+--- !u!114 &26352022
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -252,16 +252,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 26352018}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9edb3a4f20e34ef0907b86314a7e8ad9, type: 3}
+  m_Script: {fileID: 11500000, guid: f55a8aba0a4ffb74283cc45c5f4fa3ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Instance: {fileID: 0}
-  _maxAmountOfProximatesPerHand: 9
-  _proximateRadius: 0.25
+  _maxAmountOfProximatesPerHand: 3
+  _proximateRadius: 1
   _proximateJointID: 12
   _interactibleGroups:
   - {fileID: 1110593844}
   - {fileID: 1703892071}
+  Instance: {fileID: 0}
 --- !u!1 &27382933
 GameObject:
   m_ObjectHideFlags: 0
@@ -3796,6 +3797,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6bb231319f3c394bb839bc738a4636d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _delayInteractibleReactivation: 1
+  _delayInteractibleReactivationTime: 0.25
 --- !u!1001 &1229635770
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5597,6 +5600,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6bb231319f3c394bb839bc738a4636d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _delayInteractibleReactivation: 1
+  _delayInteractibleReactivationTime: 0.25
 --- !u!4 &1703892072
 Transform:
   m_ObjectHideFlags: 0
@@ -6909,6 +6914,8 @@ MonoBehaviour:
   _drawDebug: 0
   _interactableBaseTransform: {fileID: 2080736830}
   _interactObject: {fileID: 1650147529}
+  _useInteractDelay: 1
+  _interactDelay: 0.25
   _selectStartPercentage: 0.25
 --- !u!1 &2065498542
 GameObject:

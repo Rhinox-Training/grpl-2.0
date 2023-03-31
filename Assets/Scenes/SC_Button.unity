@@ -183,6 +183,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
+      propertyPath: _drawDebug
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: _selectStartPercentage
       value: 0.4
       objectReference: {fileID: 0}
@@ -227,7 +231,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 26352020}
-  - component: {fileID: 26352021}
+  - component: {fileID: 26352023}
+  - component: {fileID: 26352022}
   m_Layer: 0
   m_Name: InteractibleManager
   m_TagString: Untagged
@@ -250,7 +255,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &26352021
+--- !u!114 &26352022
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -259,14 +264,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 26352018}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9edb3a4f20e34ef0907b86314a7e8ad9, type: 3}
+  m_Script: {fileID: 11500000, guid: 7e9fbccb7570e0841a3fb60540b513f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _interactableManager: {fileID: 26352023}
+  _meshBaker: {fileID: 477563384}
+--- !u!114 &26352023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 26352018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f55a8aba0a4ffb74283cc45c5f4fa3ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Instance: {fileID: 0}
-  _maxAmountOfProximatesPerHand: 9
-  _proximateRadius: 0.25
+  _maxAmountOfProximatesPerHand: 3
+  _proximateRadius: 1
   _proximateJointID: 12
   _interactibleGroups:
+  - {fileID: 1039238251}
+  - {fileID: 130702486}
   - {fileID: 1110593844}
 --- !u!1 &42276285
 GameObject:
@@ -564,6 +585,8 @@ MonoBehaviour:
   _drawDebug: 0
   _interactableBaseTransform: {fileID: 370884511}
   _interactObject: {fileID: 951720752}
+  _useInteractDelay: 1
+  _interactDelay: 0.25
   _selectStartPercentage: 0.25
 --- !u!1 &130702484
 GameObject:
@@ -611,6 +634,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6bb231319f3c394bb839bc738a4636d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _delayInteractibleReactivation: 1
+  _delayInteractibleReactivationTime: 0.25
 --- !u!1 &137069409
 GameObject:
   m_ObjectHideFlags: 0
@@ -917,6 +942,8 @@ MonoBehaviour:
   _drawDebug: 0
   _interactableBaseTransform: {fileID: 1159259492}
   _interactObject: {fileID: 1020492204}
+  _useInteractDelay: 1
+  _interactDelay: 0.25
   _selectStartPercentage: 0.25
 --- !u!1 &299344882
 GameObject:
@@ -1230,6 +1257,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935796, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
+      propertyPath: _drawDebug
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
@@ -1705,9 +1736,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8613a5b7f9650748aabf4763d25821d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _handVisualizer: {fileID: 0}
+  _handVisualizer: {fileID: 477563386}
   _bakedMeshMaterial: {fileID: 2100000, guid: 613690cd962241049a0ec289a6ff835e, type: 2}
   _handAfterBakeMaterial: {fileID: 2100000, guid: 081b6bc4cf86dd94d80d6df9db580e1f, type: 2}
+--- !u!114 &477563386 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1580037713721437764, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+  m_PrefabInstance: {fileID: 1776352268}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 477563378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f0c6b690126c15488febe00999b67fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &492910928
 GameObject:
   m_ObjectHideFlags: 0
@@ -2783,6 +2825,8 @@ MonoBehaviour:
   _drawDebug: 0
   _interactableBaseTransform: {fileID: 1804658658}
   _interactObject: {fileID: 1937194935}
+  _useInteractDelay: 1
+  _interactDelay: 0.25
   _selectStartPercentage: 0.25
 --- !u!1 &664261957
 GameObject:
@@ -3067,6 +3111,8 @@ MonoBehaviour:
   _drawDebug: 0
   _interactableBaseTransform: {fileID: 1840236698}
   _interactObject: {fileID: 1350784501}
+  _useInteractDelay: 1
+  _interactDelay: 0.25
   _selectStartPercentage: 0.25
 --- !u!1 &779751958
 GameObject:
@@ -3990,6 +4036,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6bb231319f3c394bb839bc738a4636d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _delayInteractibleReactivation: 1
+  _delayInteractibleReactivationTime: 0.25
 --- !u!1 &1068034386
 GameObject:
   m_ObjectHideFlags: 0
@@ -4347,6 +4395,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6bb231319f3c394bb839bc738a4636d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _delayInteractibleReactivation: 1
+  _delayInteractibleReactivationTime: 0.25
 --- !u!1 &1159259491
 GameObject:
   m_ObjectHideFlags: 0
@@ -4436,6 +4486,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935796, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
+      propertyPath: _drawDebug
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
@@ -4838,6 +4892,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935796, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
+      propertyPath: _drawDebug
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
@@ -5329,6 +5387,8 @@ MonoBehaviour:
   _drawDebug: 0
   _interactableBaseTransform: {fileID: 2006563335}
   _interactObject: {fileID: 2138547903}
+  _useInteractDelay: 1
+  _interactDelay: 0.25
   _selectStartPercentage: 0.25
 --- !u!1 &1498657494
 GameObject:
@@ -5634,6 +5694,8 @@ MonoBehaviour:
   _drawDebug: 0
   _interactableBaseTransform: {fileID: 1107230079}
   _interactObject: {fileID: 821127323}
+  _useInteractDelay: 1
+  _interactDelay: 0.25
   _selectStartPercentage: 0.25
 --- !u!114 &1552088985 stripped
 MonoBehaviour:
@@ -7025,6 +7087,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
+      propertyPath: _drawDebug
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: _selectStartPercentage
       value: 0.4
       objectReference: {fileID: 0}
@@ -7202,6 +7268,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Grapple_Player
       objectReference: {fileID: 0}
+    - target: {fileID: 5545826842087243644, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
 --- !u!1001 &1798319914
@@ -7261,6 +7331,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935796, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
+      propertyPath: _drawDebug
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
@@ -7653,6 +7727,8 @@ MonoBehaviour:
   _drawDebug: 0
   _interactableBaseTransform: {fileID: 961948665}
   _interactObject: {fileID: 63877137}
+  _useInteractDelay: 1
+  _interactDelay: 0.25
   _selectStartPercentage: 0.25
 --- !u!1 &1830872212
 GameObject:
@@ -7847,6 +7923,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
+      propertyPath: _drawDebug
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: _selectStartPercentage
       value: 0.4
       objectReference: {fileID: 0}
@@ -7939,6 +8019,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935796, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
+      propertyPath: _drawDebug
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
@@ -8348,6 +8432,8 @@ MonoBehaviour:
   _drawDebug: 1
   _interactableBaseTransform: {fileID: 2080736830}
   _interactObject: {fileID: 1650147529}
+  _useInteractDelay: 1
+  _interactDelay: 0.25
   _selectStartPercentage: 0.25
 --- !u!1 &2065498542
 GameObject:
@@ -8859,6 +8945,8 @@ MonoBehaviour:
   _drawDebug: 0
   _interactableBaseTransform: {fileID: 394207465}
   _interactObject: {fileID: 42276286}
+  _useInteractDelay: 1
+  _interactDelay: 0.25
   _selectStartPercentage: 0.25
 --- !u!1001 &2122865063
 PrefabInstance:
@@ -8917,6 +9005,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935796, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
+      propertyPath: _drawDebug
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
@@ -9104,6 +9196,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
+      propertyPath: _drawDebug
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4117710423721935797, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
       propertyPath: _selectStartPercentage
       value: 0.293
       objectReference: {fileID: 0}
@@ -9124,6 +9220,10 @@ PrefabInstance:
       propertyPath: _drawDebug
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5210042141153954088, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
+      propertyPath: _interactDelay
+      value: 0.25
+      objectReference: {fileID: 0}
     - target: {fileID: 5210042141153954089, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
       propertyPath: m_Name
       value: Square button
@@ -9138,11 +9238,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5210042141153954091, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.8459546
+      value: 1.07
       objectReference: {fileID: 0}
     - target: {fileID: 5210042141153954091, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.039
+      value: -3.171
       objectReference: {fileID: 0}
     - target: {fileID: 5210042141153954091, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
       propertyPath: m_LocalRotation.w

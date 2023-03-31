@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using Rhinox.GUIUtils;
 using Rhinox.Lightspeed;
 using UnityEditor;
 using UnityEngine;
@@ -16,7 +18,10 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField] private Transform _interactObject;
 
         [Header("Activation parameters")]
+        [SerializeField] private bool _useInteractDelay = true;
+        [SerializeField] private float _interactDelay = 0.25f;
         [Range(0f, 1f)][SerializeField] private float _selectStartPercentage = 0.25f;
+        
         public Bounds PressBounds { get; private set; }
 
         public Transform ButtonBaseTransform => _interactableBaseTransform;
@@ -25,9 +30,11 @@ namespace Rhinox.XR.Grapple.It
         public float MaxPressedDistance => _maxPressDistance;
 
 
+        private RhinoxJoint _previousInteractJoint;
         private float _maxPressDistance;
         private const float INITIAL_INTERACT_OFFSET = 0.25f;
-
+        private bool _isOnCooldown = false;
+        
         protected override void Initialize()
         {
             // Calculate the initial distance between the interact object and base transform
@@ -47,14 +54,18 @@ namespace Rhinox.XR.Grapple.It
         //-----------------------
         // INHERITED EVENTS
         //-----------------------
-        private protected override void InteractStopped()
+        protected override void InteractStopped()
         {
+            if (_useInteractDelay)
+                StartCoroutine(DisableInteractibleForDuration());
             ButtonSurface.transform.position = ButtonBaseTransform.position +
                                                _maxPressDistance * ButtonBaseTransform.forward;
+            
+            
             base.InteractStopped();
         }
 
-        private protected override void ProximityStopped()
+        protected override void ProximityStopped()
         {
             ButtonSurface.transform.position = ButtonBaseTransform.position +
                                                _maxPressDistance * ButtonBaseTransform.forward;
@@ -62,11 +73,21 @@ namespace Rhinox.XR.Grapple.It
         }
 
         //-----------------------
+        // COROUTINES
+        //-----------------------
+        private IEnumerator DisableInteractibleForDuration()
+        {
+            _isOnCooldown = true;
+            yield return new WaitForSecondsRealtime(_interactDelay);
+            _isOnCooldown = false;
+        }
+
+        //-----------------------
         // INHERITED METHODS
         //-----------------------
         public override bool CheckForInteraction(RhinoxJoint joint)
         {
-            if (!gameObject.activeInHierarchy)
+            if (!gameObject.activeInHierarchy || _isOnCooldown)
                 return false;
 
             float closestDistance = MaxPressedDistance;
@@ -105,7 +126,13 @@ namespace Rhinox.XR.Grapple.It
 
             float pressPercentage = 1 - (closestDistance / MaxPressedDistance);
 
-            return pressPercentage > SelectStartPercentage;
+            if (pressPercentage > _selectStartPercentage)
+            {
+                _previousInteractJoint = joint;
+                return true;    
+            }
+            
+            return false;
         }
 
         public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint)
@@ -132,6 +159,25 @@ namespace Rhinox.XR.Grapple.It
 
             return outJoint != null;
         }
+
+        public override bool ShouldInteractionCheckStop()
+        {
+            if (State != GRPLInteractionState.Interacted)
+                return false;
+
+            // Check if the joint pos is in front of the plane that is defined by the button
+            if (!InteractableMathUtils.IsPositionInFrontOfPlane(_previousInteractJoint.JointPosition,
+                    ButtonBaseTransform.position,
+                    ButtonBaseTransform.forward))
+            {
+                ShouldPerformInteractCheck = false;
+                return true;
+            }
+
+            ShouldPerformInteractCheck = true;
+            return false;
+        }
+
 
         //-----------------------
         // EDITOR ONLY METHODS
@@ -169,22 +215,22 @@ namespace Rhinox.XR.Grapple.It
 
             if (ButtonBaseTransform != null)
             {
-                Gizmos.color = Color.cyan;
+                GUIContentHelper.PushColor(Color.cyan);
                 var pos = ButtonBaseTransform.position;
                 Handles.Label(pos, "Press limit");
                 Gizmos.DrawWireSphere(pos, 0.01f);
+                GUIContentHelper.PopColor();
             }
 
             if (ButtonSurface != null)
             {
-                Gizmos.color = Color.red;
+                GUIContentHelper.PushColor(Color.red);
                 var pos = ButtonSurface.position;
                 Handles.Label(pos, "Press surface");
                 Gizmos.DrawWireSphere(pos, 0.01f);
+                GUIContentHelper.PopColor();
             }
-
         }
 #endif
-
     }
 }
