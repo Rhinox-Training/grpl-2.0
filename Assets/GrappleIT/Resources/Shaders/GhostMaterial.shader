@@ -2,8 +2,18 @@ Shader "Grapple/GhostMaterial"
 {
     Properties
     {
+        [Header(Colour parameters)]
         _Color("Main color",Color) = (0,0.5,0.5,0.5)
+
+        [Header(Border parameters)]
+        _BorderColor("Border color",Color) = (0,0.5,0.5,0.5)
         _BorderMultiplier("Border multiplier",float) = 1
+
+        [Header(Pusle)]
+        [Toggle]_UsePulse("Use pulse",float) = 0
+        _PulseMultiplier("Pulse multiplier",float) = 1
+        _PulseMin("Lower pulse value",range(0,1)) = 0.2
+        _PulseMax("Upper pulse value",range(0,1)) = 1
     }
     SubShader
     {
@@ -40,12 +50,18 @@ Shader "Grapple/GhostMaterial"
                 float3 view_t : TEXCOORD1;
 
                 fixed4 color : COLOR;
-                float border_multiplier: TEXCOORD2;
+                fixed4 border_color : COLOR1;
             };
+
+            uniform float _BorderMultiplier;
+            uniform float _PulseMultiplier;
+            uniform float _PulseMin;
+            uniform float _PulseMax;
+            uniform float _UsePulse;
 
             UNITY_INSTANCING_BUFFER_START(Props)
             UNITY_DEFINE_INSTANCED_PROP(fixed4, _Color)
-            UNITY_DEFINE_INSTANCED_PROP(float, _BorderMultiplier)
+            UNITY_DEFINE_INSTANCED_PROP(fixed4, _BorderColor)
             UNITY_INSTANCING_BUFFER_END(Props)
 
             v2f vert(appdata v)
@@ -56,7 +72,7 @@ Shader "Grapple/GhostMaterial"
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
                 o.color = UNITY_ACCESS_INSTANCED_PROP(Props, _Color);
-                o.border_multiplier = UNITY_ACCESS_INSTANCED_PROP(Props, _BorderMultiplier);
+                o.border_color = UNITY_ACCESS_INSTANCED_PROP(Props, _BorderColor);
 
                 o.normal = normalize(v.normal);
                 o.view_t = normalize(ObjSpaceViewDir(v.vertex)); //ObjSpaceViewDir is similar, but local space.
@@ -64,6 +80,12 @@ Shader "Grapple/GhostMaterial"
                 o.uv = v.uv;
 
                 return o;
+            }
+
+            void unity_remap_float(const float In, float2 in_min_max, float2 out_min_max, out float output)
+            {
+                output = out_min_max.x + (In - in_min_max.x) * (out_min_max.y - out_min_max.x) / (in_min_max.y -
+                    in_min_max.x);
             }
 
             fixed4 frag(v2f i) : SV_Target
@@ -74,15 +96,20 @@ Shader "Grapple/GhostMaterial"
                 // Calculate fresnel value
                 float fresnel = saturate(pow(1.0 - view_dot_normal, 3));
 
+                if (_UsePulse > 0)
+                {
+                    // Make the border pulse with time
+                    float remapped_sine_time = 0;
+                    float sineTime = sin(_PulseMultiplier * _Time.y);
+
+                    unity_remap_float(sineTime, float2(-1, 1), float2(_PulseMin, _PulseMax), remapped_sine_time);
+                    fresnel *= remapped_sine_time;
+                }
+
                 // Apply the multiplier
-                fresnel *= i.border_multiplier;
+                fresnel *= _BorderMultiplier;
 
-                // Calculate the border
-
-                //TODO Make it pulse with time
-
-                // Add the fresnel to the original alpha 
-                i.color.a = fresnel;
+                i.color = lerp(i.color, i.border_color, fresnel);
 
                 return i.color;
             }

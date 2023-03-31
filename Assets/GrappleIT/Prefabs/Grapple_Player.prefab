@@ -206,6 +206,7 @@ GameObject:
   - component: {fileID: 1580037713721437767}
   - component: {fileID: 1580037713721437768}
   - component: {fileID: 1580037713721437764}
+  - component: {fileID: 7176394295667534280}
   m_Layer: 0
   m_Name: Grapple_Player
   m_TagString: Untagged
@@ -307,7 +308,21 @@ MonoBehaviour:
   _xrOrigin: {fileID: 1580037713721437765}
   _leftHandPrefab: {fileID: 919132149155446097, guid: bf7151579c38e2a44be94ba8773876c1, type: 3}
   _rightHandPrefab: {fileID: 919132149155446097, guid: 56186ccf27ad7864681108ed88349071, type: 3}
-  _handMaterial: {fileID: 2100000, guid: 613690cd962241049a0ec289a6ff835e, type: 2}
+  _handMaterial: {fileID: 2100000, guid: fdc82094abb23954ab3987598c0ef5ec, type: 2}
+--- !u!114 &7176394295667534280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1580037713721437769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8613a5b7f9650748aabf4763d25821d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _bakedMeshMaterial: {fileID: 2100000, guid: fdc82094abb23954ab3987598c0ef5ec, type: 2}
+  _handAfterBakeMaterial: {fileID: 2100000, guid: f9c42f752a540d34cbbec50b978ddc6e, type: 2}
 --- !u!1 &1580037713946564251
 GameObject:
   m_ObjectHideFlags: 0

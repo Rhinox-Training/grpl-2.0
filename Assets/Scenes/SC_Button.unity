@@ -1717,26 +1717,17 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 468043275}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &477563378 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1580037713721437769, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+--- !u!114 &477563384 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7176394295667534280, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
   m_PrefabInstance: {fileID: 1776352268}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &477563384
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 477563378}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e8613a5b7f9650748aabf4763d25821d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _handVisualizer: {fileID: 0}
-  _bakedMeshMaterial: {fileID: 2100000, guid: 613690cd962241049a0ec289a6ff835e, type: 2}
-  _handAfterBakeMaterial: {fileID: 2100000, guid: 081b6bc4cf86dd94d80d6df9db580e1f, type: 2}
 --- !u!1 &492910928
 GameObject:
   m_ObjectHideFlags: 0
@@ -7203,6 +7194,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1580037713721437764, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: _handMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: f9c42f752a540d34cbbec50b978ddc6e, type: 2}
     - target: {fileID: 1580037713721437765, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: m_RootOrder
       value: 7
