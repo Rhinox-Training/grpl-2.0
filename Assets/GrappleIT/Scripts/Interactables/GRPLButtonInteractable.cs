@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Rhinox.GUIUtils;
 using Rhinox.Lightspeed;
 using UnityEditor;
 using UnityEngine;
@@ -55,7 +56,7 @@ namespace Rhinox.XR.Grapple.It
         //-----------------------
         // INHERITED EVENTS
         //-----------------------
-        private protected override void InteractStopped()
+        protected override void InteractStopped()
         {
             if (_useInteractDelay)
                 StartCoroutine(DisableInteractibleForDuration());
@@ -66,7 +67,7 @@ namespace Rhinox.XR.Grapple.It
             base.InteractStopped();
         }
 
-        private protected override void ProximityStopped()
+        protected override void ProximityStopped()
         {
             ButtonSurface.transform.position = ButtonBaseTransform.position +
                                                _maxPressDistance * ButtonBaseTransform.forward;
@@ -161,7 +162,7 @@ namespace Rhinox.XR.Grapple.It
             return outJoint != null;
         }
 
-        public override bool ShouldInteractionCheckStop(RhinoxJoint interactJoint)
+        public override bool ShouldInteractionCheckStop()
         {
             if (State != GRPLInteractionState.Interacted)
                 return false;
@@ -171,11 +172,11 @@ namespace Rhinox.XR.Grapple.It
                     ButtonBaseTransform.position,
                     ButtonBaseTransform.forward))
             {
-                CanInteractCheck = false;
+                ShouldPerformInteractCheck = false;
                 return true;
             }
 
-            CanInteractCheck = true;
+            ShouldPerformInteractCheck = true;
             return false;
         }
 
@@ -216,18 +217,21 @@ namespace Rhinox.XR.Grapple.It
             
             if (ButtonBaseTransform != null)
             {
-                Gizmos.color = Color.cyan;
+                GUIContentHelper.PushColor(Color.cyan);
                 var pos = ButtonBaseTransform.position;
                 Handles.Label(pos, "Press limit");
                 Gizmos.DrawWireSphere(pos, 0.01f);
+                GUIContentHelper.PopColor();
             }
 
             if (ButtonSurface != null)
             {
-                Gizmos.color = Color.red;
+                GUIContentHelper.PushColor(Color.red);
                 var pos = ButtonSurface.position;
                 Handles.Label(pos, "Press surface");
                 Gizmos.DrawWireSphere(pos, 0.01f);
+                GUIContentHelper.PopColor();
+
             }
             
         }

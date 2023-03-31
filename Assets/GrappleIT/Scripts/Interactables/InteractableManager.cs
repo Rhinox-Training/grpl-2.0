@@ -7,10 +7,8 @@ using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple.It
 {
-    public class InteractableManager : MonoBehaviour
+    public class InteractableManager : Singleton<InteractableManager>
     {
-        [HideInInspector] public InteractableManager Instance;
-
         [Header("Proximate detection parameters")] [SerializeField]
         private int _maxAmountOfProximatesPerHand = 3;
 
@@ -26,23 +24,20 @@ namespace Rhinox.XR.Grapple.It
         private List<GRPLInteractable> _leftHandProximates;
         private List<GRPLInteractable> _rightHandProximates;
 
-        [Header("Mesh Baking")] [SerializeField]
-        private bool _checkForMeshBaking = true;
-
-        [SerializeField] private MeshBaker _meshBaker;
+        public event Action<RhinoxHand, GRPLInteractable> InteractibleInteractionCheckPaused;
+        public event Action<RhinoxHand, GRPLInteractable> InteractibleInteractionCheckResumed;
+        public event Action<RhinoxHand, GRPLInteractable> InteractibleLeftProximity;
 
 
         public void Awake()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-                Init();
-            }
-            else
-            {
-                Destroy(this);
-            }
+            GRPLInteractable.InteractableCreated -= OnInteractableCreated;
+            GRPLInteractable.InteractableCreated += OnInteractableCreated;
+
+            GRPLInteractable.InteractableDestroyed -= OnInteractableDestroyed;
+            GRPLInteractable.InteractableDestroyed += OnInteractableDestroyed;
+
+            _interactables = new List<GRPLInteractable>();
 
             JointManager.GlobalInitialized += OnJointManagerInitialised;
 
@@ -54,27 +49,6 @@ namespace Rhinox.XR.Grapple.It
         {
             _jointManager = obj;
             _jointManager.TrackingLost += OnTrackingLost;
-            if (_meshBaker == null)
-            {
-                _meshBaker = _jointManager.GetComponent<MeshBaker>();
-                if (_meshBaker == null && _checkForMeshBaking)
-                {
-                    PLog.Error<GrappleItLogger>(
-                        "[MeshBaker:OnJointManagerInitialized] Could not find MeshBaker component, disabling mesh baking");
-                    _checkForMeshBaking = false;
-                }
-            }
-        }
-
-        private void Init()
-        {
-            GRPLInteractable.InteractableCreated -= OnInteractableCreated;
-            GRPLInteractable.InteractableCreated += OnInteractableCreated;
-
-            GRPLInteractable.InteractableDestroyed -= OnInteractableDestroyed;
-            GRPLInteractable.InteractableDestroyed += OnInteractableDestroyed;
-
-            _interactables = new List<GRPLInteractable>();
         }
 
         private void Update()
@@ -145,28 +119,29 @@ namespace Rhinox.XR.Grapple.It
         private bool ControlInteractionCheckStop(RhinoxHand hand, GRPLInteractable proximate)
         {
             // Cache the previous CanInteract value
-            bool couldInteract = proximate.CanInteractCheck;
+            bool wasCheckingInteractions = proximate.ShouldPerformInteractCheck;
 
             // Check if interaction checks should happen for this proximate
-            bool shouldInteractionCheckStop =
-                proximate.ShouldInteractionCheckStop(new RhinoxJoint(XRHandJointID.Invalid));
+            bool shouldStopCheckingInteractions =
+                proximate.ShouldInteractionCheckStop();
 
             // If interaction should not get checked
-            if (shouldInteractionCheckStop)
+            if (shouldStopCheckingInteractions)
             {
-                if (couldInteract && _checkForMeshBaking)
-                    _meshBaker.BakeMesh(hand);
+                if (wasCheckingInteractions)
+                    InteractibleInteractionCheckPaused?.Invoke(hand, proximate);
+
                 return true;
             }
-            else if (couldInteract == false)
+
+            if (!wasCheckingInteractions)
             {
-                if(_checkForMeshBaking)
-                    _meshBaker.DestroyBakedObjects(hand);
+                InteractibleInteractionCheckResumed?.Invoke(hand, proximate);
             }
 
             return false;
         }
-        
+
 
         /// <summary>
         /// Detects all proximate interactables of the given hand in a range of "_proximateRadius".<br />
@@ -199,7 +174,7 @@ namespace Rhinox.XR.Grapple.It
             float proximateRadiusSqr = _proximateRadius * _proximateRadius;
             foreach (var interactable in _interactables)
             {
-                if(interactable.State == GRPLInteractionState.Disabled)
+                if (interactable.State == GRPLInteractionState.Disabled)
                     continue;
 
 
@@ -236,20 +211,17 @@ namespace Rhinox.XR.Grapple.It
 
             // Detect which proximates are new
             // Do this by selecting all the pairs that the currentProximates list does not contain
-            var newProximates = newProximateInteractables.Where(x => currentProximates.Contains(x.Value) == false);
+            var proximates = currentProximates;
+            var newProximates = newProximateInteractables.Where(x => proximates.Contains(x.Value) == false);
             foreach (var pair in newProximates)
                 pair.Value.SetState(GRPLInteractionState.Proximate);
-
-            // foreach (var pair in newProximateInteractables)
-            //         pair.Value.SetState(GRPLInteractionState.Proximate);
 
             // Save a copy of the current proximates as the previousProximates
             var previousProximates = new List<GRPLInteractable>(currentProximates);
 
             // Set the new current proximates
             currentProximates.Clear();
-            foreach (var pair in newProximateInteractables)
-                currentProximates.Add(pair.Value);
+            currentProximates.AddRange(newProximateInteractables.Select(pair => pair.Value));
 
             // Filter out proximates that can not be used because of their group
             foreach (var group in _interactibleGroups)
@@ -257,24 +229,35 @@ namespace Rhinox.XR.Grapple.It
                 group.FilterImpossibleInteractables(ref currentProximates);
             }
 
+            CleanupProximatesExitingProximity(hand, previousProximates, currentProximates);
+
+            return currentProximates;
+        }
+
+        /// <summary>
+        /// Detect which proximates are not valid anymore. Invokes the corresponding events for those and sets their state to active
+        /// </summary>
+        /// <param name="hand"></param>
+        /// <param name="previousProximates">An IEnumerable holding the proximates from the last check</param>
+        /// <param name="currentProximates">An IEnumerable list holding the proximates for this check</param>
+        private void CleanupProximatesExitingProximity(RhinoxHand hand, IEnumerable<GRPLInteractable> previousProximates,
+            ICollection<GRPLInteractable> currentProximates)
+        {
             // Detect which proximates are not valid anymore
             // Do this by selecting all proximates in previousProximates that the currentProximates does not contain
             var stoppedProximates = previousProximates.Where(x => currentProximates.Contains(x) == false);
             foreach (var proximate in stoppedProximates)
             {
-                // If the proximate is still in proximity for the other hand
-                // Ignore it
-                
-                if (!proximate.CanInteractCheck)
+                // TODO: If the proximate is still in proximity for the other hand, Ignore it
+
+                if (!proximate.ShouldPerformInteractCheck)
                 {
-                    proximate.CanInteractCheck = true;
-                    if(_checkForMeshBaking)
-                        _meshBaker.DestroyBakedObjects(hand);
+                    proximate.ShouldPerformInteractCheck = true;
+                    InteractibleLeftProximity?.Invoke(hand, proximate);
                 }
+
                 proximate.SetState(GRPLInteractionState.Active);
             }
-
-            return currentProximates;
         }
 
         //-----------------------
