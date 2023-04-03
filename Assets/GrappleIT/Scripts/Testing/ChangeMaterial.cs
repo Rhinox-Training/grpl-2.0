@@ -22,10 +22,10 @@ public class ChangeMaterial : MonoBehaviour
             if (tempList.Count > 0)
                 _material = tempList[0];
             else
-                PLog.Error<GRPLItLogger>("No mat found", this);
+                PLog.Error<GRPLITLogger>("No mat found", this);
         }
         else
-            PLog.Error<GRPLItLogger>("No meshrendere found", this);
+            PLog.Error<GRPLITLogger>("No meshrendere found", this);
 
     }
 

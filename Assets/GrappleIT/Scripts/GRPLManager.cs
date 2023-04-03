@@ -28,14 +28,14 @@ namespace Rhinox.XR.Grapple.It
                 _physicsService = new GRPLPhysicsSocketService(_gestureRecognizer, gameObject);
 
             if (_enableSocketing && _physicsService.GetType() == typeof(NullPhysicsService))
-                PLog.Error<GRPLItLogger>($"{nameof(GRPLManager)} Failed to add Socketing service", this);
+                PLog.Error<GRPLITLogger>($"{nameof(GRPLManager)} Failed to add Socketing service", this);
 
 
             if (gameObject.TryGetComponent(out _teleporter))
                 _teleporter.Initialize(_jointManager, _gestureRecognizer);
             else
             {
-                PLog.Warn<GRPLItLogger>($"{nameof(GRPLManager)} Failed to find {nameof(GRPLTeleport)}", this);
+                PLog.Warn<GRPLITLogger>($"{nameof(GRPLManager)} Failed to find {nameof(GRPLTeleport)}", this);
                 return;
             }
         }

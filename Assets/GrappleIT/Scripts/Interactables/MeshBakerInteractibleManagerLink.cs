@@ -23,7 +23,7 @@ namespace Rhinox.XR.Grapple.It
                 _meshBaker = obj.GetComponent<MeshBaker>();
                 if (_meshBaker == null)
                 {
-                    PLog.Error<GRPLItLogger>(
+                    PLog.Error<GRPLITLogger>(
                         "[MeshBakerInteractibleManagerLink:OnJointManagerGlobalInitialized] Could not find MeshBaker component, disabling component");
                 }
             }
@@ -33,7 +33,7 @@ namespace Rhinox.XR.Grapple.It
                 _interactableManager = obj.GetComponent<GRPLInteractableManager>();
                 if (_interactableManager == null)
                 {
-                    PLog.Error<GRPLItLogger>(
+                    PLog.Error<GRPLITLogger>(
                         "[MeshBakerInteractibleManagerLink:OnJointManagerGlobalInitialized] Could not find _interactableManager component, disabling component");
                 }
             }

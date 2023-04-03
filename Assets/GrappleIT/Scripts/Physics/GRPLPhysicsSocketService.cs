@@ -226,7 +226,7 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    PLog.Error<GRPLItLogger>($"{nameof(GRPLPhysicsSocketService)} - {nameof(TryGrab)}, " +
+                    PLog.Error<GRPLITLogger>($"{nameof(GRPLPhysicsSocketService)} - {nameof(TryGrab)}, " +
                         $"function called with incorrect Hand {hand}. Only left or right is supported!");
                     break;
             }
@@ -249,7 +249,7 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    PLog.Error<GRPLItLogger>($"{nameof(GRPLPhysicsSocketService)} - {nameof(TryDrop)}, " +
+                    PLog.Error<GRPLITLogger>($"{nameof(GRPLPhysicsSocketService)} - {nameof(TryDrop)}, " +
                         $"function called with incorrect hand {hand}. Only left or right is supported!");
                     break;
             }

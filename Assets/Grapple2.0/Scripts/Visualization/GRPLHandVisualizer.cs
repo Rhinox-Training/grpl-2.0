@@ -6,9 +6,6 @@ using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class GRPLHandVisualizer : MonoBehaviour
     {
         [SerializeField] private Transform _xrOrigin;

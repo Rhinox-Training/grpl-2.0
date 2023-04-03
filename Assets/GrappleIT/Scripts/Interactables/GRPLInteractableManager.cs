@@ -164,7 +164,7 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    PLog.Error<GRPLItLogger>(
+                    PLog.Error<GRPLITLogger>(
                         $"[{this.GetType()}:DetectProximates], function called with invalid hand {hand}");
                     return Array.Empty<GRPLInteractable>();
             }
@@ -286,7 +286,7 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    PLog.Error<GRPLItLogger>(
+                    PLog.Error<GRPLITLogger>(
                         $"[{GetType()}:OnTrackingLost], function called with invalid hand {hand}");
                     return;
             }

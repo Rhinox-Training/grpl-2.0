@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Rhinox.XR.Grapple.It
 {
-    internal class GRPLItLogger : CustomLogger
+    internal class GRPLITLogger : CustomLogger
     {
     }
 }

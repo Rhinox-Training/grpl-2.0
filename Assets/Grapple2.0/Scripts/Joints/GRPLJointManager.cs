@@ -237,7 +237,7 @@ namespace Rhinox.XR.Grapple
                     }
                 default:
                     PLog.Error<GrappleLogger>(
-                        $"[GRPLJointManager:InitializeJointCapsules]," +
+                        $"{nameof(GRPLJointManager)} - {nameof(InitializeJointCapsules)}" +
                         $", function called with incorrect rhinoxHand {handedness}. Only left or right supported!", this);
                     return;
             }
