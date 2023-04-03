@@ -4375,7 +4375,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1110593843
 Transform:
   m_ObjectHideFlags: 0
@@ -6158,7 +6158,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5210042141153954088, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
       propertyPath: _drawDebug
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5210042141153954088, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
       propertyPath: _interactDelay
@@ -8572,7 +8572,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5210042141153954089, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5210042141153954091, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
       propertyPath: m_RootOrder
@@ -9513,7 +9513,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5210042141153954089, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5210042141153954091, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
       propertyPath: m_RootOrder

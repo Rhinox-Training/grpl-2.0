@@ -1,3 +1,4 @@
+using Rhinox.Lightspeed;
 using UnityEngine;
 
 namespace Rhinox.XR.Grapple.It
@@ -36,6 +37,7 @@ namespace Rhinox.XR.Grapple.It
             var projectedPos = Vector3.ProjectOnPlane(point, planeNormal) +
                                Vector3.Dot(planePosition, planeNormal) *
                                planeNormal;
+            
             return bounds.Contains(projectedPos);
         }
 

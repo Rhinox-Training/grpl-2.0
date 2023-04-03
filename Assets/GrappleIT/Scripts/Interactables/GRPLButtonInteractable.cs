@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Rhinox.GUIUtils;
+using Rhinox.GUIUtils.Editor;
 using Rhinox.Lightspeed;
 using UnityEditor;
 using UnityEngine;
@@ -109,7 +109,7 @@ namespace Rhinox.XR.Grapple.It
 
             // Check if the projected joint pos is within the button bounding box
             if (!InteractableMathUtils.IsPlaneProjectedPointInBounds(joint.JointPosition, buttonBaseTransform.position,
-                    Vector3.back, PressBounds))
+                    transform.forward, PressBounds))
                 return false;
 
             // Projects the joint pos onto the normal out of the button and gets the distance
@@ -147,16 +147,16 @@ namespace Rhinox.XR.Grapple.It
 
             var normalPos = ButtonBaseTransform.position;
             var normal = ButtonBaseTransform.forward;
-            
+
             foreach (var joint in joints)
             {
-                if(_forceInteractibleJoint && joint.JointID != _forcedInteractJointID)
+                if (_forceInteractibleJoint && joint.JointID != _forcedInteractJointID)
                     continue;
-                
+
                 if (!InteractableMathUtils.IsPlaneProjectedPointInBounds(joint.JointPosition,
                         normalPos, normal, PressBounds))
                     continue;
-                
+
                 var distance =
                     InteractableMathUtils.GetProjectedDistanceFromPointOnNormal(joint.JointPosition, normalPos, normal);
                 if (distance < closestDist)
@@ -224,38 +224,23 @@ namespace Rhinox.XR.Grapple.It
 
             if (ButtonBaseTransform != null)
             {
-                GUIContentHelper.PushColor(Color.cyan);
-                var pos = ButtonBaseTransform.position;
-                Handles.Label(pos, "Press limit");
-                Gizmos.DrawWireSphere(pos, 0.01f);
-                GUIContentHelper.PopColor();
+                using (new eUtility.GizmoColor(Color.cyan))
+                {
+                    var pos = ButtonBaseTransform.position;
+                    Handles.Label(pos, "Press limit");
+                    Gizmos.DrawWireSphere(pos, 0.01f);
+                }
             }
 
             if (ButtonSurface != null)
             {
-                GUIContentHelper.PushColor(Color.red);
-                var pos = ButtonSurface.position;
-                Handles.Label(pos, "Press surface");
-                Gizmos.DrawWireSphere(pos, 0.01f);
-                GUIContentHelper.PopColor();
+                using (new eUtility.GizmoColor(Color.red))
+                {
+                    var pos = ButtonSurface.position;
+                    Handles.Label(pos, "Press surface");
+                    Gizmos.DrawWireSphere(pos, 0.01f);
+                }
             }
-            
-            // Draw bounds
-            var boundExtends = ButtonSurface.gameObject.GetObjectBounds().extents;
-            boundExtends.z += 0.005f;
-
-            PressBounds = new Bounds()
-            {
-                center = ButtonBaseTransform.position,
-                extents = boundExtends
-            };
-            Gizmos.color = Color.blue;
-            GUIContentHelper.PushColor(Color.green);
-            Gizmos.DrawWireCube(PressBounds.center,PressBounds.size);
-            GUIContentHelper.PopColor();
-            Gizmos.color = Color.yellow;
-
-            Gizmos.DrawSphere(new Vector3(0.285530388f, 1.06990981f, -3.65700006f),0.01f);
         }
 #endif
     }
