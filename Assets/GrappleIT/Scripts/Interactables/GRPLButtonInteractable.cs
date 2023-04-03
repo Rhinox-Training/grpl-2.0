@@ -5,7 +5,6 @@ using Rhinox.GUIUtils;
 using Rhinox.Lightspeed;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple.It
 {
@@ -240,6 +239,23 @@ namespace Rhinox.XR.Grapple.It
                 Gizmos.DrawWireSphere(pos, 0.01f);
                 GUIContentHelper.PopColor();
             }
+            
+            // Draw bounds
+            var boundExtends = ButtonSurface.gameObject.GetObjectBounds().extents;
+            boundExtends.z += 0.005f;
+
+            PressBounds = new Bounds()
+            {
+                center = ButtonBaseTransform.position,
+                extents = boundExtends
+            };
+            Gizmos.color = Color.blue;
+            GUIContentHelper.PushColor(Color.green);
+            Gizmos.DrawWireCube(PressBounds.center,PressBounds.size);
+            GUIContentHelper.PopColor();
+            Gizmos.color = Color.yellow;
+
+            Gizmos.DrawSphere(new Vector3(0.285530388f, 1.06990981f, -3.65700006f),0.01f);
         }
 #endif
     }
