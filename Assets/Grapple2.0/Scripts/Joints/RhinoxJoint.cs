@@ -11,10 +11,6 @@ namespace Rhinox.XR.Grapple
         /// JointPosition is in WorldSpace
         /// </summary>
         public Vector3 JointPosition = Vector3.zero;
-
-        /// <summary>
-        /// JointPosition is in WorldSpace
-        /// </summary>
         public Quaternion JointRotation = Quaternion.identity;
 
         public Vector3 Forward;

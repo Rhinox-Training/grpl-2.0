@@ -10,5 +10,4 @@ namespace Rhinox.XR.Grapple
         public RhinoxJoint StartJoint;
         public RhinoxJoint EndJoint;
     }
-
 }

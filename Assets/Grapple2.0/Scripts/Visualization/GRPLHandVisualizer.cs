@@ -12,9 +12,13 @@ namespace Rhinox.XR.Grapple
         [SerializeField] private GameObject _leftHandPrefab;
         [SerializeField] private GameObject _rightHandPrefab;
         [SerializeField] private Material _handMaterial;
-        public Material HandMaterial => _handMaterial;
-        private GRPLJointManager _jointManager;
 
+        public Material HandMaterial => _handMaterial;
+        public SkinnedMeshRenderer LeftHandRenderer => _leftHandRenderer;
+        public SkinnedMeshRenderer RightHandRenderer => _rightHandRenderer;
+
+
+        private GRPLJointManager _jointManager;
         private List<GameObject> _leftJoints = new List<GameObject>();
         private List<GameObject> _rightJoints = new List<GameObject>();
 
@@ -22,9 +26,7 @@ namespace Rhinox.XR.Grapple
         private GameObject _rightHandRoot;
 
         private SkinnedMeshRenderer _leftHandRenderer;
-        public SkinnedMeshRenderer LeftHandRenderer => _leftHandRenderer;
         private SkinnedMeshRenderer _rightHandRenderer;
-        public SkinnedMeshRenderer RightHandRenderer => _rightHandRenderer;
 
         private void Awake()
         {

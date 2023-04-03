@@ -9,7 +9,13 @@ using UnityEngine.UI;
 
 namespace Rhinox.XR.Grapple.It
 {
-    public class GRPLSliderInteractable : GRPLInteractable
+    /// <summary>
+    /// A UI slider based on the GRPLInteractable system.<br />
+    /// There is an event for each time the slider updates giving the slider value as paramter.
+    /// </summary>
+    /// <remarks />
+    /// <dependencies>Unity's built in<see cref="Slider"/></dependencies>
+    public class GRPLUISliderInteractable : GRPLInteractable
     {
         public float SliderValue => _slider.value;
         public event Action<float> OnValueUpdate;
@@ -22,7 +28,7 @@ namespace Rhinox.XR.Grapple.It
         protected override void Initialize()
         {
             if (!TryGetComponent(out _slider))
-                PLog.Error<GRPLITLogger>($"[{nameof(GRPLSliderInteractable)}] {nameof(Initialize)}: " +
+                PLog.Error<GRPLITLogger>($"[{nameof(GRPLUISliderInteractable)}] {nameof(Initialize)}: " +
                     $"No slider Component was found!", this);
 
             _slider.direction = Slider.Direction.LeftToRight;
@@ -139,9 +145,6 @@ namespace Rhinox.XR.Grapple.It
 
         private void OnDrawGizmos()
         {
-
-
-
             Gizmos.DrawWireCube(_pressBounds.center, _pressBounds.extents);
             GUIContentHelper.PushColor(new Color(1f, 0f, 1f, 1f));
             Gizmos.DrawRay(_pressBounds.center, -transform.forward);

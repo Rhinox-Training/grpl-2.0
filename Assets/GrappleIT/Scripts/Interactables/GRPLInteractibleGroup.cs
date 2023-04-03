@@ -6,9 +6,8 @@ namespace Rhinox.XR.Grapple.It
 {
     public class GRPLInteractibleGroup : MonoBehaviour
     {
-        [Header("Delayed activation parameters")] [SerializeField]
-        private bool _delayInteractibleReactivation = true;
-
+        [Header("Delayed activation parameters")]
+        [SerializeField] private bool _delayInteractibleReactivation = true;
         [SerializeField] private float _delayInteractibleReactivationTime = 0.25f;
 
         private List<GRPLInteractable> _interactables;

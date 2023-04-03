@@ -4,10 +4,9 @@ using UnityEngine;
 
 namespace Rhinox.XR.Grapple
 {
-    [CustomEditor(typeof(GestureRecognizer))]
+    [CustomEditor(typeof(GRPLGestureRecognizer))]
     public class GestureRecognitionEditor : Editor
     {
-        #region Serialized properties
         private SerializedProperty _importPath;
         private SerializedProperty _importOnPlay;
         private SerializedProperty _overwriteOnImport;
@@ -26,17 +25,13 @@ namespace Rhinox.XR.Grapple
         private SerializedProperty _forwardJoint;
         
         private SerializedProperty _gestures;
-        #endregion
 
-        #region Own properties
 
-        private bool _importInEditor = false;
-        
+        private bool _importInEditor = false;        
         private bool _showImportSettings = false;
         private bool _showExportSettings = false;
         private bool _showRecordingSettings = false;
-        
-        #endregion
+
         
         private void OnEnable()
         {
@@ -62,7 +57,7 @@ namespace Rhinox.XR.Grapple
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-            var script = (GestureRecognizer)target;
+            var script = (GRPLGestureRecognizer)target;
 
             //--------------------------
             // Import
@@ -124,7 +119,7 @@ namespace Rhinox.XR.Grapple
             EditorGUILayout.Space(2.5f);
         }
 
-        private void ShowSelector(GestureRecognizer gestureRecognizer)
+        private void ShowSelector(GRPLGestureRecognizer gestureRecognizer)
         {
             if (string.IsNullOrWhiteSpace(gestureRecognizer.ExportFilePath))
                 return;
@@ -152,7 +147,7 @@ namespace Rhinox.XR.Grapple
             serializedObject.ApplyModifiedProperties();
         }
 
-        private void ShowImportSettings(GestureRecognizer script)
+        private void ShowImportSettings(GRPLGestureRecognizer script)
         {
             _overwriteOnImport.boolValue =
                 EditorGUILayout.Toggle("Overwrite gestures on import", _overwriteOnImport.boolValue);
@@ -188,7 +183,7 @@ namespace Rhinox.XR.Grapple
             }
         }
 
-        private void ShowExportSettings(GestureRecognizer script)
+        private void ShowExportSettings(GRPLGestureRecognizer script)
         {
             EditorGUILayout.PropertyField(_exportOnDestroy);
             EditorGUILayout.Separator();
@@ -241,8 +236,6 @@ namespace Rhinox.XR.Grapple
                 _recognitionDistanceThreshold.floatValue);
             _recognitionForwardThreshold.floatValue = EditorGUILayout.FloatField("Recognition forward threshold",
                 _recognitionForwardThreshold.floatValue);
-        }
-
-        
+        }        
     }
 }

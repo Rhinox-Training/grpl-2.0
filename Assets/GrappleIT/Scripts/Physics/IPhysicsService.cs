@@ -1,12 +1,5 @@
 namespace Rhinox.XR.Grapple.It
 {
-    public enum PhysicServices
-    {
-        None,
-        Socketing,
-        //KinematicProxy
-    }
-
     public interface IPhysicsService
     {
         void Initialize(GRPLJointManager jointManager);
