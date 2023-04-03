@@ -75,13 +75,14 @@ Shader "Grapple/GhostMaterial"
                 o.border_color = UNITY_ACCESS_INSTANCED_PROP(Props, _BorderColor);
 
                 o.normal = normalize(v.normal);
-                o.view_t = normalize(ObjSpaceViewDir(v.vertex)); //ObjSpaceViewDir is similar, but local space.
+                o.view_t = normalize(ObjSpaceViewDir(v.vertex));
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv;
 
                 return o;
             }
 
+            // from https://docs.unity3d.com/Packages/com.unity.shadergraph@6.9/manual/Remap-Node.html
             void unity_remap_float(const float In, float2 in_min_max, float2 out_min_max, out float output)
             {
                 output = out_min_max.x + (In - in_min_max.x) * (out_min_max.y - out_min_max.x) / (in_min_max.y -

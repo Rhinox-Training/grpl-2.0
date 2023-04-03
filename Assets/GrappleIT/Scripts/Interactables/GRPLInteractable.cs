@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple.It
 {
@@ -15,6 +16,14 @@ namespace Rhinox.XR.Grapple.It
         public static InteractableEvent InteractableCreated = null;
         public static InteractableEvent InteractableDestroyed = null;
 
+        [Header("Proximate detection parameters")] [SerializeField]
+        private float _proximateRadius = .5f;
+
+        [Header("Interact detection parameters")] [SerializeField]
+        protected bool _forceInteractibleJoint = false;
+        [SerializeField] protected XRHandJointID _forcedInteractJointID = XRHandJointID.IndexTip;
+        
+        public float ProximateRadius => _proximateRadius;
         public event Action<GRPLInteractable> OnInteractStarted;
         public event Action<GRPLInteractable> OnInteractEnded;
         public event Action<GRPLInteractable> OnProximityStarted;
@@ -27,6 +36,8 @@ namespace Rhinox.XR.Grapple.It
         public GRPLInteractionState State => _state;
         
         public bool ShouldPerformInteractCheck { set; get; } = true;
+        
+        
         
         private void Start()
         {
