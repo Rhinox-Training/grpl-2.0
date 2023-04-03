@@ -11,7 +11,7 @@ public class GestureRecognitionScreen : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _rightScreen;
 
-    [SerializeField] private GestureRecognizer _recognizer;
+    [SerializeField] private GRPLGestureRecognizer _recognizer;
 
     private void OnValidate()
     {

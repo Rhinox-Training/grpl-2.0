@@ -7,21 +7,27 @@ using UnityEngine.UI;
 
 namespace Rhinox.XR.Grapple.It
 {
-    public class GRPLSliderInteractable : GRPLInteractable
+    /// <summary>
+    /// A UI slider based on the GRPLInteractable system.<br />
+    /// There is an event for each time the slider updates giving the slider value as paramter.
+    /// </summary>
+    /// <remarks />
+    /// <dependencies>Unity's built in<see cref="Slider"/></dependencies>
+    public class GRPLUISliderInteractable : GRPLInteractable
     {
+        public event Action<float> OnValueUpdate;
         public Slider.Direction SliderDirection => _sliderDirection;
         public float SliderValue => _slider.value;
-        private Slider.Direction _sliderDirection = Slider.Direction.LeftToRight;
-        //[SerializeField] private SliderDirections _sliderDirection = SliderDirections.LeftToRight;
-        private Bounds _pressBounds;
-        private Slider _slider;
 
-        public event Action<float> OnValueUpdate;
+
+        private Slider _slider;
+        private Slider.Direction _sliderDirection = Slider.Direction.LeftToRight;
+        private Bounds _pressBounds;
 
         protected override void Initialize()
         {
             if (!TryGetComponent(out _slider))
-                PLog.Error<GRPLITLogger>($"[{nameof(GRPLSliderInteractable)}] {nameof(Initialize)}: " +
+                PLog.Error<GRPLITLogger>($"[{nameof(GRPLUISliderInteractable)}] {nameof(Initialize)}: " +
                     $"No slider Component was found!", this);
 
             _sliderDirection = _slider.direction;
@@ -121,7 +127,7 @@ namespace Rhinox.XR.Grapple.It
                 case Slider.Direction.TopToBottom:
                     return jointPos.y.Map(sliderPos.y - (_pressBounds.extents.y / 2f), sliderPos.y + (_pressBounds.extents.y / 2f), 1f, 0f);
                 default:
-                    PLog.Error($"[{nameof(GRPLSliderInteractable)}] {nameof(CalculateSliderValueFromSliderDirection)}: " +
+                    PLog.Error($"[{nameof(GRPLUISliderInteractable)}] {nameof(CalculateSliderValueFromSliderDirection)}: " +
                     $"SliderDirection: {_sliderDirection} was not valid!", this);
                     break;
             }

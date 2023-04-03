@@ -7,17 +7,15 @@ using UnityEngine;
 
 public class FingerBendScreen : MonoBehaviour
 {
-    [Header("Hand Text fields")] [SerializeField]
-    private TextMeshProUGUI _thumb;
-
+    [Header("Hand Text fields")]
+    [SerializeField] private TextMeshProUGUI _thumb;
     [SerializeField] private TextMeshProUGUI _index;
     [SerializeField] private TextMeshProUGUI _middle;
     [SerializeField] private TextMeshProUGUI _ring;
     [SerializeField] private TextMeshProUGUI _little;
 
-    [Header("Parameters")] [SerializeField]
-    private bool _isScaled = true;
-
+    [Header("Parameters")]
+    [SerializeField] private bool _isScaled = true;
     [SerializeField] private RhinoxHand TargetHand = RhinoxHand.Left;
 
     private GRPLJointManager _jointManager;

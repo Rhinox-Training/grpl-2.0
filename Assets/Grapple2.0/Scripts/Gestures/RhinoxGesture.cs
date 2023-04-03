@@ -46,7 +46,9 @@ namespace Rhinox.XR.Grapple
         [JsonIgnore]
         private const int AMOUNTOFJOINTS = 26;
 
-        #region Wrapping Unity events for external code
+        //================
+        //Recognize events
+        //================
         public void AddListenerOnRecognized(UnityAction<RhinoxHand> action)
         {
             if (OnRecognized == null)
@@ -69,8 +71,9 @@ namespace Rhinox.XR.Grapple
         {
             OnRecognized?.Invoke(hand);
         }
-
-
+        //==================
+        //Unrecognize events
+        //==================
         public void AddListenerOnUnRecognized(UnityAction<RhinoxHand> action)
         {
             if (OnUnrecognized == null)
@@ -93,7 +96,6 @@ namespace Rhinox.XR.Grapple
         {
             OnUnrecognized?.Invoke(hand);
         }
-        #endregion
 
         /// <remarks>Does not compare the name or events!</remarks>
         public override bool Equals(object obj)

@@ -7,27 +7,27 @@ using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple.It
 {
-    public class InteractableManager : Singleton<InteractableManager>
+    public class GRPLInteractableManager : Singleton<GRPLInteractableManager>
     {
-        [Header("Proximate detection parameters")] [SerializeField]
-        private int _maxAmountOfProximatesPerHand = 3;
-
+        [Header("Proximate detection parameters")]
+        [SerializeField] private int _maxAmountOfProximatesPerHand = 3;
         [SerializeField] private float _proximateRadius = 1f;
         [SerializeField] private XRHandJointID _proximateJointID = XRHandJointID.MiddleMetacarpal;
+        
+        [Header("Interactible Groups")]
+        [SerializeField] private List<GRPLInteractibleGroup> _interactibleGroups;
 
-        [Header("Interactible Groups")] [SerializeField]
-        private List<InteractibleGroup> _interactibleGroups;
+        //[HideInInspector] public GRPLInteractableManager Instance;
 
+        public event Action<RhinoxHand, GRPLInteractable> InteractibleInteractionCheckPaused;
+        public event Action<RhinoxHand, GRPLInteractable> InteractibleInteractionCheckResumed;
+        public event Action<RhinoxHand, GRPLInteractable> InteractibleLeftProximity;
+        
         private GRPLJointManager _jointManager;
         private List<GRPLInteractable> _interactables = null;
 
         private List<GRPLInteractable> _leftHandProximates;
         private List<GRPLInteractable> _rightHandProximates;
-
-        public event Action<RhinoxHand, GRPLInteractable> InteractibleInteractionCheckPaused;
-        public event Action<RhinoxHand, GRPLInteractable> InteractibleInteractionCheckResumed;
-        public event Action<RhinoxHand, GRPLInteractable> InteractibleLeftProximity;
-
 
         public void Awake()
         {

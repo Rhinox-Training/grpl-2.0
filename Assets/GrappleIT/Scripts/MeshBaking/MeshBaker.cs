@@ -1,4 +1,3 @@
-using System;
 using Rhinox.Perceptor;
 using UnityEngine;
 
@@ -10,13 +9,13 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField] private Material _handAfterBakeMaterial;
 
         private GRPLJointManager _jointManager;
-        private GRPLHandVisualizer _handVisualizer;
 
         private SkinnedMeshRenderer _leftHandRenderer;
         private SkinnedMeshRenderer _rightHandRenderer;
 
         private GameObject _leftBakedMeshObject;
         private GameObject _rightBakedMeshObject;
+        private GRPLHandVisualizer _handVisualizer = null;
 
         private void Awake()
         {

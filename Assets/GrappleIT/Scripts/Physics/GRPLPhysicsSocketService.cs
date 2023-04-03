@@ -5,21 +5,29 @@ using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple.It
 {
-    public class PhysicsSocketService : IPhysicsService
+    /// <summary>
+    /// Physics service that takes care of the grabbing and dropping logic of <see cref="GRPLInteractable"/> objects
+    /// </summary>
+    /// <remarks />
+    /// <dependencies>
+    /// - <see cref="GRPLJointManager"/>
+    /// - <see cref="GRPLGestureRecognizer"/>
+    /// </dependencies>
+    public class GRPLPhysicsSocketService : IPhysicsService
     {
+        public float ColliderActivationDelay = 1.0f;
+
         public UnityEvent<RhinoxHand, GameObject> OnObjectGrabbed = new();
         public UnityEvent<RhinoxHand, GameObject> OnObjectDropped = new();
 
         public UnityEvent<RhinoxHand> OnGrabStarted = new();
         public UnityEvent<RhinoxHand> OnGrabEnded = new();
 
-        public float ColliderActivationDelay = 1.0f;
 
-
+        private GRPLJointManager _jointManager;
+        private GRPLGestureRecognizer _gestureRecognizer;
 
         private bool _isInitialized = false;
-        private GRPLJointManager _jointManager;
-        private GestureRecognizer _gestureRecognizer;
 
         private RhinoxGesture _grabGesture;
 
@@ -42,7 +50,7 @@ namespace Rhinox.XR.Grapple.It
         private GameObject _grabbedItemL = null;
         private GameObject _grabbedItemR = null;
 
-        public PhysicsSocketService(GestureRecognizer gestureRecognizer, GameObject parentObject)
+        public GRPLPhysicsSocketService(GRPLGestureRecognizer gestureRecognizer, GameObject parentObject)
         {
             GRPLJointManager.GlobalInitialized += Initialize;
 
@@ -100,7 +108,7 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
-        ~PhysicsSocketService()
+        ~GRPLPhysicsSocketService()
         {
             if (!_jointManager.AreJointsInitialised && !_isInitialized)
                 return;
@@ -138,6 +146,7 @@ namespace Rhinox.XR.Grapple.It
         {
             if (_isInitialized || jointManager == null)
                 return;
+
             _jointManager = jointManager;
             _jointManager.TrackingAcquired += TrackingAcquired;
             _jointManager.TrackingLost += TrackingLost;
@@ -189,20 +198,17 @@ namespace Rhinox.XR.Grapple.It
             {
                 //updating the obj with the is-in-grabbing reach collider
                 _jointManager.TryGetJointFromHandById(XRHandJointID.Palm, RhinoxHand.Left, out var palmBone);
-                _colliderObjL.transform.position = palmBone.JointPosition;
-                _colliderObjL.transform.rotation = palmBone.JointRotation;
+                _colliderObjL.transform.SetPositionAndRotation(palmBone.JointPosition, palmBone.JointRotation);
             }
 
             if (_enabledR)
             {
                 //updating the obj with the is-in-grabbing reach collider
                 _jointManager.TryGetJointFromHandById(XRHandJointID.Palm, RhinoxHand.Right, out var palmBone);
-                _colliderObjR.transform.position = palmBone.JointPosition;
-                _colliderObjR.transform.rotation = palmBone.JointRotation;
+                _colliderObjR.transform.SetPositionAndRotation(palmBone.JointPosition, palmBone.JointRotation);
             }
         }
 
-        #region Grab & Drop Logic
         public void TryGrab(RhinoxHand hand)
         {
             if (!_enabledL && !_enabledR)
@@ -220,7 +226,7 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    PLog.Error<GRPLITLogger>($"{nameof(PhysicsSocketService)} - {nameof(TryGrab)}, " +
+                    PLog.Error<GRPLITLogger>($"{nameof(GRPLPhysicsSocketService)} - {nameof(TryGrab)}, " +
                         $"function called with incorrect Hand {hand}. Only left or right is supported!");
                     break;
             }
@@ -243,7 +249,7 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    PLog.Error<GRPLITLogger>($"{nameof(PhysicsSocketService)} - {nameof(TryDrop)}, " +
+                    PLog.Error<GRPLITLogger>($"{nameof(GRPLPhysicsSocketService)} - {nameof(TryDrop)}, " +
                         $"function called with incorrect hand {hand}. Only left or right is supported!");
                     break;
             }
@@ -286,9 +292,7 @@ namespace Rhinox.XR.Grapple.It
                 grabbedItemCurrentHand = null;
             }
         }
-        #endregion
 
-        #region Hand Trigger Logic
         public void OnHandTriggerEnter(GameObject triggerObj, GameObject otherObj, RhinoxHand hand)
         {
             var grplInteractableCmp = otherObj.GetComponent<GRPLBaseInteractable>();
@@ -324,9 +328,7 @@ namespace Rhinox.XR.Grapple.It
                     break;
             }
         }
-        #endregion
 
-        #region State Logic
         private void TrackingAcquired(RhinoxHand hand) => SetHandEnabled(true, hand);
 
         private void TrackingLost(RhinoxHand hand) => SetHandEnabled(false, hand);
@@ -358,6 +360,5 @@ namespace Rhinox.XR.Grapple.It
                     return false;
             }
         }
-        #endregion
     }
 }

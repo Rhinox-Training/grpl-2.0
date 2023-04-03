@@ -8,11 +8,48 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Rhinox.GUIUtils.Attributes;
 using Rhinox.Lightspeed;
+using Rhinox.Perceptor;
 
 namespace Rhinox.XR.Grapple
 {
+    /// <summary>
+    /// Takes the Joint data from <see cref="XRHandSubsystem"/> and maps them to our own <see cref="RhinoxJoint"/> structure.<br />
+    /// This manager also supplies and updates Capsule colliders with rigidbodies <see cref="RhinoxJointCapsule"/>.<br />
+    /// This manager also relays events from the XRHandSubsystem when tracking is either lost or acquired.
+    /// </summary>
+    /// <remarks>Almost all classes in the Interaction Toolkit rely on this jointmanager to function</remarks>
+    /// <dependencies <see cref="XRHandSubsystem"/>/>
     public class GRPLJointManager : MonoBehaviour
     {
+        //-----------------------------
+        // Finger bend fields
+        //-----------------------------
+        [Header("Bend Thresholds")]
+        [SerializeField] private float ThumbBendThreshold = 0.75f;
+        [SerializeField] private float IndexBendThreshold = 0.3f;
+        [SerializeField] private float MiddleBendThreshold = 0.25f;
+        [SerializeField] private float RingBendThreshold = 0.3f;
+        [SerializeField] private float LittleBendThreshold = 0.3f;
+
+        // As it is impossible for the joints to fully touch each other, this value represents a total bend
+        public float BendDistMin = 0.3f;
+        // As it is almost impossible for a finger to be fully stretched, this value represents a total stretch
+        public float StretchDistMin = 0.9f;
+
+        [Layer] public int HandLayer = -1;
+        public bool HandTrackingProviderContainsCapsules = false;
+        public float ColliderActivationDelay = 1.5f;
+
+        public static event Action<GRPLJointManager> GlobalInitialized;
+
+        public event Action<RhinoxHand> TrackingAcquired;
+        public event Action<RhinoxHand> TrackingLost;
+        public event Action<RhinoxHand> OnHandsUpdated;
+        public event Action<RhinoxHand> OnJointCapsulesInitialized;
+
+        public bool IsLeftHandTracked { get; private set; } = false;
+        public bool IsRightHandTracked { get; private set; } = false;
+        public bool AreJointsInitialised { get; private set; } = false;
         public bool JointCollisionsEnabled
         {
             get => _jointCollisionsEnabled;
@@ -24,35 +61,11 @@ namespace Rhinox.XR.Grapple
             }
         }
 
-        private bool _jointCollisionsEnabled = true;
-
-        [Layer] public int HandLayer = -1;
-
-        public bool IsLeftHandTracked { get; private set; } = false;
-        public bool IsRightHandTracked { get; private set; } = false;
-
-        public event Action<RhinoxHand> TrackingAcquired;
-        public event Action<RhinoxHand> TrackingLost;
-        public event Action<RhinoxHand> OnHandsUpdated;
-
-        public event Action Initialized;
-        public event Action<RhinoxHand> OnJointCapsulesInitialized;
-        public static event Action<GRPLJointManager> GlobalInitialized;
-        public bool AreJointsInitialised { get; private set; } = false;
-
-        public bool HandTrackingProviderContainsCapsules = false;
-
-        public float ColliderActivationDelay = 1.5f;
-
-        // As it is impossible for the joints to fully touch each other, this value represents a total bend
-        public float BendDistMin = 0.3f;
-
-        // As it is almost impossible for a finger to be fully stretched, this value represents a total stretch
-        public float StretchDistMin = 0.9f;
-
-
         public RhinoxJointCapsule[] LeftHandCapsules => _leftHandCapsules;
         public RhinoxJointCapsule[] RightHandCapsules => _rightHandCapsules;
+
+
+        private bool _jointCollisionsEnabled = true;
 
         private XRHandSubsystem _subsystem;
 
@@ -72,18 +85,6 @@ namespace Rhinox.XR.Grapple
         private bool _fixedUpdateAfterTrackingRightFound = false;
         private bool _firstHandUpdateAfterTrackingFound = false;
 
-        //-----------------------------
-        // Finger bend fields
-        //-----------------------------
-        [Header("Bend Thresholds")]
-        [SerializeField]
-        public float ThumbBendThreshold = 0.75f;
-
-        [SerializeField] public float IndexBendThreshold = 0.3f;
-        [SerializeField] public float MiddleBendThreshold = 0.25f;
-        [SerializeField] public float RingBendThreshold = 0.3f;
-        [SerializeField] public float LittleBendThreshold = 0.3f;
-
         // Finger full stretch values
         private float _thumbFullStretchVal = 0;
         private float _indexFullStretchVal = 0;
@@ -91,8 +92,11 @@ namespace Rhinox.XR.Grapple
         private float _ringFullStretchVal = 0;
         private float _littleFullStretchVal = 0;
 
-        #region Initialization Methods
+        private event Action Initialized;
 
+        //======================
+        //Initialization Methods
+        //======================
         private void Awake()
         {
             InitializeHandJoints();
@@ -123,7 +127,6 @@ namespace Rhinox.XR.Grapple
             _subsystem.trackingAcquired -= OnTrackingAcquired;
             _subsystem.trackingLost -= OnTrackingLost;
         }
-
 
         private void TryEnsureInitialized()
         {
@@ -201,7 +204,8 @@ namespace Rhinox.XR.Grapple
         {
             if (HandTrackingProviderContainsCapsules)
             {
-                Debug.LogError("RhinoxHand tracking provider has it's own capsules, don't create them manually");
+                PLog.Error<GrappleLogger>($"[GRPLJointManager:InitializeJointCapsules]," +
+                    $"NOT IMPLEMENTED", this);
                 return;
             }
 
@@ -214,7 +218,6 @@ namespace Rhinox.XR.Grapple
                         if (_leftHandCollidersParent)
                             break;
                         _leftHandCollidersParent = new GameObject($"{handedness}_Capsules");
-                        //_leftHandCollidersParent.tag = handedness.ToString();
                         Transform parentTransform = _leftHandCollidersParent.transform;
                         parentTransform.SetParent(transform, false);
                         parentTransform.localPosition = Vector3.zero;
@@ -226,7 +229,6 @@ namespace Rhinox.XR.Grapple
                         if (_rightHandCollidersParent)
                             break;
                         _rightHandCollidersParent = new GameObject($"{handedness}_Capsules");
-                        //_rightHandCollidersParent.tag = handedness.ToString();
                         Transform parentTransform = _rightHandCollidersParent.transform;
                         parentTransform.SetParent(transform, false);
                         parentTransform.localPosition = Vector3.zero;
@@ -234,9 +236,9 @@ namespace Rhinox.XR.Grapple
                         break;
                     }
                 default:
-                    Debug.LogError(
+                    PLog.Error<GrappleLogger>(
                         $"{nameof(GRPLJointManager)} - {nameof(InitializeJointCapsules)}" +
-                        $", function called with incorrect rhinoxHand {handedness}. Only left or right supported!");
+                        $", function called with incorrect rhinoxHand {handedness}. Only left or right supported!", this);
                     return;
             }
 
@@ -276,7 +278,7 @@ namespace Rhinox.XR.Grapple
         private void InitializeCapsulesForHand(RhinoxHand hand, GameObject parent, RhinoxJointCapsule[] capsules,
             List<RhinoxJoint> joints)
         {
-            //Loop over the capsules and process them
+            //Loop over the capsules and process them (from tip to wrist)
             for (var index = capsules.Length - 1; index > 0; index--)
             {
                 // Get the current joint and get/create its corresponding capsule
@@ -343,7 +345,6 @@ namespace Rhinox.XR.Grapple
             }
         }
 
-
         private void InitializeFingerBendFields(RhinoxHand hand)
         {
             foreach (RhinoxFinger finger in Enum.GetValues(typeof(RhinoxFinger)))
@@ -365,13 +366,10 @@ namespace Rhinox.XR.Grapple
                 SetFullStretchDistance(finger, fullStretchDistance);
             }
         }
-        
-        
-        
-        #endregion
 
-        #region Collision Setters
-
+        //=================
+        //Collision Setters
+        //=================
         public void EnableHandCollisions(RhinoxHand rhinoxHand)
         {
             SetHandCollisions(true, rhinoxHand);
@@ -420,10 +418,9 @@ namespace Rhinox.XR.Grapple
             }
         }
 
-        #endregion
-
-        #region Event Methods
-
+        //=============
+        //Event Methods
+        //=============
         private void OnTrackingAcquired(XRHand hand)
         {
             switch (hand.handedness)
@@ -472,10 +469,9 @@ namespace Rhinox.XR.Grapple
             TrackingLost?.Invoke(hand.handedness.ToRhinoxHand());
         }
 
-        #endregion
-
-        #region Update Logic
-
+        //============
+        //Update Logic
+        //============
         /// <summary>
         /// This function is a callback for the OnUpdatedHands event on the XRHandSubsystem.
         /// </summary>
@@ -742,10 +738,9 @@ namespace Rhinox.XR.Grapple
             }
         }
 
-        #endregion
-
-        #region Get methods
-
+        //===========
+        //Get methods
+        //===========
         /// <summary>
         /// Attempts to get all joint of the given hand.
         /// </summary>
@@ -899,7 +894,6 @@ namespace Rhinox.XR.Grapple
             return true;
         }
 
-
         /// <summary>
         /// Attempts to create a list of the joint positions of all joints of the given finger on the given hand.
         /// </summary>
@@ -934,10 +928,10 @@ namespace Rhinox.XR.Grapple
         public ICollection<RhinoxJoint> GetJointsFromBothHand(XRHandJointID jointID)
         {
             ICollection<RhinoxJoint> returnVal = new List<RhinoxJoint>();
-            
+
             // Create compare local function
             bool Match(RhinoxJoint joint) => joint.JointID == jointID;
-            
+
             // If the left hand is being tracked,
             // Get all instances in the left hand
             if (IsLeftHandTracked)
@@ -947,7 +941,7 @@ namespace Rhinox.XR.Grapple
             // Get all instances in the right hand
             if (IsRightHandTracked)
                 returnVal.AddRange(_rightHandJoints.FindAll(Match));
-            
+
             return returnVal.Count == 0 ? Array.Empty<RhinoxJoint>() : returnVal;
         }
 
@@ -1004,10 +998,9 @@ namespace Rhinox.XR.Grapple
             return returnValue;
         }
 
-        
-        
-        #endregion
-
+        //==============
+        //Finger Bending
+        //==============
         /// <summary>
         /// Sets the full stretch distance of the desired finger.
         /// </summary>
