@@ -21,7 +21,7 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField] private bool _useInteractDelay = true;
         [SerializeField] private float _interactDelay = 0.25f;
         [Range(0f, 1f)][SerializeField] private float _selectStartPercentage = 0.25f;
-        
+
         public Bounds PressBounds { get; private set; }
 
         public Transform ButtonBaseTransform => _interactableBaseTransform;
@@ -34,7 +34,7 @@ namespace Rhinox.XR.Grapple.It
         private float _maxPressDistance;
         private const float INITIAL_INTERACT_OFFSET = 0.25f;
         private bool _isOnCooldown = false;
-        
+
         protected override void Initialize()
         {
             // Calculate the initial distance between the interact object and base transform
@@ -60,8 +60,8 @@ namespace Rhinox.XR.Grapple.It
                 StartCoroutine(DisableInteractibleForDuration());
             ButtonSurface.transform.position = ButtonBaseTransform.position +
                                                _maxPressDistance * ButtonBaseTransform.forward;
-            
-            
+
+
             base.InteractStopped();
         }
 
@@ -92,7 +92,7 @@ namespace Rhinox.XR.Grapple.It
 
             float closestDistance = MaxPressedDistance;
 
-            // Cache the button fields that get reused
+            // Cache the button fields that get re-used
             Transform buttonBaseTransform = ButtonBaseTransform;
 
             var forward = buttonBaseTransform.forward;
@@ -129,9 +129,9 @@ namespace Rhinox.XR.Grapple.It
             if (pressPercentage > _selectStartPercentage)
             {
                 _previousInteractJoint = joint;
-                return true;    
+                return true;
             }
-            
+
             return false;
         }
 

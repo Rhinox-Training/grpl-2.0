@@ -126,7 +126,7 @@ namespace Rhinox.XR.Grapple.It
         /// <param name="gestureRecognizer">reference to the GRPLGestureRecognizer</param>
         public void Initialize(GRPLJointManager jointManager, GRPLGestureRecognizer gestureRecognizer)
         {
-            if (_isInitialized)
+            if (_isInitialized || !isActiveAndEnabled)
                 return;
 
             _jointManager = jointManager;

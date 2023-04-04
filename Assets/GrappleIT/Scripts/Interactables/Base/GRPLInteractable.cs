@@ -19,15 +19,15 @@ namespace Rhinox.XR.Grapple.It
         public event Action<GRPLInteractable> OnInteractEnded;
         public event Action<GRPLInteractable> OnProximityStarted;
         public event Action<GRPLInteractable> OnProximityEnded;
-        
+
         protected virtual void Initialize() { }
         protected virtual void Destroyed() { }
 
         private GRPLInteractionState _state = GRPLInteractionState.Active;
         public GRPLInteractionState State => _state;
-        
+
         public bool ShouldPerformInteractCheck { set; get; } = true;
-        
+
         private void Start()
         {
             Initialize();
@@ -40,15 +40,15 @@ namespace Rhinox.XR.Grapple.It
             Destroyed();
         }
 
-        private void OnEnable() => _state = GRPLInteractionState.Active;
+        protected virtual void OnEnable() => _state = GRPLInteractionState.Active;
 
-        private void OnDisable() => _state = GRPLInteractionState.Disabled;
+        protected virtual void OnDisable() => _state = GRPLInteractionState.Disabled;
 
         public void SetState(GRPLInteractionState newState)
         {
-            if(_state == newState)
+            if (_state == newState)
                 return;
-            
+
             switch (_state)
             {
                 case GRPLInteractionState.Proximate:
@@ -58,7 +58,7 @@ namespace Rhinox.XR.Grapple.It
                     InteractStopped();
                     break;
             }
-            
+
             switch (newState)
             {
                 case GRPLInteractionState.Proximate:
@@ -96,9 +96,9 @@ namespace Rhinox.XR.Grapple.It
         /// An example could be a projected distance check, where the joint with the lowest distance gets returned.
         /// </summary>
         /// <param name="joints"> A collection of joints to check.</param>
-        /// <param name="joint"> An out parameter for a valid joint, if one was found</param>
+        /// <param name="outJoint"> An out parameter for a valid joint, if one was found</param>
         /// <returns>Whether a valid joint was found.</returns>
-        public abstract bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint joint);
+        public abstract bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint);
 
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Rhinox.XR.Grapple.It
         /// </summary>
         /// <param name="p1">The main point</param>
         /// <param name="p2">The other point</param>
-        /// <returns>A boolean representing whether the point is closer or not.</returns>
+        /// <returns>A boolean representing whether the first point "p1" is closer or not.</returns>
         public virtual bool IsPointCloserThanOtherPoint(Vector3 p1, Vector3 p2)
         {
             var position = transform.position;

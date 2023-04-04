@@ -27,8 +27,8 @@ namespace Rhinox.XR.Grapple.It
             if (_enableSocketing)
                 _physicsService = new GRPLPhysicsSocketService(_gestureRecognizer, gameObject);
 
-            if (_enableSocketing && _physicsService.GetType() == typeof(NullPhysicsService))
-                PLog.Error<GRPLITLogger>($"{nameof(GRPLManager)} Failed to add Socketing service", this);
+            //if (_enableSocketing && _physicsService.GetType() == typeof(NullPhysicsService))
+            //    PLog.Error<GRPLITLogger>($"{nameof(GRPLManager)} Failed to add Socketing service", this);
 
 
             if (gameObject.TryGetComponent(out _teleporter))

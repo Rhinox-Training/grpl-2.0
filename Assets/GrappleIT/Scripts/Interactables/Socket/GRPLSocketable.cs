@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Rhinox.XR.Grapple.It
 {
-    public class GRPLSocketable : GRPLBaseInteractable
+    public class GRPLSocketable : GRPLGrabbableInteractable
     {
         public GameObject Socket = null;
 
