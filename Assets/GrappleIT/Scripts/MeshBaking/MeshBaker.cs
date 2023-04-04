@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Rhinox.XR.Grapple.It
 {
+    /// <summary>
+    /// This component contains functionality to bake a mesh.
+    /// </summary>
     public class MeshBaker : MonoBehaviour
     {
         [SerializeField] private Material _bakedMeshMaterial;

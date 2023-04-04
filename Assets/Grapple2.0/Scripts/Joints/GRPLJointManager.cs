@@ -18,7 +18,7 @@ namespace Rhinox.XR.Grapple
     /// This manager also relays events from the XRHandSubsystem when tracking is either lost or acquired.
     /// </summary>
     /// <remarks>Almost all classes in the Interaction Toolkit rely on this jointmanager to function</remarks>
-    /// <dependencies <see cref="XRHandSubsystem"/>/>
+    /// <dependencies> <see cref="XRHandSubsystem"/> </dependencies>
     public class GRPLJointManager : MonoBehaviour
     {
         //-----------------------------

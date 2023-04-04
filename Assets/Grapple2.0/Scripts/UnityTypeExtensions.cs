@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.XR.Hands;
 
+/// <summary>
+/// Contains extensions for Unity types.
+/// </summary>
 public static class UnityTypeExtensions
 {
     public static bool Approximately(this Quaternion q1, Quaternion q2, float acceptableRange)

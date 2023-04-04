@@ -4,6 +4,12 @@ using UnityEngine;
 
 namespace Rhinox.XR.Grapple.It
 {
+    /// <summary>
+    /// This component links the interactible manager to the mesh baker. <br />
+    /// When the interactible manager freezer an interaction check, it bakes the current mesh.
+    /// </summary>
+    /// <dependencies>
+    /// <see cref="GRPLInteractableManager"/> <see cref="MeshBaker"/> </dependencies>
     public class MeshBakerInteractibleManagerLink : MonoBehaviour
     {
         [SerializeField] private GRPLInteractableManager _interactableManager;

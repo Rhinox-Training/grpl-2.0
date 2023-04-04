@@ -75,15 +75,15 @@ namespace Rhinox.XR.Grapple.It
         {
 
             //getting the grab gesture and linking events
-            if (_grabGesture == null)
-            {
-                _grabGesture = _gestureRecognizer.Gestures.Find(x => x.Name == "Grab");
-                if (_grabGesture != null)
-                {
-                    _grabGesture.AddListenerOnRecognized(TryGrab);// .OnRecognized.AddListener(TryGrab);
-                    _grabGesture.AddListenerOnUnRecognized(TryDrop);// .OnUnrecognized.AddListener(TryDrop);
-                }
-            }
+            //if (_grabGesture == null)
+            //{
+            //    _grabGesture = _gestureRecognizer.Gestures.Find(x => x.Name == "Grab");
+            //    if (_grabGesture != null)
+            //    {
+            //        _grabGesture.AddListenerOnRecognized(TryGrab);// .OnRecognized.AddListener(TryGrab);
+            //        _grabGesture.AddListenerOnUnRecognized(TryDrop);// .OnUnrecognized.AddListener(TryDrop);
+            //    }
+            //}
         }
 
         private void Update()
