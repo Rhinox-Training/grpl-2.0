@@ -227,8 +227,8 @@ namespace Rhinox.XR.Grapple.It
                 if (interactable.State == GRPLInteractionState.Disabled)
                     continue;
 
-                // Calculate the vector from the joint to the interactable
-                Vector3 fromJointToInteractable = interactable.transform.position - referenceJointPos;
+                // Calculate the vector from the joint to the interactable reference point
+                Vector3 fromJointToInteractable = interactable.GetReferencePoint() - referenceJointPos;
 
                 // Calculate the distance from the interactable to the reference pos
                 float sqrDistance = fromJointToInteractable.sqrMagnitude;

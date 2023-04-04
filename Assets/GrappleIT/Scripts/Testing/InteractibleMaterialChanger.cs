@@ -2,9 +2,9 @@ using Rhinox.XR.Grapple.It;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class ButtonMaterialChanger : MonoBehaviour
+public class InteractibleMaterialChanger : MonoBehaviour
 {
-   [SerializeField] private GRPLButtonInteractable _interactable;
+   [SerializeField] private GRPLInteractable _interactable;
    [SerializeField] private MeshRenderer _target;
    [SerializeField] private Material _defaultMaterial;
    [SerializeField] private Material _proximityMaterial;
