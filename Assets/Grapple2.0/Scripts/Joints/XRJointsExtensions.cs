@@ -2,6 +2,9 @@ using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple
 {
+    /// <summary>
+    /// Contains extensions for XR Hand Joints
+    /// </summary>
     public static class XRJointsExtensions
     {
         public static bool IsDistal(this XRHandJointID joint)

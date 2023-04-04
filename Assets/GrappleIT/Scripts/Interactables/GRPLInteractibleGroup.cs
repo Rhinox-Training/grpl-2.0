@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Rhinox.XR.Grapple.It
 {
+    /// <summary>
+    /// This component defines a list of interactables. This component assures, only 1 one interactable from said list can be interacted with at a time. 
+    /// </summary>
     public class GRPLInteractibleGroup : MonoBehaviour
     {
         [Header("Delayed activation parameters")]
@@ -11,9 +14,7 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField] private float _delayInteractibleReactivationTime = 0.25f;
 
         private List<GRPLInteractable> _interactables;
-
         private GRPLInteractable _currentInteractedObject;
-
         private bool _isCoolingDown = false;
 
         private void Awake()

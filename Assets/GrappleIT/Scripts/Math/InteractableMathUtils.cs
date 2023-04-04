@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Rhinox.XR.Grapple.It
 {
+    /// <summary>
+    /// This class contains some useful 3D math functions/
+    /// </summary>
     public static class InteractableMathUtils
     {
         /// <summary>
