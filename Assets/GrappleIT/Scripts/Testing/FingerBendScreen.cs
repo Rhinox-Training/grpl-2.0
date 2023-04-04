@@ -7,24 +7,22 @@ using UnityEngine;
 
 public class FingerBendScreen : MonoBehaviour
 {
-    [Header("Hand Text fields")] [SerializeField]
-    private TextMeshProUGUI _thumb;
-
+    [Header("Hand Text fields")]
+    [SerializeField] private TextMeshProUGUI _thumb;
     [SerializeField] private TextMeshProUGUI _index;
     [SerializeField] private TextMeshProUGUI _middle;
     [SerializeField] private TextMeshProUGUI _ring;
     [SerializeField] private TextMeshProUGUI _little;
 
-    [Header("Parameters")] [SerializeField]
-    private bool _isScaled = true;
-
+    [Header("Parameters")]
+    [SerializeField] private bool _isScaled = true;
     [SerializeField] private RhinoxHand TargetHand = RhinoxHand.Left;
 
-    private JointManager _jointManager;
+    private GRPLJointManager _jointManager;
 
     private void Awake()
     {
-        JointManager.GlobalInitialized += OnJointManagerInitialized;
+        GRPLJointManager.GlobalInitialized += OnJointManagerInitialized;
     }
 
     private void OnEnable()
@@ -43,7 +41,7 @@ public class FingerBendScreen : MonoBehaviour
         _jointManager.OnHandsUpdated -= OnHandsUpdated;
     }
 
-    private void OnJointManagerInitialized(JointManager manager)
+    private void OnJointManagerInitialized(GRPLJointManager manager)
     {
         _jointManager = manager;
 

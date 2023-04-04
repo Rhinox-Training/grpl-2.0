@@ -7,22 +7,17 @@ using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple.It
 {
-    public class InteractableManager : Singleton<InteractableManager>
+    public class GRPLInteractableManager : Singleton<GRPLInteractableManager>
     {
-        [Header("Proximate detection parameters")] [SerializeField]
-        private int _maxAmountOfProximatesPerHand = 3;
-
+        [Header("Proximate detection parameters")]
+        [SerializeField] private int _maxAmountOfProximatesPerHand = 3;
         [SerializeField] private float _proximateRadius = 1f;
         [SerializeField] private XRHandJointID _proximateJointID = XRHandJointID.MiddleMetacarpal;
+        
+        [Header("Interactible Groups")]
+        [SerializeField] private List<GRPLInteractibleGroup> _interactibleGroups;
 
-        [Header("Interactible Groups")] [SerializeField]
-        private List<InteractibleGroup> _interactibleGroups;
-
-        private JointManager _jointManager;
-        private List<GRPLInteractable> _interactables = null;
-
-        private List<GRPLInteractable> _leftHandProximates;
-        private List<GRPLInteractable> _rightHandProximates;
+        //[HideInInspector] public GRPLInteractableManager Instance;
 
         private HashSet<GRPLInteractable> _leftInteractedProximates = new HashSet<GRPLInteractable>();
         private HashSet<GRPLInteractable> _rightInteractedProximates = new HashSet<GRPLInteractable>();
@@ -30,7 +25,12 @@ namespace Rhinox.XR.Grapple.It
         public event Action<RhinoxHand, GRPLInteractable> InteractibleInteractionCheckPaused;
         public event Action<RhinoxHand, GRPLInteractable> InteractibleInteractionCheckResumed;
         public event Action<RhinoxHand, GRPLInteractable> InteractibleLeftProximity;
+        
+        private GRPLJointManager _jointManager;
+        private List<GRPLInteractable> _interactables = null;
 
+        private List<GRPLInteractable> _leftHandProximates;
+        private List<GRPLInteractable> _rightHandProximates;
 
         public void Awake()
         {
@@ -42,13 +42,13 @@ namespace Rhinox.XR.Grapple.It
 
             _interactables = new List<GRPLInteractable>();
 
-            JointManager.GlobalInitialized += OnJointManagerInitialised;
+            GRPLJointManager.GlobalInitialized += OnJointManagerInitialised;
 
             _leftHandProximates = new List<GRPLInteractable>();
             _rightHandProximates = new List<GRPLInteractable>();
         }
 
-        private void OnJointManagerInitialised(JointManager obj)
+        private void OnJointManagerInitialised(GRPLJointManager obj)
         {
             _jointManager = obj;
             _jointManager.TrackingLost += OnTrackingLost;
@@ -210,7 +210,7 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    PLog.Error<GrappleItLogger>(
+                    PLog.Error<GRPLITLogger>(
                         $"[{this.GetType()}:DetectProximates], function called with invalid hand {hand}");
                     return Array.Empty<GRPLInteractable>();
             }
@@ -352,7 +352,7 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    PLog.Error<GrappleItLogger>(
+                    PLog.Error<GRPLITLogger>(
                         $"[{GetType()}:OnTrackingLost], function called with invalid hand {hand}");
                     return;
             }

@@ -85,3 +85,4 @@ crashlytics-build.properties
 
 # VS editor config file
 .editorconfig
+*.orig.meta

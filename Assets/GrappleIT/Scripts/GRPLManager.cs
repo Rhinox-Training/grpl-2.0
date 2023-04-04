@@ -1,45 +1,41 @@
 using Rhinox.GUIUtils.Attributes;
 using Rhinox.Perceptor;
-using UnityEditor.SceneManagement;
-using UnityEditor.SearchService;
 using UnityEngine;
 
 namespace Rhinox.XR.Grapple.It
 {
-    [RequireComponent(typeof(GestureRecognizer))]
-    public class GrappleManager : MonoBehaviour
+    [RequireComponent(typeof(GRPLGestureRecognizer))]
+    public class GRPLManager : MonoBehaviour
     {
-        private JointManager _jointManager = null;
-
-        private IPhysicsService _physicsService = new NullPhysicsService();
-
         [Header("Physics")]
         [SerializeField] private bool _enableSocketing = true;
         [Layer][SerializeField] private int _handLayer = 2;
         public int Handlayer => _handLayer;
 
-        private GestureRecognizer _gestureRecognizer = null;
 
+        private GRPLJointManager _jointManager = null;
+        private IPhysicsService _physicsService = new NullPhysicsService();
+        private GRPLGestureRecognizer _gestureRecognizer = null;
         private GRPLTeleport _teleporter = null;
 
         private void Start()
         {
-            _jointManager = gameObject.AddComponent<JointManager>();
+            _jointManager = gameObject.AddComponent<GRPLJointManager>();
             _jointManager.HandLayer = _handLayer;
-            _gestureRecognizer = GetComponent<GestureRecognizer>();
+            _gestureRecognizer = GetComponent<GRPLGestureRecognizer>();
 
             if (_enableSocketing)
-                _physicsService = new PhysicsSocketService(_gestureRecognizer, gameObject);
+                _physicsService = new GRPLPhysicsSocketService(_gestureRecognizer, gameObject);
 
             if (_enableSocketing && _physicsService.GetType() == typeof(NullPhysicsService))
-                PLog.Error<GrappleItLogger>($"{nameof(GrappleManager)} Failed to add Socketing service", this);
+                PLog.Error<GRPLITLogger>($"{nameof(GRPLManager)} Failed to add Socketing service", this);
 
 
             if (gameObject.TryGetComponent(out _teleporter))
                 _teleporter.Initialize(_jointManager, _gestureRecognizer);
             else
             {
-                PLog.Warn<GrappleItLogger>($"{nameof(GrappleManager)} Failed to find {nameof(GRPLTeleport)}", this);
+                PLog.Warn<GRPLITLogger>($"{nameof(GRPLManager)} Failed to find {nameof(GRPLTeleport)}", this);
                 return;
             }
         }

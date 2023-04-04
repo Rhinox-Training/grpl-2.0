@@ -1,4 +1,3 @@
-using System;
 using Rhinox.Perceptor;
 using UnityEngine;
 
@@ -6,24 +5,24 @@ namespace Rhinox.XR.Grapple.It
 {
     public class MeshBaker : MonoBehaviour
     {
-        private SkinnedMeshRenderer _leftHandRenderer;
-        private SkinnedMeshRenderer _rightHandRenderer;
-        private GRPLHandVisualizer _handVisualizer;
-        
         [SerializeField] private Material _bakedMeshMaterial;
         [SerializeField] private Material _handAfterBakeMaterial;
 
-        private JointManager _jointManager;
+        private GRPLJointManager _jointManager;
+
+        private SkinnedMeshRenderer _leftHandRenderer;
+        private SkinnedMeshRenderer _rightHandRenderer;
 
         private GameObject _leftBakedMeshObject;
         private GameObject _rightBakedMeshObject;
-        
+        private GRPLHandVisualizer _handVisualizer = null;
+
         private void Awake()
         {
-            JointManager.GlobalInitialized += OnJointManagerInitialized;
+            GRPLJointManager.GlobalInitialized += OnJointManagerInitialized;
         }
 
-        private void OnJointManagerInitialized(JointManager obj)
+        private void OnJointManagerInitialized(GRPLJointManager obj)
         {
             _jointManager = obj;
             if (_handVisualizer == null)
@@ -31,7 +30,7 @@ namespace Rhinox.XR.Grapple.It
                 _handVisualizer = _jointManager.GetComponent<GRPLHandVisualizer>();
                 if (_handVisualizer == null)
                 {
-                    PLog.Warn<GrappleItLogger>("[MeshBaker:OnJointManagerInitialized] Could not find GRPLHandVisualizer component, disabling mesh baker");
+                    PLog.Warn<GRPLITLogger>("[MeshBaker:OnJointManagerInitialized] Could not find GRPLHandVisualizer component, disabling mesh baker");
                     enabled = false;
                 }
                 else
@@ -52,12 +51,12 @@ namespace Rhinox.XR.Grapple.It
             switch (hand)
             {
                 case RhinoxHand.Left:
-                    if(!_jointManager.IsLeftHandTracked)
+                    if (!_jointManager.IsLeftHandTracked)
                         return;
                     if (_leftBakedMeshObject == null)
                         _leftBakedMeshObject = new GameObject("Left Baked meshes");
                     _leftHandRenderer.enabled = !disableRenderer;
-                    BakeMeshDelegate(_leftHandRenderer,_leftBakedMeshObject);
+                    BakeMeshDelegate(_leftHandRenderer, _leftBakedMeshObject);
                     break;
                 case RhinoxHand.Right:
                     if (!_jointManager.IsRightHandTracked)
@@ -69,7 +68,7 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    PLog.Error<GrappleItLogger>($"[MeshBaker:BakeMesh], function called with invalid RhinoxHand: {hand}");
+                    PLog.Error<GRPLITLogger>($"[MeshBaker:BakeMesh], function called with invalid RhinoxHand: {hand}");
                     return;
             }
         }
@@ -82,15 +81,15 @@ namespace Rhinox.XR.Grapple.It
             var bakeChild = new GameObject("Baked mesh");
             bakeRenderer = bakeChild.AddComponent<MeshRenderer>();
             bakeFilter = bakeChild.AddComponent<MeshFilter>();
-            
+
             bakeRenderer.material = _bakedMeshMaterial;
             meshRenderer.BakeMesh(bakeFilter.mesh);
-            
+
             meshRenderer.material = _handAfterBakeMaterial;
             var transform1 = meshRenderer.transform;
             bakeChild.transform.position = transform1.position;
             bakeChild.transform.rotation = transform1.rotation;
-            bakeChild.transform.SetParent(parent.transform,true);
+            bakeChild.transform.SetParent(parent.transform, true);
         }
 
         /// <summary>
@@ -113,7 +112,7 @@ namespace Rhinox.XR.Grapple.It
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    PLog.Error<GrappleItLogger>("[MeshBaker:DestroyBakedObjects], function called with invalid hand value: {hand}");
+                    PLog.Error<GRPLITLogger>("[MeshBaker:DestroyBakedObjects], function called with invalid hand value: {hand}");
                     return;
             }
         }

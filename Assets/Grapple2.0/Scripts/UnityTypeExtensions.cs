@@ -13,7 +13,7 @@ public static class UnityTypeExtensions
 
     public static bool Approximately(this Vector3 v1, Vector3 v2, float acceptableRange)
     {
-        return Approximately(v1.x,v2.x,acceptableRange) && 
+        return Approximately(v1.x, v2.x, acceptableRange) &&
                Approximately(v1.y, v2.y, acceptableRange) &&
                Approximately(v1.z, v2.z, acceptableRange);
     }
@@ -51,18 +51,19 @@ public static class UnityTypeExtensions
                 return "R_";
             case RhinoxHand.Invalid:
             default:
-                return "";        }
+                return "";
+        }
     }
-    
+
     public static void SubscribeAndActivateAsset(InputActionReference reference,
         Action<InputAction.CallbackContext> performed = null,
         Action<InputAction.CallbackContext> canceled = null)
     {
-        if(reference == null)
+        if (reference == null)
             return;
-        
+
         reference.asset.Enable();
-        
+
         var action = GetInputAction(reference);
         if (action != null)
         {

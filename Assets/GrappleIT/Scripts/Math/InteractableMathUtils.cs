@@ -37,7 +37,7 @@ namespace Rhinox.XR.Grapple.It
             var projectedPos = Vector3.ProjectOnPlane(point, planeNormal) +
                                Vector3.Dot(planePosition, planeNormal) *
                                planeNormal;
-            
+
             return bounds.Contains(projectedPos);
         }
 
@@ -55,6 +55,5 @@ namespace Rhinox.XR.Grapple.It
             return Vector3.Dot(projectPoint - normalPoint,
                 normal);
         }
-        
     }
 }

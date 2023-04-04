@@ -1,25 +1,33 @@
 using Rhinox.GUIUtils.Attributes;
-using System;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace Rhinox.XR.Grapple.It
 {
+    /// <summary>
+    /// A simple trigger sensor to detect if a Rhinox hand has entered/exited it.
+    /// </summary>
+    /// <remarks />
+    /// <dependencies><see cref="Collider"/></dependencies>
     [RequireComponent(typeof(Collider))]
-    public class GRPLProximitySensor : MonoBehaviour
+    public class GRPLTriggerSensor : MonoBehaviour
     {
         [Layer][SerializeField] private int _handLayer = 3;
+        [Space(15f)]
+        [SerializeField] private UnityEvent OnSensorEnter = null;
+        [Space(10f)]
+        [SerializeField] private UnityEvent OnSensorExit = null;
+
         public int HandLayer
         {
             get { return _handLayer; }
             set { _handLayer = value; }
         }
 
-        [Space(15f)]
-        [SerializeField] private UnityEvent OnSensorEnter = null;
-        [Space(10f)]
-        [SerializeField] private UnityEvent OnSensorExit = null;
-
+        /// <summary>
+        /// Takes an array of <see cref="RhinoxJointCapsule"/> to be ignored from trigger the sensor.
+        /// </summary>
+        /// <param name="rhinoxJoinCapsules">Array of RhinoxJointCapsule gotten from <see cref="GRPLJointManager"/></param>
         public void SetIgnoreList(RhinoxJointCapsule[] rhinoxJoinCapsules)
         {
             Collider proximityCollider = GetComponent<Collider>();
@@ -50,8 +58,9 @@ namespace Rhinox.XR.Grapple.It
                 OnSensorExit?.Invoke();
         }
 
-
-        #region SensorEnter
+        //============
+        // SensorEnter
+        //============
         public void AddListenerOnSensorEnter(UnityAction action)
         {
             if (OnSensorEnter == null)
@@ -74,9 +83,10 @@ namespace Rhinox.XR.Grapple.It
         {
             OnSensorEnter?.Invoke();
         }
-        #endregion
 
-        #region SensorExit
+        //==========
+        // SensorExit
+        //==========
         public void AddListenerOnSensorExit(UnityAction action)
         {
             if (OnSensorExit == null)
@@ -99,6 +109,5 @@ namespace Rhinox.XR.Grapple.It
         {
             OnSensorExit?.Invoke();
         }
-        #endregion
     }
 }

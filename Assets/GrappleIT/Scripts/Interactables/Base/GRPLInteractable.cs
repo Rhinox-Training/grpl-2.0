@@ -8,7 +8,7 @@ namespace Rhinox.XR.Grapple.It
     /// <summary>
     /// This abstract base class is used for Grapple interactables. <br />
     /// If all pure abstract methods are correctly implemented, the derived interactables should work seamlessly with
-    /// the <see cref="InteractableManager"/>. 
+    /// the <see cref="GRPLInteractableManager"/>. 
     /// </summary>
     public abstract class GRPLInteractable : MonoBehaviour
     {

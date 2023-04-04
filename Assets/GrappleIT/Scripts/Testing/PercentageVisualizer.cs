@@ -8,7 +8,7 @@ using UnityEngine;
 public class PercentageVisualizer : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _screen;
-    [SerializeField] private GRPLSliderInteractable _sliderInteractable;
+    [SerializeField] private GRPLUISliderInteractable _sliderInteractable;
 
     private void OnEnable()
     {

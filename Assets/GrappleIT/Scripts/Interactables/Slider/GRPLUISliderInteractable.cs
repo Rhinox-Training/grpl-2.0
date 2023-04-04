@@ -1,41 +1,49 @@
+using Rhinox.GUIUtils;
 using Rhinox.Lightspeed;
 using Rhinox.Perceptor;
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Rhinox.XR.Grapple.It
 {
-    public class GRPLSliderInteractable : GRPLInteractable
+    /// <summary>
+    /// A UI slider based on the GRPLInteractable system.<br />
+    /// There is an event for each time the slider updates giving the slider value as paramter.
+    /// </summary>
+    /// <remarks />
+    /// <dependencies>Unity's built in<see cref="Slider"/></dependencies>
+    public class GRPLUISliderInteractable : GRPLInteractable
     {
-        public Slider.Direction SliderDirection => _sliderDirection;
         public float SliderValue => _slider.value;
-        private Slider.Direction _sliderDirection = Slider.Direction.LeftToRight;
-        //[SerializeField] private SliderDirections _sliderDirection = SliderDirections.LeftToRight;
+        public event Action<float> OnValueUpdate;
+
         private Bounds _pressBounds;
         private Slider _slider;
-
-        public event Action<float> OnValueUpdate;
+        private Vector3[] _corners = new Vector3[4];
+        private Vector3 _slidDir = Vector3.zero;
 
         protected override void Initialize()
         {
             if (!TryGetComponent(out _slider))
-                PLog.Error<GrappleItLogger>($"[{nameof(GRPLSliderInteractable)}] {nameof(Initialize)}: " +
+                PLog.Error<GRPLITLogger>($"[{nameof(GRPLUISliderInteractable)}] {nameof(Initialize)}: " +
                     $"No slider Component was found!", this);
 
-            _sliderDirection = _slider.direction;
+            _slider.direction = Slider.Direction.LeftToRight;
 
             var trans = (RectTransform)transform;
             if (trans != null)
             {
-                Vector3[] corners = new Vector3[4];
-                trans.GetWorldCorners(corners);
+                Vector3[] cornersLocal = new Vector3[4];
+                trans.GetWorldCorners(_corners);
+                trans.GetLocalCorners(cornersLocal);
 
                 float minX = float.PositiveInfinity, minY = float.PositiveInfinity, minZ = float.PositiveInfinity;
                 float maxX = float.NegativeInfinity, maxY = float.NegativeInfinity, maxZ = float.NegativeInfinity;
 
-                foreach (var corner in corners)
+                foreach (var corner in _corners)
                 {
                     minX = Mathf.Min(minX, corner.x);
                     minY = Mathf.Min(minY, corner.y);
@@ -52,15 +60,8 @@ namespace Rhinox.XR.Grapple.It
                     extents = new Vector3(maxX - minX, maxY - minY, maxZ - minZ)
                 };
 
-                //extend the slider x-bound a bit to make it easier to get the 0% and 100%
-                //extend the slider z-bound for the plane projection
-                _pressBounds.extents = new Vector3(_pressBounds.extents.x + 0.005f,
-                                                   _pressBounds.extents.y,
-                                                   _pressBounds.extents.z + 0.005f);
+                _slidDir = _corners[3] - _corners[0];
             }
-
-
-            var boundExtends = RectTransformUtility.CalculateRelativeRectTransformBounds(transform);
         }
 
         public override bool CheckForInteraction(RhinoxJoint joint)
@@ -89,9 +90,11 @@ namespace Rhinox.XR.Grapple.It
             if (pokeDistance < 0f)
                 pokeDistance = 0f;
 
-            if (pokeDistance <= _pressBounds.extents.z)
+            if (pokeDistance <= 0.005f)
             {
-                _slider.value = CalculateSliderValueFromSliderDirection(sliderPos, sliderForward, joint.JointPosition);
+                var val = CalculateSliderValueFromSliderDirection(sliderPos, sliderForward, joint.JointPosition);
+                PLog.Info<GRPLITLogger>($"SLiderVal: {val}");
+                _slider.value = val;
                 OnValueUpdate?.Invoke(_slider.value);
                 return true;
             }
@@ -108,25 +111,10 @@ namespace Rhinox.XR.Grapple.It
         /// <returns></returns>
         private float CalculateSliderValueFromSliderDirection(Vector3 sliderPos, Vector3 sliderForward, Vector3 jointPos)
         {
-            var projectedPos = Vector3.ProjectOnPlane(jointPos, sliderForward);
+            Vector3 jointDir = jointPos - _corners[0];
 
-            switch (_sliderDirection)
-            {
-                case Slider.Direction.LeftToRight:
-                    return jointPos.x.Map(sliderPos.x - (_pressBounds.extents.x / 2f), sliderPos.x + (_pressBounds.extents.x / 2f), 0f, 1f);
-                case Slider.Direction.RightToLeft:
-                    return jointPos.x.Map(sliderPos.x - (_pressBounds.extents.x / 2f), sliderPos.x + (_pressBounds.extents.x / 2f), 1f, 0f);
-                case Slider.Direction.BottomToTop:
-                    return jointPos.y.Map(sliderPos.y - (_pressBounds.extents.y / 2f), sliderPos.y + (_pressBounds.extents.y / 2f), 0f, 1f);
-                case Slider.Direction.TopToBottom:
-                    return jointPos.y.Map(sliderPos.y - (_pressBounds.extents.y / 2f), sliderPos.y + (_pressBounds.extents.y / 2f), 1f, 0f);
-                default:
-                    PLog.Error($"[{nameof(GRPLSliderInteractable)}] {nameof(CalculateSliderValueFromSliderDirection)}: " +
-                    $"SliderDirection: {_sliderDirection} was not valid!", this);
-                    break;
-            }
-
-            return _slider.value;
+            Vector3 projectedjoint = Vector3.Project(jointDir, _slidDir);
+            return projectedjoint.magnitude;
         }
 
         public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint)
@@ -152,6 +140,15 @@ namespace Rhinox.XR.Grapple.It
             }
 
             return outJoint != null;
+        }
+
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.DrawWireCube(_pressBounds.center, _pressBounds.extents);
+            GUIContentHelper.PushColor(new Color(1f, 0f, 1f, 1f));
+            Gizmos.DrawRay(_pressBounds.center, -transform.forward);
+            GUIContentHelper.PopColor();
         }
     }
 }
