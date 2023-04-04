@@ -7,6 +7,10 @@ using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple.It
 {
+    /// <summary>
+    /// This object is responsible for calculating all interactions between the hands defined by the jointManager field and all interactables in the scene that inherit from GRPLInteractable.
+    /// </summary>
+    /// <dependencies> <see cref="GRPLJointManager"/> </dependencies>
     public class GRPLInteractableManager : Singleton<GRPLInteractableManager>
     {
         [Header("Proximate detection parameters")]

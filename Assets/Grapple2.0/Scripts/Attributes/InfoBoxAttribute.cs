@@ -2,8 +2,12 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
+#if UNITY_EDITOR
 namespace Rhinox.XR.Grapple.It
 {
+    /// <summary>
+    /// Attribute to display an infobox above a field with optional MessageType.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = true, Inherited = true)]
     public class InfoBoxAttribute : PropertyAttribute
     {
@@ -23,3 +27,4 @@ namespace Rhinox.XR.Grapple.It
         }
     }
 }
+#endif

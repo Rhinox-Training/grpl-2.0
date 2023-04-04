@@ -12,6 +12,7 @@ namespace Rhinox.XR.Grapple
     /// This class implements the behaviour to detect gestures. These gestures can be imported from a json or recording during play mode.
     /// There is also the possibility to export the gestures in a (new) json file.
     /// </summary>
+    /// <dependencies> <see cref="GRPLJointManager"/> </dependencies>
     public class GRPLGestureRecognizer : MonoBehaviour
     {
         public bool ImportOnPlay = false;
@@ -33,18 +34,16 @@ namespace Rhinox.XR.Grapple
         public float GestureDistanceThreshold = 0.02f;
         public float GestureForwardThreshold = 0.5f;
 
-
         public List<RhinoxGesture> Gestures = new List<RhinoxGesture>();
+
+        public UnityEvent<RhinoxHand, string> OnGestureRecognized;
+        public UnityEvent<RhinoxHand, string> OnGestureUnrecognized;
 
         private RhinoxGesture _currentLeftGesture;
         private RhinoxGesture _currentRightGesture;
 
         private RhinoxGesture _lastLeftGesture;
         private RhinoxGesture _lastRightGesture;
-
-        public UnityEvent<RhinoxHand, string> OnGestureRecognized;
-        public UnityEvent<RhinoxHand, string> OnGestureUnrecognized;
-
 
         private GRPLJointManager _jointManager;
 

@@ -3,6 +3,9 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Events;
 
+/// <summary>
+/// This component can be used to wrap a GRPL Button Interactable for unity events in editor.
+/// </summary>
 public class GRPLButtonInteractableUnityWrapper : MonoBehaviour
 {
     [SerializeField] private GRPLButtonInteractable _interactable;
