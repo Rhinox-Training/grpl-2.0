@@ -1,3 +1,4 @@
+using Rhinox.Lightspeed;
 using UnityEngine;
 
 namespace Rhinox.XR.Grapple.It

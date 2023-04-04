@@ -19,6 +19,9 @@ namespace Rhinox.XR.Grapple.It
 
         //[HideInInspector] public GRPLInteractableManager Instance;
 
+        private HashSet<GRPLInteractable> _leftInteractedProximates = new HashSet<GRPLInteractable>();
+        private HashSet<GRPLInteractable> _rightInteractedProximates = new HashSet<GRPLInteractable>();
+
         public event Action<RhinoxHand, GRPLInteractable> InteractibleInteractionCheckPaused;
         public event Action<RhinoxHand, GRPLInteractable> InteractibleInteractionCheckResumed;
         public event Action<RhinoxHand, GRPLInteractable> InteractibleLeftProximity;
@@ -83,6 +86,9 @@ namespace Rhinox.XR.Grapple.It
             if (!_jointManager.TryGetJointsFromHand(hand, out var joints))
                 return;
 
+            var interactedObjects = GetInteractedObjectsFromHand(hand);
+            var otherHandInteractedObjects = GetInteractedObjectsFromHand(hand.GetInverse());
+
             // For every proximate
             foreach (var proximate in proximates)
             {
@@ -97,16 +103,50 @@ namespace Rhinox.XR.Grapple.It
                     continue;
                 }
 
+                // Check if the proximate is already interacted by the other hand
+                // If so, skip this proximate
+                if (otherHandInteractedObjects.Contains(proximate))
+                    continue;
+
                 // Check if an interaction is happening
                 bool isInteracted = proximate.CheckForInteraction(interactJoint);
 
                 if (isInteracted)
                 {
                     if (proximate.State != GRPLInteractionState.Interacted)
+                    {
+                        if (!interactedObjects.Contains(proximate))
+                        {
+                            bool succeeded = interactedObjects.Add(proximate);
+                            if (!succeeded)
+                                PLog.Warn<GRPLITLogger>(
+                                    $"[InteractibleManager,HandUpdate], proximate already in {hand} interactedObjects");
+                        }
+
                         proximate.SetState(GRPLInteractionState.Interacted);
+                    }
                 }
                 else if (proximate.State == GRPLInteractionState.Interacted)
+                {
                     proximate.SetState(GRPLInteractionState.Proximate);
+                    interactedObjects.Remove(proximate);
+                }
+            }
+        }
+
+        private HashSet<GRPLInteractable> GetInteractedObjectsFromHand(RhinoxHand hand)
+        {
+            switch (hand)
+            {
+                case RhinoxHand.Left:
+                    return _leftInteractedProximates;
+                case RhinoxHand.Right:
+                    return _rightInteractedProximates;
+                case RhinoxHand.Invalid:
+                default:
+                    PLog.Error<GRPLITLogger>(
+                        $"[InteractibleManager,GetInteractedObjectsFromHand], function called with invalid hand {hand}");
+                    return new HashSet<GRPLInteractable>();
             }
         }
 
@@ -154,13 +194,19 @@ namespace Rhinox.XR.Grapple.It
         private IEnumerable<GRPLInteractable> DetectProximates(RhinoxHand hand, Vector3 referenceJointPos)
         {
             List<GRPLInteractable> currentProximates;
+            List<GRPLInteractable> otherHandProximates;
+            HashSet<GRPLInteractable> currentHandInteractedObjects;
             switch (hand)
             {
                 case RhinoxHand.Left:
                     currentProximates = _leftHandProximates;
+                    otherHandProximates = _rightHandProximates;
+                    currentHandInteractedObjects = _leftInteractedProximates;
                     break;
                 case RhinoxHand.Right:
                     currentProximates = _rightHandProximates;
+                    otherHandProximates = _leftHandProximates;
+                    currentHandInteractedObjects = _rightInteractedProximates;
                     break;
                 case RhinoxHand.Invalid:
                 default:
@@ -177,8 +223,7 @@ namespace Rhinox.XR.Grapple.It
                 if (interactable.State == GRPLInteractionState.Disabled)
                     continue;
 
-
-                // Calculate the vector from th joint to the interactable
+                // Calculate the vector from the joint to the interactable
                 Vector3 fromJointToInteractable = interactable.transform.position - referenceJointPos;
 
                 // Calculate the distance from the interactable to the reference pos
@@ -198,7 +243,7 @@ namespace Rhinox.XR.Grapple.It
                 }
 
                 // Find the new proximate at the furthest distance
-                var furthestKey = newProximateInteractables.Keys.Max();
+                float furthestKey = newProximateInteractables.Keys.Max();
 
                 // If the new square distance is smaller than that distance
                 if (furthestKey > sqrDistance)
@@ -229,34 +274,46 @@ namespace Rhinox.XR.Grapple.It
                 group.FilterImpossibleInteractables(ref currentProximates);
             }
 
-            CleanupProximatesExitingProximity(hand, previousProximates, currentProximates);
+            CleanupProximatesExitingProximity(hand, previousProximates, currentProximates, otherHandProximates,
+                currentHandInteractedObjects);
 
             return currentProximates;
         }
 
         /// <summary>
-        /// Detect which proximates are not valid anymore. Invokes the corresponding events for those and sets their state to active
+        /// Detect which proximates are not valid anymore. Invokes the corresponding events for those and sets their state to active. <br />
+        /// Proximates are not valid anymore if they are not in the currentProximates list. The state of the proximate is not changed if the otherHandProximates contains it.
         /// </summary>
-        /// <param name="hand"></param>
+        /// <param name="hand">The current hand</param>
         /// <param name="previousProximates">An IEnumerable holding the proximates from the last check</param>
-        /// <param name="currentProximates">An IEnumerable list holding the proximates for this check</param>
-        private void CleanupProximatesExitingProximity(RhinoxHand hand, IEnumerable<GRPLInteractable> previousProximates,
-            ICollection<GRPLInteractable> currentProximates)
+        /// <param name="currentProximates">An ICollection list holding the proximates for this check</param>
+        /// <param name="otherHandProximates">An ICollection holding the current proximates of the other hand</param>
+        /// <param name="currentHandInteractedObjects">An ICollection holding the current interacted objects of the current hand</param>
+        private void CleanupProximatesExitingProximity(RhinoxHand hand,
+            IEnumerable<GRPLInteractable> previousProximates,
+            ICollection<GRPLInteractable> currentProximates, ICollection<GRPLInteractable> otherHandProximates,
+            ICollection<GRPLInteractable> currentHandInteractedObjects)
         {
             // Detect which proximates are not valid anymore
             // Do this by selecting all proximates in previousProximates that the currentProximates does not contain
-            var stoppedProximates = previousProximates.Where(x => currentProximates.Contains(x) == false);
-            foreach (var proximate in stoppedProximates)
-            {
-                // TODO: If the proximate is still in proximity for the other hand, Ignore it
+            var stoppedProximates =
+                previousProximates.Where(x => currentProximates.Contains(x) == false);
+            var grplInteractables = stoppedProximates as GRPLInteractable[] ?? stoppedProximates.ToArray();
 
+            foreach (var proximate in grplInteractables)
+            {
                 if (!proximate.ShouldPerformInteractCheck)
                 {
                     proximate.ShouldPerformInteractCheck = true;
                     InteractibleLeftProximity?.Invoke(hand, proximate);
                 }
 
-                proximate.SetState(GRPLInteractionState.Active);
+                // If the proximate was interacting with the hand, remove it from the list
+                if (currentHandInteractedObjects.Contains(proximate))
+                    currentHandInteractedObjects.Remove(proximate);
+
+                if (!otherHandProximates.Contains(proximate))
+                    proximate.SetState(GRPLInteractionState.Active);
             }
         }
 
@@ -276,13 +333,19 @@ namespace Rhinox.XR.Grapple.It
         private void OnTrackingLost(RhinoxHand hand)
         {
             List<GRPLInteractable> proximates;
+            List<GRPLInteractable> otherHandProximates;
+            HashSet<GRPLInteractable> currentHandInteractedObjects;
             switch (hand)
             {
                 case RhinoxHand.Left:
                     proximates = _leftHandProximates;
+                    otherHandProximates = _rightHandProximates;
+                    currentHandInteractedObjects = _leftInteractedProximates;
                     break;
                 case RhinoxHand.Right:
                     proximates = _rightHandProximates;
+                    otherHandProximates = _leftHandProximates;
+                    currentHandInteractedObjects = _rightInteractedProximates;
                     break;
                 case RhinoxHand.Invalid:
                 default:
@@ -291,10 +354,8 @@ namespace Rhinox.XR.Grapple.It
                     return;
             }
 
-            foreach (var proximate in proximates)
-            {
-                proximate.SetState(GRPLInteractionState.Active);
-            }
+            CleanupProximatesExitingProximity(hand, proximates, new List<GRPLInteractable>(),
+                otherHandProximates, currentHandInteractedObjects);
 
             proximates.Clear();
         }
