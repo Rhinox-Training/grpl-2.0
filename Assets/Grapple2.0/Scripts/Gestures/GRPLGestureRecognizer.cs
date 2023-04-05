@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using Rhinox.Perceptor;
-using Unity.Plastic.Newtonsoft.Json.Serialization;
 using UnityEngine.InputSystem;
 
 namespace Rhinox.XR.Grapple

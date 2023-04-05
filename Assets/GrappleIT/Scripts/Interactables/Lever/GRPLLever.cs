@@ -3,9 +3,10 @@ using UnityEngine.XR.Hands;
 using Rhinox.XR.Grapple.It;
 using Rhinox.XR.Grapple;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using Rhinox.Lightspeed;
+using Rhinox.Perceptor;
+using UnityEditor;
 
 #if UNITY_EDITOR
 using Rhinox.GUIUtils.Editor;
@@ -14,8 +15,9 @@ using Rhinox.GUIUtils.Editor;
 public class GRPLLever : GRPLInteractable
 {
     [Space(5)] [Header("Lever parameters")] [SerializeField]
-    private Transform _stemTransform;
+    private Transform _baseTransform;
 
+    [SerializeField] private Transform _stemTransform;
     [SerializeField] private Transform _handleTransform;
 
     [Header("Grab parameters")] [SerializeField]
@@ -24,6 +26,16 @@ public class GRPLLever : GRPLInteractable
     [SerializeField] private float _grabRadius = .1f;
 
     private GRPLGestureRecognizer _gestureRecognizer;
+    private RhinoxJoint _currentInteractJoint;
+
+    private Vector3 _baseToHandle;
+    private Vector3 _baseToProjJoint;
+
+    private Vector3 _initialHandlePos;
+    private Vector3 _initialHandleRot;
+
+    //DEBUG
+    private Vector3 _projectedPos;
 
     private void Awake()
     {
@@ -33,6 +45,10 @@ public class GRPLLever : GRPLInteractable
 
         // Link to gesture recognizer
         GRPLGestureRecognizer.GestureRecognizerGlobalInitialized += OnGestureRecognizerGlobalInitialized;
+
+        // Set initial state
+        _initialHandlePos = _handleTransform.position;
+        _initialHandleRot = _handleTransform.rotation.eulerAngles;
     }
 
     /// <summary>
@@ -45,6 +61,47 @@ public class GRPLLever : GRPLInteractable
         _gestureRecognizer = obj;
     }
 
+    private void Update()
+    {
+        if (State != GRPLInteractionState.Interacted)
+            return;
+
+        if (_currentInteractJoint == null)
+            return;
+
+        Vector3 basePos = _baseTransform.position;
+
+        // Project the joint on the lever plane
+        Vector3 projectedPos =
+            _currentInteractJoint.JointPosition.ProjectOnPlaneAndTranslate(basePos, _baseTransform.right);
+        _projectedPos = projectedPos;
+        
+        // If the projected position is behind the lever, return
+        if(!InteractableMathUtils.IsPositionInFrontOfPlane(projectedPos, _baseTransform.position, _baseTransform.forward))
+            return;
+        
+        // Calculate vector from the base to the projected joint
+        Vector3 baseToJoint = projectedPos - basePos;
+        _baseToProjJoint = baseToJoint;
+
+        // Calculate the vector from the base to the handle
+        Vector3 baseToHandle = _handleTransform.position - basePos;
+        _baseToHandle = baseToHandle;
+
+        // Calculate the vector from the base to the initial handle pos
+        Vector3 baseToInitialHandle = _initialHandlePos - basePos;
+
+        // Calculate the angle between the two vectors
+        // Vector3.Angle return an angle in [0;180] degrees
+        float angle = Vector3.Angle(baseToInitialHandle, baseToJoint);
+        
+        // Set the final rotation
+        Quaternion newRot = Quaternion.identity;
+        newRot.eulerAngles = _initialHandleRot + new Vector3(angle, 0, 0);
+
+        _stemTransform.rotation = newRot;
+    }
+    
     public override Vector3 GetReferencePoint()
     {
         return _handleTransform.position;
@@ -68,11 +125,17 @@ public class GRPLLever : GRPLInteractable
 
         if (!_gestureRecognizer.WasRecognizedGestureStartedThisFrame(hand))
             return false;
-        
+
         // Return whether the interact joint is in range
         float jointDistSq = joint.JointPosition.SqrDistanceTo(_handleTransform.position);
-        
-        return (jointDistSq < _grabRadius * _grabRadius);
+
+        if (jointDistSq < _grabRadius * _grabRadius)
+        {
+            _currentInteractJoint = joint;
+            return true;
+        }
+
+        return false;
     }
 
     public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint joint)
@@ -86,30 +149,44 @@ public class GRPLLever : GRPLInteractable
     private void OnDrawGizmos()
     {
         Transform transform1 = transform;
-        Vector3 position = transform1.position;
-        Vector3 position1 = _handleTransform.position;
+        Vector3 basePos = _baseTransform.position;
+        Vector3 handlePos = _handleTransform.position;
 
-        Vector3 direction = position - position1;
+        Vector3 direction = handlePos - basePos;
         direction.Normalize();
+        Gizmos.DrawSphere(basePos, .01f);
 
         // Calculate the distance
-        float distance = Vector3.Distance(position, position1);
+        float distance = Vector3.Distance(basePos, handlePos);
 
-        // Debug.Log(transform1.up);
-        Handles.DrawWireArc(position, transform1.forward, direction, 180, distance);
+        Handles.DrawWireArc(basePos, transform1.right, direction, 180, distance);
 
         using (new eUtility.GizmoColor(Color.green))
         {
             // Draw lever begin
-            Vector3 beginPos = position - direction * distance;
+            Vector3 beginPos = basePos + direction * distance;
+            Handles.Label(beginPos, "Arc begin");
             Gizmos.DrawSphere(beginPos, .01f);
         }
 
         using (new eUtility.GizmoColor(Color.red))
         {
             // Draw lever end
-            Vector3 endPos = position + direction * distance;
-            Gizmos.DrawSphere(endPos, .01f);
+            Vector3 endPos = basePos - direction * distance;
+            Handles.Label(endPos, "Arc end");
+            Gizmos.DrawSphere(endPos, .005f);
+        }
+
+        using (new eUtility.GizmoColor(Color.black))
+        {
+            // Draw the direction
+            Gizmos.DrawRay(basePos, _baseToHandle);
+        }
+
+        using (new eUtility.GizmoColor(Color.blue))
+        {
+            // Draw the direction
+            Gizmos.DrawRay(basePos, _baseToProjJoint);
         }
     }
 #endif

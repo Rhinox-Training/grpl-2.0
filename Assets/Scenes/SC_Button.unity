@@ -307,7 +307,6 @@ MonoBehaviour:
   _proximateJointID: 12
   _interactibleGroups:
   - {fileID: 1110593844}
-  - {fileID: 1110593844}
 --- !u!1 &42276285
 GameObject:
   m_ObjectHideFlags: 0
