@@ -26,9 +26,12 @@ namespace Rhinox.XR.Grapple.It
         protected bool _canHandGrabL = false;
         protected bool _canHandGrabR = false;
 
+
         private Bounds _bounds;
-        private static RhinoxGesture _grabGesture;
+        private RhinoxGesture _grabGesture;
         private static GRPLJointManager _jointManager;
+
+        private const float _boundsIncreasment = 1.35f;
 
         protected override void OnEnable()
         {
@@ -100,7 +103,7 @@ namespace Rhinox.XR.Grapple.It
             _bounds = gameObject.GetObjectBounds();
 
             //TODO: Refactor this
-            _bounds.extents *= 1.25f;//increase bouds a bit with magic number
+            _bounds.extents *= _boundsIncreasment;//increase bouds a bit with magic number
 
             if (TryGetComponent(out _rigidBody))
             {
@@ -115,9 +118,7 @@ namespace Rhinox.XR.Grapple.It
         private void Update()
         {
             _bounds = gameObject.GetObjectBounds();
-
-            //    .center = transform.position;
-            //_bounds.extents = trans
+            _bounds.extents *= _boundsIncreasment;
         }
 
         public void TryGrab(RhinoxHand hand)
@@ -133,7 +134,7 @@ namespace Rhinox.XR.Grapple.It
             if (_currentHandHolding != hand)
             {
                 //if trying to swap hands
-                if (hand == _currentHandHolding.GetInverse())
+                if (_currentHandHolding != RhinoxHand.Invalid && hand == _currentHandHolding.GetInverse())
                 {
                     DropInternal();
                 }
@@ -213,55 +214,17 @@ namespace Rhinox.XR.Grapple.It
             if (!IsGrabbed)
                 return false;
             else
+            {
+
+                //PLog.Info<GRPLITLogger>("GRABBED", this);
                 return true;
+            }
         }
 
         public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint)
         {
-            outJoint = joints.FirstOrDefault(x => x.JointID == XRHandJointID.MiddleMetacarpal);
+            outJoint = joints.FirstOrDefault(x => x.JointID == XRHandJointID.MiddleProximal);
             return outJoint != null;
-
-
-
-
-
-            //throw new System.NotImplementedException();
-            //joint = null;
-            //return false;
-
-            //outJoint = null;
-            //float closestDist = float.MaxValue;
-
-
-            //foreach (var joint in joints)
-            //{
-            //    if (joint.JointID == XRHandJointID.Palm)
-            //    {
-            //        outJoint = joint;
-            //        return true;
-            //    }
-            //}
-
-            //var normalPos = ButtonBaseTransform.position;
-            //var normal = ButtonBaseTransform.forward;
-            //foreach (var joint in joints)
-            //{
-            //    if (!InteractableMathUtils.IsPlaneProjectedPointInBounds(joint.JointPosition,
-            //            normalPos, normal, PressBounds))
-            //        continue;
-
-            //    var distance =
-
-
-            //        InteractableMathUtils.GetProjectedDistanceFromPointOnNormal(joint.JointPosition, normalPos, normal);
-            //    if (distance < closestDist)
-            //    {
-            //        outJoint = joint;
-            //        closestDist = distance;
-            //    }
-            //}
-
-            //return outJoint != null;
         }
 
         private void OnDrawGizmos()

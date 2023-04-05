@@ -656,7 +656,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 605976610}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.85, z: 0.295}
+  m_LocalPosition: {x: 0, y: 0.85, z: 0.799}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1363,6 +1363,18 @@ PrefabInstance:
     - target: {fileID: 1580037713721437765, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: ImportOnPlay
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: ImportFilePath
+      value: C:/Users/Rhinox/UnityProjects/grpl-2.0/Assets/GrappleIT/Resources/StandardGestures.json
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: OverwriteGesturesOnImport
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437768, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: _enableSocketing
@@ -2213,7 +2225,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Instance: {fileID: 0}
-  _maxAmountOfProximatesPerHand: 3
+  _maxAmountOfProximatesPerHand: 1
   _proximateRadius: 1
   _proximateJointID: 12
   _interactibleGroups: []
@@ -2259,7 +2271,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1959799570}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.3, y: 0, z: 0}
+  m_LocalPosition: {x: 0.3, y: 0, z: -0.596}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

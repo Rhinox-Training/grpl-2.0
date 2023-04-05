@@ -102,7 +102,10 @@ namespace Rhinox.XR.Grapple
         private void Awake()
         {
             _leftHandParent = new GameObject("Left Hand");
+            _leftHandParent.transform.SetParent(transform);
             _rightHandParent = new GameObject("Right Hand");
+            _rightHandParent.transform.SetParent(transform);
+
 
             InitializeHandJoints();
         }
@@ -492,7 +495,10 @@ namespace Rhinox.XR.Grapple
                 return;
 
             if (updateSuccessFlags.HasFlag(XRHandSubsystem.UpdateSuccessFlags.LeftHandRootPose))
+            {
                 UpdateRootPose(RhinoxHand.Left);
+                _leftHandParent.transform.SetLocalPositionAndRotation(_leftHandJoints[0].JointPosition, _leftHandJoints[0].JointRotation);
+            }
 
             if (updateSuccessFlags.HasFlag(XRHandSubsystem.UpdateSuccessFlags.LeftHandJoints))
             {
@@ -505,7 +511,10 @@ namespace Rhinox.XR.Grapple
             }
 
             if (updateSuccessFlags.HasFlag(XRHandSubsystem.UpdateSuccessFlags.RightHandRootPose))
+            {
                 UpdateRootPose(RhinoxHand.Right);
+                _rightHandParent.transform.SetLocalPositionAndRotation(_rightHandJoints[0].JointPosition, _rightHandJoints[0].JointRotation);
+            }
 
             if (updateSuccessFlags.HasFlag(XRHandSubsystem.UpdateSuccessFlags.RightHandJoints))
                 UpdateJoints(RhinoxHand.Right);
@@ -533,7 +542,7 @@ namespace Rhinox.XR.Grapple
                         var worldPose = rootPose.GetTransformedBy(new Pose(transform1.position, transform1.rotation));
 
                         _leftHandJoints[0].JointPosition = worldPose.position;
-                        _leftHandJoints[0].JointRotation = worldPose.rotation;//transform.rotation;//rootPose.rotation;// * transform.rotation;
+                        _leftHandJoints[0].JointRotation = worldPose.rotation;
                         _leftHandJoints[0].Forward = rootPose.forward;
 
                         if (_subsystem.leftHand.GetJoint(XRHandJointID.Wrist).TryGetRadius(out var radius))
