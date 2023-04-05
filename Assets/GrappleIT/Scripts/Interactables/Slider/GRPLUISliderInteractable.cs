@@ -2,6 +2,7 @@ using Rhinox.GUIUtils;
 using Rhinox.Lightspeed;
 using Rhinox.Perceptor;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -17,13 +18,21 @@ namespace Rhinox.XR.Grapple.It
     /// <dependencies>Unity's built in<see cref="Slider"/></dependencies>
     public class GRPLUISliderInteractable : GRPLInteractable
     {
+        [SerializeField] float _fadeInDuration = .15f;
+        [SerializeField] float _fadeOutDuration = .5f;
+
         public float SliderValue => _slider.value;
         public event Action<float> OnValueUpdate;
 
         private Bounds _pressBounds;
         private Slider _slider;
         private Vector3[] _corners = new Vector3[4];
-        private Vector3 _slidDir = Vector3.zero;
+        private Vector3 _slidDirHor = Vector3.zero;
+        private float _sliderWitdth = 0f;
+        private bool _boolToBeNamed = false;
+
+        private Image _handleImage = null;
+        private RhinoxJoint _previousInteractJoint;
 
         protected override void Initialize()
         {
@@ -33,7 +42,24 @@ namespace Rhinox.XR.Grapple.It
 
             _slider.direction = Slider.Direction.LeftToRight;
 
+            if (!_slider.handleRect.GetChild(0).TryGetComponent(out _handleImage))
+                PLog.Error<GRPLITLogger>($"[GRPLUISliderInteractable:Initialize], " +
+                    $"Slider Handle does not have an image Component", this);
+
+            //force setting handle image to invisible on start
+            _handleImage.color = new Color(_handleImage.color.r,
+                                           _handleImage.color.g,
+                                           _handleImage.color.b,
+                                           0f);
+
+            CalculateBounds();
+        }
+
+        private void CalculateBounds()
+        {
             var trans = (RectTransform)transform;
+            _sliderWitdth = trans.sizeDelta.x;
+
             if (trans != null)
             {
                 Vector3[] cornersLocal = new Vector3[4];
@@ -60,11 +86,11 @@ namespace Rhinox.XR.Grapple.It
                     extents = new Vector3(maxX - minX, maxY - minY, maxZ - minZ)
                 };
 
-                _slidDir = _corners[3] - _corners[0];
+                _slidDirHor = _corners[3] - _corners[0];
             }
         }
 
-        public override bool CheckForInteraction(RhinoxJoint joint)
+        public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
             if (!gameObject.activeInHierarchy)
                 return false;
@@ -92,15 +118,18 @@ namespace Rhinox.XR.Grapple.It
 
             if (pokeDistance <= 0.005f)
             {
-                var val = CalculateSliderValueFromSliderDirection(sliderPos, sliderForward, joint.JointPosition);
-                PLog.Info<GRPLITLogger>($"SLiderVal: {val}");
+                var val = CalculateSliderValueFromSliderDirection(joint.JointPosition);
                 _slider.value = val;
                 OnValueUpdate?.Invoke(_slider.value);
+
+                _previousInteractJoint = joint;
                 return true;
             }
             else
                 return false;
         }
+
+        //protected override 
 
         /// <summary>
         /// Calculates the slider value (0f->1f) range depending on the <see cref="SliderDirections"/> 
@@ -109,12 +138,15 @@ namespace Rhinox.XR.Grapple.It
         /// <param name="sliderForward">The forward vector of the slider</param>
         /// <param name="jointPos">The position of the joint that is trying to interact with the slider</param>
         /// <returns></returns>
-        private float CalculateSliderValueFromSliderDirection(Vector3 sliderPos, Vector3 sliderForward, Vector3 jointPos)
+        private float CalculateSliderValueFromSliderDirection(Vector3 jointPos)
         {
             Vector3 jointDir = jointPos - _corners[0];
+            Vector3 projectedjoint = Vector3.Project(jointDir, _slidDirHor);
 
-            Vector3 projectedjoint = Vector3.Project(jointDir, _slidDir);
-            return projectedjoint.magnitude;
+            //if (!_boolToBeNamed)
+            _slider.handleRect.GetChild(0).transform.SetPosition(jointPos.x, jointPos.y);
+
+            return projectedjoint.magnitude / _sliderWitdth;
         }
 
         public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint)
@@ -142,13 +174,74 @@ namespace Rhinox.XR.Grapple.It
             return outJoint != null;
         }
 
+        public override bool ShouldInteractionCheckStop()
+        {
+            if (State != GRPLInteractionState.Interacted)
+                return false;
+
+            // Check if the joint pos is in front of the plane that is defined by the button
+            if (!InteractableMathUtils.IsPositionInFrontOfPlane(_previousInteractJoint.JointPosition, 
+                                                                transform.position, -transform.forward))
+            {
+                ShouldPerformInteractCheck = false;
+
+                var val = CalculateSliderValueFromSliderDirection(_previousInteractJoint.JointPosition);
+                _slider.value = val;
+                OnValueUpdate?.Invoke(_slider.value);
+
+                return true;
+            }
+
+            ShouldPerformInteractCheck = true;
+            return false;
+        }
+
+        protected override void InteractStarted()
+        {
+            base.InteractStarted();
+
+            _boolToBeNamed = true;
+            StartCoroutine(Fade());
+        }
+
+        protected override void InteractStopped()
+        {
+            base.InteractStopped();
+
+            _boolToBeNamed = false;
+        }
+
+        private IEnumerator Fade(bool isFadeIn = true)
+        {
+            Color initialColor = _handleImage.color;
+            Color targetColor;
+
+            if (isFadeIn)
+                targetColor = new Color(initialColor.r, initialColor.g, initialColor.b, 1f);
+            else
+                targetColor = new Color(initialColor.r, initialColor.g, initialColor.b, 0f);
+
+            float elapsedTime = 0f;
+            float fadeDuration = isFadeIn ? _fadeInDuration : _fadeOutDuration;
+
+            while (elapsedTime <= fadeDuration)
+            {
+                elapsedTime += Time.deltaTime;
+                _handleImage.color = Color.Lerp(initialColor, targetColor, elapsedTime / fadeDuration);
+                yield return null;
+            }
+
+            if (isFadeIn)
+                StartCoroutine(Fade(false));
+        }
+
 
         private void OnDrawGizmos()
         {
-            Gizmos.DrawWireCube(_pressBounds.center, _pressBounds.extents);
-            GUIContentHelper.PushColor(new Color(1f, 0f, 1f, 1f));
-            Gizmos.DrawRay(_pressBounds.center, -transform.forward);
-            GUIContentHelper.PopColor();
+            //Gizmos.DrawWireCube(_pressBounds.center, _pressBounds.extents);
+            //GUIContentHelper.PushColor(new Color(1f, 0f, 1f, 1f));
+            //Gizmos.DrawRay(_pressBounds.center, -transform.forward);
+            //GUIContentHelper.PopColor();
         }
     }
 }

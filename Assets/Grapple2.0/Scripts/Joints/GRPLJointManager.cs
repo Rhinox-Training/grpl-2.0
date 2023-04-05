@@ -64,6 +64,8 @@ namespace Rhinox.XR.Grapple
         public RhinoxJointCapsule[] LeftHandCapsules => _leftHandCapsules;
         public RhinoxJointCapsule[] RightHandCapsules => _rightHandCapsules;
 
+        public GameObject LeftHandParentObj => _leftHandParent;
+        public GameObject RightHandParentObj => _rightHandParent;
 
         private bool _jointCollisionsEnabled = true;
 
@@ -99,6 +101,9 @@ namespace Rhinox.XR.Grapple
         //======================
         private void Awake()
         {
+            _leftHandParent = new GameObject("Left Hand");
+            _rightHandParent = new GameObject("Right Hand");
+
             InitializeHandJoints();
         }
 
@@ -219,7 +224,7 @@ namespace Rhinox.XR.Grapple
                             break;
                         _leftHandCollidersParent = new GameObject($"{handedness}_Capsules");
                         Transform parentTransform = _leftHandCollidersParent.transform;
-                        parentTransform.SetParent(transform, false);
+                        parentTransform.SetParent(_leftHandParent.transform, false);
                         parentTransform.localPosition = Vector3.zero;
                         parentTransform.localRotation = Quaternion.identity;
                         break;
@@ -230,15 +235,15 @@ namespace Rhinox.XR.Grapple
                             break;
                         _rightHandCollidersParent = new GameObject($"{handedness}_Capsules");
                         Transform parentTransform = _rightHandCollidersParent.transform;
-                        parentTransform.SetParent(transform, false);
+                        parentTransform.SetParent(_rightHandParent.transform, false);
                         parentTransform.localPosition = Vector3.zero;
                         parentTransform.localRotation = Quaternion.identity;
                         break;
                     }
                 default:
                     PLog.Error<GrappleLogger>(
-                        $"{nameof(GRPLJointManager)} - {nameof(InitializeJointCapsules)}" +
-                        $", function called with incorrect rhinoxHand {handedness}. Only left or right supported!", this);
+                        $"[GRPLJointManager:InitializeJointCapsules], " +
+                        $"function called with incorrect rhinoxHand {handedness}. Only left or right supported!", this);
                     return;
             }
 

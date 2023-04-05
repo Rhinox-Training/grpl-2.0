@@ -1,4 +1,3 @@
-using System;
 using Rhinox.Perceptor;
 
 namespace Rhinox.XR.Grapple
