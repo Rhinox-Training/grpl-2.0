@@ -113,7 +113,7 @@ namespace Rhinox.XR.Grapple.It
                     continue;
 
                 // Check if an interaction is happening
-                bool isInteracted = proximate.CheckForInteraction(interactJoint);
+                bool isInteracted = proximate.CheckForInteraction(interactJoint, hand);
 
                 if (isInteracted)
                 {

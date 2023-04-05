@@ -1,9 +1,7 @@
 using Rhinox.GUIUtils;
-using Rhinox.Lightspeed;
 using Rhinox.Perceptor;
 using System;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -64,7 +62,7 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
-        public override bool CheckForInteraction(RhinoxJoint joint)
+        public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
             if (!gameObject.activeInHierarchy)
                 return false;

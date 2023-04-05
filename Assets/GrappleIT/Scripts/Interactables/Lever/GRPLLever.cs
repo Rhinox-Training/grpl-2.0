@@ -5,6 +5,7 @@ using Rhinox.XR.Grapple;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using Rhinox.Lightspeed;
 
 #if UNITY_EDITOR
 using Rhinox.GUIUtils.Editor;
@@ -17,6 +18,12 @@ public class GRPLLever : GRPLInteractable
 
     [SerializeField] private Transform _handleTransform;
 
+    [Header("Grab parameters")] [SerializeField]
+    private string _grabGestureName = "Grab";
+
+    [SerializeField] private float _grabRadius = .1f;
+
+    private GRPLGestureRecognizer _gestureRecognizer;
 
     private void Awake()
     {
@@ -25,6 +32,17 @@ public class GRPLLever : GRPLInteractable
         ForcedInteractJointID = XRHandJointID.Palm;
 
         // Link to gesture recognizer
+        GRPLGestureRecognizer.GestureRecognizerGlobalInitialized += OnGestureRecognizerGlobalInitialized;
+    }
+
+    /// <summary>
+    /// Event reaction to the globalInitialized event of the Gesture Recognizer.<br />
+    /// Saves the recognizer in a private field.
+    /// </summary>
+    /// <param name="obj"></param>
+    private void OnGestureRecognizerGlobalInitialized(GRPLGestureRecognizer obj)
+    {
+        _gestureRecognizer = obj;
     }
 
     public override Vector3 GetReferencePoint()
@@ -32,24 +50,36 @@ public class GRPLLever : GRPLInteractable
         return _handleTransform.position;
     }
 
-    public override bool CheckForInteraction(RhinoxJoint joint)
+    public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
     {
+        // Get the current gesture from the target hand
+        RhinoxGesture gestureOnHand = _gestureRecognizer.GetGestureOnHand(hand);
+
+        // If there is currently no gesture on the target hand
+        if (gestureOnHand == null)
+            return false;
+
+        //If the gesture does not have the target name, return false
+        if (!gestureOnHand.Name.Equals(_grabGestureName))
+            return false;
+
+        if (State == GRPLInteractionState.Interacted)
+            return true;
+
+        if (!_gestureRecognizer.WasRecognizedGestureStartedThisFrame(hand))
+            return false;
         
-        // 1. Check if there is currently a grab gesture for this hand
-        // a. If there is not return false and clean up the interacted state, if needed
-        // 2. Check if the gesture was started this frame
-        // a. If not, return true
-        // 3. Check if the hand is in interactible range
-        // Start the interaction
+        // Return whether the interact joint is in range
+        float jointDistSq = joint.JointPosition.SqrDistanceTo(_handleTransform.position);
         
-        return false;
+        return (jointDistSq < _grabRadius * _grabRadius);
     }
 
     public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint joint)
     {
         joint = joints.FirstOrDefault(x => x.JointID == ForcedInteractJointID);
 
-        return joint == null;
+        return joint != null;
     }
 
 #if UNITY_EDITOR

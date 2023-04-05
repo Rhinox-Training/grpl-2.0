@@ -555,6 +555,8 @@ MonoBehaviour:
   ForcedInteractJointID: 11
   _stemTransform: {fileID: 653855579}
   _handleTransform: {fileID: 887746599}
+  _grabGestureName: Grab
+  _grabRadius: 0.15
 --- !u!1 &653855578
 GameObject:
   m_ObjectHideFlags: 0
@@ -1365,6 +1367,134 @@ PrefabInstance:
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: ImportOnPlay
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: ImportFilePath
+      value: C:/Users/TEST SSD/Desktop/Fork/grpl-2.0/Assets/GrappleIT/Resources/StandardGestures.json
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].Name
+      value: Grab
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].DistanceThreshold
+      value: 0.055
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].RotationThreshold
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.size
+      value: 26
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[1]
+      value: 0.046847135
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[2]
+      value: 0.04902326
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[3]
+      value: 0.08011278
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[4]
+      value: 0.109527916
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[5]
+      value: 0.123119056
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[6]
+      value: 0.042525318
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[7]
+      value: 0.09704018
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[8]
+      value: 0.12182287
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[9]
+      value: 0.10587644
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[10]
+      value: 0.08486665
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[11]
+      value: 0.036145646
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[12]
+      value: 0.09369434
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[13]
+      value: 0.11963515
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[14]
+      value: 0.10123547
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[15]
+      value: 0.07785955
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[16]
+      value: 0.03754243
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[17]
+      value: 0.08873682
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[18]
+      value: 0.111480586
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[19]
+      value: 0.09565899
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[20]
+      value: 0.072311714
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[21]
+      value: 0.041292183
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[22]
+      value: 0.0847006
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[23]
+      value: 0.103030264
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[24]
+      value: 0.09374117
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].JointData.Array.data[25]
+      value: 0.074214384
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437769, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: m_Name

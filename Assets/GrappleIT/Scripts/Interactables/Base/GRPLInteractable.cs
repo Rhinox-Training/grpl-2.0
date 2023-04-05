@@ -36,9 +36,7 @@ namespace Rhinox.XR.Grapple.It
         public GRPLInteractionState State => _state;
         
         public bool ShouldPerformInteractCheck { set; get; } = true;
-        
-        
-        
+
         private void Start()
         {
             Initialize();
@@ -106,8 +104,9 @@ namespace Rhinox.XR.Grapple.It
         /// Check whether the given joint activates the interaction for this interactable.
         /// </summary>
         /// <param name="joint">The joint to check with</param>
+        /// <param name="hand">The hand on which this joint is located</param>
         /// <returns>Whether the interaction is now happening</returns>
-        public abstract bool CheckForInteraction(RhinoxJoint joint);
+        public abstract bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand);
 
         /// <summary>
         /// This function defines which joint should get used when checking for interactions.  <br />
