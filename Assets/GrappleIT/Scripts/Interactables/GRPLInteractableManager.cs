@@ -17,7 +17,7 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField] private int _maxAmountOfProximatesPerHand = 3;
         [SerializeField] private float _proximateRadius = 1f;
         [SerializeField] private XRHandJointID _proximateJointID = XRHandJointID.MiddleMetacarpal;
-        
+
         [Header("Interactible Groups")]
         [SerializeField] private List<GRPLInteractibleGroup> _interactibleGroups;
 
@@ -29,7 +29,7 @@ namespace Rhinox.XR.Grapple.It
         public event Action<RhinoxHand, GRPLInteractable> InteractibleInteractionCheckPaused;
         public event Action<RhinoxHand, GRPLInteractable> InteractibleInteractionCheckResumed;
         public event Action<RhinoxHand, GRPLInteractable> InteractibleLeftProximity;
-        
+
         private GRPLJointManager _jointManager;
         private List<GRPLInteractable> _interactables = null;
 
@@ -113,7 +113,7 @@ namespace Rhinox.XR.Grapple.It
                     continue;
 
                 // Check if an interaction is happening
-                bool isInteracted = proximate.CheckForInteraction(interactJoint);
+                bool isInteracted = proximate.CheckForInteraction(interactJoint, hand);
 
                 if (isInteracted)
                 {

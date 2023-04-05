@@ -37,23 +37,23 @@ namespace Rhinox.XR.Grapple
             GRPLJointManager.GlobalInitialized += OnJointManagerInitialized;
 
             _leftHandRoot = new GameObject("Left Hand");
-            _leftHandRoot.transform.parent = _xrOrigin;
             InstantiateHand(RhinoxHand.Left, _leftJoints, _leftHandRoot.transform, _leftHandPrefab,
                 out _leftHandRenderer);
 
-
             _rightHandRoot = new GameObject("Right Hand");
-            _rightHandRoot.transform.parent = _xrOrigin;
             InstantiateHand(RhinoxHand.Right, _rightJoints, _rightHandRoot.transform, _rightHandPrefab,
                 out _rightHandRenderer);
         }
 
-        private void OnJointManagerInitialized(GRPLJointManager obj)
+        private void OnJointManagerInitialized(GRPLJointManager jointManager)
         {
-            _jointManager = obj;
+            _jointManager = jointManager;
             _jointManager.OnHandsUpdated += OnHandUpdated;
             _jointManager.TrackingAcquired += OnTrackingAcquired;
             _jointManager.TrackingLost += OnTrackingLost;
+
+            _leftHandRoot.transform.SetParent(_jointManager.LeftHandParentObj.transform, true);
+            _rightHandRoot.transform.SetParent(_jointManager.RightHandParentObj.transform, true);
         }
 
         private void InstantiateHand(RhinoxHand hand, List<GameObject> jointObjects, Transform parent,

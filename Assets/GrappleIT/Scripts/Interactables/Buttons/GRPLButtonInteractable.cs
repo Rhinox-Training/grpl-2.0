@@ -90,7 +90,7 @@ namespace Rhinox.XR.Grapple.It
         //-----------------------
         // INHERITED METHODS
         //-----------------------
-        public override bool CheckForInteraction(RhinoxJoint joint)
+        public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
             if (!gameObject.activeInHierarchy || _isOnCooldown)
                 return false;

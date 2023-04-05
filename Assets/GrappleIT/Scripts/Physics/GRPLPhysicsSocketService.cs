@@ -262,13 +262,13 @@ namespace Rhinox.XR.Grapple.It
                 //switch hand if the potential object is currently grabbed by the other hand
                 if (potentialGrabItem == grabbedItemOtherHand)
                 {
-                    grabbedItemOtherHand.GetComponent<GRPLGrabbableInteractable>().Dropped();
+                    grabbedItemOtherHand.GetComponent<GRPLGrabbableInteractable>().DropInternal();
                     OnObjectDropped.Invoke(hand, grabbedItemOtherHand);
                     OnGrabEnded.Invoke(hand);
                     grabbedItemOtherHand = null;
                 }
 
-                potentialGrabItem.GetComponent<GRPLGrabbableInteractable>().Grabbed(socket, hand);
+                potentialGrabItem.GetComponent<GRPLGrabbableInteractable>().GrabInternal(socket, hand);
 
                 grabbedItemCurrentHand = potentialGrabItem;
 
@@ -283,7 +283,7 @@ namespace Rhinox.XR.Grapple.It
             {
                 if (grabbedItemCurrentHand != grabbedItemOtherHand)
                 {
-                    grabbedItemCurrentHand.GetComponent<GRPLGrabbableInteractable>().Dropped();
+                    grabbedItemCurrentHand.GetComponent<GRPLGrabbableInteractable>().DropInternal();
 
                     OnObjectDropped.Invoke(hand, grabbedItemCurrentHand);
                     OnGrabEnded.Invoke(hand);

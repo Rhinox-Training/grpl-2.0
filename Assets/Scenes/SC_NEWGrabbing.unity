@@ -947,6 +947,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 278647feca54de64399c71acc931f0b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _proximateRadius: 0.5
+  _forceInteractibleJoint: 0
+  _forcedInteractJointID: 11
 --- !u!1001 &799506849
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -954,6 +957,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5210042141153954088, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
+      propertyPath: _drawDebug
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5210042141153954089, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
       propertyPath: m_Name
       value: Square button
@@ -1767,6 +1774,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e3a2c671fd548c4aa61ffd6add29af8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _proximateRadius: 0.5
+  _forceInteractibleJoint: 0
+  _forcedInteractJointID: 11
   Socket: {fileID: 2143812453}
 --- !u!54 &1711070354
 Rigidbody:
@@ -2153,6 +2163,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e3a2c671fd548c4aa61ffd6add29af8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _proximateRadius: 0.5
+  _forceInteractibleJoint: 0
+  _forcedInteractJointID: 11
   Socket: {fileID: 1370054200}
 --- !u!54 &1913588395
 Rigidbody:
@@ -2295,6 +2308,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 278647feca54de64399c71acc931f0b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _proximateRadius: 0.5
+  _forceInteractibleJoint: 0
+  _forcedInteractJointID: 11
 --- !u!1 &2009825737
 GameObject:
   m_ObjectHideFlags: 0
@@ -2833,6 +2849,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e3a2c671fd548c4aa61ffd6add29af8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _proximateRadius: 0.5
+  _forceInteractibleJoint: 0
+  _forcedInteractJointID: 11
   Socket: {fileID: 116190143229355883}
 --- !u!23 &6138866788402097585
 MeshRenderer:

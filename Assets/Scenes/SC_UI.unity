@@ -2489,7 +2489,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &631241997
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2553,6 +2553,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 070a6e3fc395a1c4899f5d8434a70048, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _proximateRadius: 0.5
+  _forceInteractibleJoint: 0
+  _forcedInteractJointID: 11
 --- !u!224 &631241999
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2574,7 +2577,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0.25, y: 0.05}
+  m_SizeDelta: {x: 0.5, y: 0.05}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &631242000
 Canvas:
@@ -3295,7 +3298,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0.476, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -4764,8 +4767,8 @@ RectTransform:
   m_Father: {fileID: 80143806}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.476, y: 0}
-  m_AnchorMax: {x: 0.476, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -6333,9 +6336,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2839de4b6f174444935da38fe4db858, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OverwriteGesturesOnImport: 0
   ImportOnPlay: 0
   ImportFilePath: C:/Users/TEST SSD/Desktop/Fork/grpl-2.0/Gestures/RecordedGestures.json
-  OverwriteGesturesOnImport: 0
   ExportOnDestroy: 0
   ExportFilePath: C:/Users/TEST SSD/Desktop/Fork/grpl-2.0/Gestures
   ExportFileName: ExportTest
@@ -6933,6 +6936,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ac7812c106125c4a87a301f554ab8f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _proximateRadius: 0.5
+  _forceInteractibleJoint: 0
+  _forcedInteractJointID: 11
   _drawDebug: 0
   _interactableBaseTransform: {fileID: 2080736830}
   _interactObject: {fileID: 1650147529}

@@ -179,6 +179,7 @@ namespace Rhinox.XR.Grapple
                         script.ImportFilePath != "" ? script.ImportFilePath : Application.dataPath, "json");
 
                     script.ReadGesturesFromJson(chosenFilePath);
+                    //serializedObject.ApplyModifiedProperties();
                 }
             }
         }

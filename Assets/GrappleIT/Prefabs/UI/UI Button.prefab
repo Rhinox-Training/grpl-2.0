@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 4117710422573361483}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: -0.00000004371139}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.04, y: 0.040000007, z: 0.040000007}
+  m_LocalScale: {x: 0.05, y: 0.05, z: 0.05}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 4117710423749119231}
@@ -126,7 +126,7 @@ Transform:
   m_GameObject: {fileID: 4117710423132112225}
   m_LocalRotation: {x: -0, y: 1, z: -0, w: -0.00000004371139}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.04, y: 0.04, z: 0.04}
+  m_LocalScale: {x: 0.05, y: 0.049999997, z: 0.049999997}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 4117710423380426880}
@@ -223,7 +223,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4117710423380426881}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: -0, z: 0.0171}
+  m_LocalPosition: {x: -0, y: -0, z: 0.02}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -255,9 +255,9 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4117710423721935802}
-  m_LocalRotation: {x: 0.000000011313343, y: 0.9659259, z: 0.25881907, w: -0.000000042221963}
-  m_LocalPosition: {x: -0.025929794, y: 0.07704258, z: -0.28029585}
-  m_LocalScale: {x: 1.4066001, y: 1.4066, z: 1.4066}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4117710423749119231}
@@ -277,11 +277,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ac7812c106125c4a87a301f554ab8f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _proximateRadius: 0.5
+  _forceInteractibleJoint: 0
+  _forcedInteractJointID: 11
   _drawDebug: 1
   _interactableBaseTransform: {fileID: 4117710423749119231}
   _interactObject: {fileID: 4117710423380426880}
+  _useInteractDelay: 1
+  _interactDelay: 0.25
   _selectStartPercentage: 0.25
-  _jointBehindButtonStopDelay: 5
 --- !u!1 &4117710423749119228
 GameObject:
   m_ObjectHideFlags: 0

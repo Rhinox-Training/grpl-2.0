@@ -1,5 +1,7 @@
 using Codice.ThemeImages;
 using Rhinox.Lightspeed;
+using Rhinox.Perceptor;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -9,8 +11,7 @@ namespace Rhinox.XR.Grapple.It
 {
     public class GRPLGrabbableInteractable : GRPLInteractable
     {
-
-        public bool IsGrabbed { get; protected set; }
+        public bool IsGrabbed { get; protected set; } = false;
 
         protected Transform _previousParentTransform = null;
         protected Rigidbody _rigidBody = null;
@@ -19,39 +20,78 @@ namespace Rhinox.XR.Grapple.It
         protected bool _hadGravity;
 
         protected bool _isValid = true;
+        protected RhinoxHand _currentHandHolding = RhinoxHand.Invalid;
+        //protected bool _canBeGrabbed = false;
+
+        protected bool _canHandGrabL = false;
+        protected bool _canHandGrabR = false;
 
         private Bounds _bounds;
-        private RhinoxGesture _grabGesture;
-
-        //protected override void Start()
-        //{
-        //    base.Start();
-
-        //    _bounds = gameObject.GetObjectBounds();
-
-        //    if (TryGetComponent(out _rigidBody))
-        //    {
-        //        _wasKinematic = _rigidBody.isKinematic;
-        //        _hadGravity = _rigidBody.useGravity;
-        //        _previousParentTransform = transform.parent;
-        //    }
-        //    else
-        //        _isValid = false;
-        //}
+        private static RhinoxGesture _grabGesture;
+        private static GRPLJointManager _jointManager;
 
         protected override void OnEnable()
         {
             base.OnEnable();
 
+            GRPLJointManager.GlobalInitialized += JointManagerInitialized;
+            GRPLGestureRecognizer.GlobalInitialized += GestureRecognizerInitialized;
 
+            if (_grabGesture != null)
+            {
+                _grabGesture.AddListenerOnRecognized(TryGrab);
+                _grabGesture.AddListenerOnUnRecognized(TryDrop);
+            }
         }
 
         protected override void OnDisable()
         {
             base.OnDisable();
 
+            GRPLJointManager.GlobalInitialized -= JointManagerInitialized;
+            GRPLGestureRecognizer.GlobalInitialized -= GestureRecognizerInitialized;
 
+            if (_grabGesture != null)
+            {
+                _grabGesture.RemoveListenerOnRecognized(TryGrab);
+                _grabGesture.RemoveListenerOnUnRecognized(TryDrop);
+            }
         }
+
+        private void JointManagerInitialized(GRPLJointManager jointManager)
+        {
+            if (_jointManager == null)
+                _jointManager = jointManager;
+        }
+
+        //getting the grab gesture and linking events
+        private void GestureRecognizerInitialized(GRPLGestureRecognizer gestureRecognizer)
+        {
+            if (_grabGesture == null)
+            {
+                _grabGesture = gestureRecognizer.Gestures.Find(x => x.Name == "Grab");
+                if (_grabGesture != null)
+                {
+                    _grabGesture.AddListenerOnRecognized(TryGrab);
+                    _grabGesture.AddListenerOnUnRecognized(TryDrop);
+                }
+            }
+            //else
+            //{
+            //    _grabGesture.AddListenerOnRecognized(TryGrab);
+            //    _grabGesture.AddListenerOnUnRecognized(TryDrop);
+            //}
+        }
+
+        //protected override void ProximityStarted()
+        //{
+        //    base.ProximityStarted();
+        //}
+
+        //protected override void ProximityStopped()
+        //{
+        //    base.ProximityStopped();
+        //}
 
         protected override void Initialize()
         {
@@ -59,7 +99,8 @@ namespace Rhinox.XR.Grapple.It
 
             _bounds = gameObject.GetObjectBounds();
 
-            _bounds.extents *= 1.1f;//increase bouds a bit with magic number
+            //TODO: Refactor this
+            _bounds.extents *= 1.25f;//increase bouds a bit with magic number
 
             if (TryGetComponent(out _rigidBody))
             {
@@ -71,28 +112,59 @@ namespace Rhinox.XR.Grapple.It
                 _isValid = false;
         }
 
-        private void GetGesture()
-        {
-
-            //getting the grab gesture and linking events
-            //if (_grabGesture == null)
-            //{
-            //    _grabGesture = _gestureRecognizer.Gestures.Find(x => x.Name == "Grab");
-            //    if (_grabGesture != null)
-            //    {
-            //        _grabGesture.AddListenerOnRecognized(TryGrab);// .OnRecognized.AddListener(TryGrab);
-            //        _grabGesture.AddListenerOnUnRecognized(TryDrop);// .OnUnrecognized.AddListener(TryDrop);
-            //    }
-            //}
-        }
-
         private void Update()
         {
-            _bounds.center = transform.position;
+            _bounds = gameObject.GetObjectBounds();
+
+            //    .center = transform.position;
+            //_bounds.extents = trans
+        }
+
+        public void TryGrab(RhinoxHand hand)
+        {
+            //if the given hand was invalid or the given hand cannot grab this object, do early return
+            if (hand == RhinoxHand.Invalid ||
+                hand == RhinoxHand.Left && !_canHandGrabL ||
+                hand == RhinoxHand.Right && !_canHandGrabR)
+                return;
+
+            //if the object is being held by the same hand that is trying to grab it again,
+            //then nothing should happen.
+            if (_currentHandHolding != hand)
+            {
+                //if trying to swap hands
+                if (hand == _currentHandHolding.GetInverse())
+                {
+                    DropInternal();
+                }
+
+                switch (hand)
+                {
+                    case RhinoxHand.Left:
+                        GrabInternal(_jointManager.LeftHandParentObj, RhinoxHand.Left);
+                        break;
+                    case RhinoxHand.Right:
+                        GrabInternal(_jointManager.RightHandParentObj, RhinoxHand.Right);
+                        break;
+                    default:
+                        break;
+                }
+
+                _currentHandHolding = hand;
+            }
+        }
+
+        public void TryDrop(RhinoxHand hand)
+        {
+            if (_currentHandHolding == hand)
+            {
+                DropInternal();
+                _currentHandHolding = RhinoxHand.Invalid;
+            }
         }
 
         //save and change the rigidbody settings so it can properly move along with the handand it is now attached to
-        public virtual void Grabbed(GameObject parent, RhinoxHand rhinoxHand = RhinoxHand.Invalid)
+        public virtual void GrabInternal(GameObject parent, RhinoxHand rhinoxHand)
         {
             if (!_isValid)
                 return;
@@ -105,10 +177,12 @@ namespace Rhinox.XR.Grapple.It
             _previousParentTransform = transform.parent;
 
             gameObject.transform.parent = parent.transform;
+
+            IsGrabbed = true;
         }
 
         //reinstate the changed rigidbody settings
-        public virtual void Dropped()
+        public virtual void DropInternal()
         {
             if (!_isValid)
                 return;
@@ -117,28 +191,29 @@ namespace Rhinox.XR.Grapple.It
             _rigidBody.useGravity = _hadGravity;
 
             gameObject.transform.parent = _previousParentTransform;
+
+            IsGrabbed = false;
         }
 
-        public override bool CheckForInteraction(RhinoxJoint joint)
+        public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
-            if (_bounds.Contains(joint.JointPosition))
+            switch (hand)
             {
-                //Grabbed(joint.JointPosition.);
-
-                _wasKinematic = _rigidBody.isKinematic;
-                _hadGravity = _rigidBody.useGravity;
-
-                _rigidBody.isKinematic = true;
-                _rigidBody.useGravity = false;
-                _previousParentTransform = transform.parent;
-
-                return true;
+                case RhinoxHand.Left:
+                    _canHandGrabL = _bounds.Contains(joint.JointPosition);
+                    break;
+                case RhinoxHand.Right:
+                    _canHandGrabR = _bounds.Contains(joint.JointPosition);
+                    break;
+                case RhinoxHand.Invalid:
+                default:
+                    break;
             }
-            else
-            {
-                Dropped();
+
+            if (!IsGrabbed)
                 return false;
-            }
+            else
+                return true;
         }
 
         public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint)

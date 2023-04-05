@@ -93,7 +93,7 @@ namespace Rhinox.XR.Grapple.It
         private const float _gravity = -9.81f;
 
         private Vector3 _sensorOffset = new Vector3(0f, 0f, -0.05f);
-        private Vector3 _sensorSize = new Vector3(0.08f, 0.08f, 0.08f);
+        //private Vector3 _sensorSize = new Vector3(0.08f, 0.08f, 0.08f);
 
         private bool _isOnCooldown = false;
         private bool _isValidTeleportPoint = false;
@@ -158,8 +158,8 @@ namespace Rhinox.XR.Grapple.It
             _jointManager.TrackingLost += TrackingLost;
             _jointManager.OnJointCapsulesInitialized += InitializeIgnoreList;
 
-            SensorSetup(out _sensorObjL, RhinoxHand.Left, out _proxySensorL);
-            SensorSetup(out _sensorObjR, RhinoxHand.Right, out _proxySensorR);
+            SensorSetup(out _sensorObjL, RhinoxHand.Left, _jointManager.LeftHandParentObj.transform, out _proxySensorL);
+            SensorSetup(out _sensorObjR, RhinoxHand.Right, _jointManager.RightHandParentObj.transform, out _proxySensorR);
 
             //TODO: instead of using a primitive use a nice recticle visual
             _teleportZoneVisual = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -218,18 +218,18 @@ namespace Rhinox.XR.Grapple.It
         /// <param name="sensorObj">The main object where the sensor script will be placed onto and the sensor model will be childed under</param>
         /// <param name="hand">Mainly to give the sensor <see cref="GameObject"/> the correct name</param>
         /// <param name="proxySensor">The sensor logic to hook into the events</param>
-        private void SensorSetup(out GameObject sensorObj, RhinoxHand hand, out GRPLTriggerSensor proxySensor)
+        private void SensorSetup(out GameObject sensorObj, RhinoxHand hand, Transform handParentObj, out GRPLTriggerSensor proxySensor)
         {
             sensorObj = new GameObject($"{hand}Hand Sensor");
-            sensorObj.transform.parent = transform;
+            sensorObj.transform.parent = handParentObj;
             sensorObj.SetActive(false);
-            Instantiate(_sensorModel, _sensorOffset, Quaternion.identity, sensorObj.transform).transform.localScale = _sensorSize;
+            Instantiate(_sensorModel, _sensorOffset, Quaternion.identity, sensorObj.transform);//.transform.localScale = _sensorSize;
 
-            var sensCollider = sensorObj.AddComponent<BoxCollider>();
+            var sensCollider = sensorObj.GetComponent<Collider>();
             sensCollider.isTrigger = true;
-            sensCollider.center = _sensorOffset;
-            sensCollider.size = _sensorSize;
-            proxySensor = sensorObj.AddComponent<GRPLTriggerSensor>();
+            //sensCollider.center = _sensorOffset;
+            //sensCollider.size = _sensorSize;
+            proxySensor = sensorObj.GetOrAddComponent<GRPLTriggerSensor>();
             proxySensor.HandLayer = LayerMask.NameToLayer("Hands");
             proxySensor.AddListenerOnSensorEnter(ConfirmTeleport);
         }

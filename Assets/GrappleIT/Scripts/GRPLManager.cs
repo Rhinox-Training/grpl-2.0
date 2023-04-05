@@ -1,4 +1,5 @@
 using Rhinox.GUIUtils.Attributes;
+using Rhinox.Lightspeed;
 using Rhinox.Perceptor;
 using UnityEngine;
 
@@ -14,15 +15,16 @@ namespace Rhinox.XR.Grapple.It
 
 
         private GRPLJointManager _jointManager = null;
-        private IPhysicsService _physicsService = new NullPhysicsService();
         private GRPLGestureRecognizer _gestureRecognizer = null;
+
+        private IPhysicsService _physicsService = new NullPhysicsService();
         private GRPLTeleport _teleporter = null;
 
         private void Start()
         {
-            _jointManager = gameObject.AddComponent<GRPLJointManager>();
+            _jointManager = gameObject.GetOrAddComponent<GRPLJointManager>();
             _jointManager.HandLayer = _handLayer;
-            _gestureRecognizer = GetComponent<GRPLGestureRecognizer>();
+            _gestureRecognizer = gameObject.GetOrAddComponent<GRPLGestureRecognizer>();
 
             if (_enableSocketing)
                 _physicsService = new GRPLPhysicsSocketService(_gestureRecognizer, gameObject);
@@ -35,7 +37,7 @@ namespace Rhinox.XR.Grapple.It
                 _teleporter.Initialize(_jointManager, _gestureRecognizer);
             else
             {
-                PLog.Warn<GRPLITLogger>($"{nameof(GRPLManager)} Failed to find {nameof(GRPLTeleport)}", this);
+                PLog.Warn<GRPLITLogger>($"[{nameof(GRPLManager)}:{nameof(Start)}], Failed to find {nameof(GRPLTeleport)}", this);
                 return;
             }
         }

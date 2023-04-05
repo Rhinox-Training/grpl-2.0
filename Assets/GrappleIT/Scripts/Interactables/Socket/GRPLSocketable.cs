@@ -14,9 +14,9 @@ namespace Rhinox.XR.Grapple.It
                 PLog.Error<GRPLITLogger>($"{nameof(GRPLSocketable)} Socket was not set.", this);
         }
 
-        public override void Grabbed(GameObject parent, RhinoxHand rhinoxHand)
+        public override void GrabInternal(GameObject parent, RhinoxHand rhinoxHand)
         {
-            base.Grabbed(parent, rhinoxHand);
+            base.GrabInternal(parent, rhinoxHand);
 
             Matrix4x4 relativeMatrix;
 

@@ -15,7 +15,6 @@ public class PrefabSpawner : MonoBehaviour
     {
         Assert.AreNotEqual(null, _prefabToSpawn, $"{nameof(_prefabToSpawn)}, prefab to spawn not set!");
         Assert.AreNotEqual(null, _spawnTransform, $"{nameof(_prefabToSpawn)}, spawn transform not set!");
-
     }
 
     private void Awake()
@@ -35,8 +34,6 @@ public class PrefabSpawner : MonoBehaviour
 
     private void SpawnObject()
     {
-        Instantiate(_prefabToSpawn, _spawnTransform.position, _spawnTransform.rotation,_spawnParent.transform);
+        Instantiate(_prefabToSpawn, _spawnTransform.position, _spawnTransform.rotation, _spawnParent.transform);
     }
-    
-    
 }

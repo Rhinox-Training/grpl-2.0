@@ -99,8 +99,9 @@ namespace Rhinox.XR.Grapple.It
         /// Check whether the given joint activates the interaction for this interactable.
         /// </summary>
         /// <param name="joint">The joint to check with</param>
+        /// <param name="hand">The hand that the joint is from</param>
         /// <returns>Whether the interaction is now happening</returns>
-        public abstract bool CheckForInteraction(RhinoxJoint joint);
+        public abstract bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand);
 
         /// <summary>
         /// This function defines which joint should get used when checking for interactions.  <br />
