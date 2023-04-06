@@ -1,9 +1,11 @@
 using Rhinox.Lightspeed;
 using Rhinox.Perceptor;
+using System;
 //using Rhinox.Perceptor;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static PlasticPipe.PlasticProtocol.Client.ConnectionCreator.PlasticProtoSocketConnection;
 
 namespace Rhinox.XR.Grapple.It
@@ -34,7 +36,13 @@ namespace Rhinox.XR.Grapple.It
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
             //TODO: maybe bounding box optimazition for early return?
+
+            //Predicate<Transform> predicate = (trans) => { return (joint.JointPosition - trans.position).sqrMagnitude <= _maxSocketDistanceSqrd; };
+            //_closestSocket = _sockets.GetClosestTo(joint.JointPosition, predicate);
+
+            //ask Jorian/Gaetan what to do with this
             _closestSocket = _sockets.GetClosestTo(joint.JointPosition, null, ref _maxSocketDistanceSqrd);
+            _maxSocketDistanceSqrd = _maxSocketDistance * _maxSocketDistance;
 
             switch (hand)
             {

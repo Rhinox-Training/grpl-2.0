@@ -71,6 +71,12 @@ namespace Rhinox.XR.Grapple.It
             if (_grabGesture == null)
             {
                 _grabGesture = gestureRecognizer.Gestures.Find(x => x.Name == "Grab");
+
+                if (_grabGesture != null)
+                {
+                    _grabGesture.AddListenerOnRecognized(TryGrab);
+                    _grabGesture.AddListenerOnUnRecognized(TryDrop);
+                }
             }
         }
 
@@ -95,6 +101,11 @@ namespace Rhinox.XR.Grapple.It
                 _jointManager.TrackingLost += TrackingLost;
             }
 
+            if (_grabGesture != null)
+            {
+                _grabGesture.AddListenerOnRecognized(TryGrab);
+                _grabGesture.AddListenerOnUnRecognized(TryDrop);
+            }
         }
 
         protected override void OnDisable()
@@ -114,35 +125,34 @@ namespace Rhinox.XR.Grapple.It
             {
                 _grabGesture.RemoveListenerOnRecognized(TryGrab);
                 _grabGesture.RemoveListenerOnUnRecognized(TryDrop);
-                PLog.Info<GRPLITLogger>($"{this.name}: Removed");
+                //PLog.Info<GRPLITLogger>($"{this.name}: Removed");
             }
         }
 
 
         protected override void ProximityStarted()
         {
-            base.ProximityStarted();
+            //if (_grabGesture != null)
+            //{
+            //    _grabGesture.AddListenerOnRecognized(TryGrab);
+            //    _grabGesture.AddListenerOnUnRecognized(TryDrop);
+            //    //PLog.Info<GRPLITLogger>($"Added:\t{this.name}");
+            //}
 
-            if (_grabGesture != null)
-            {
-                _grabGesture.AddListenerOnRecognized(TryGrab);
-                _grabGesture.AddListenerOnUnRecognized(TryDrop);
-                PLog.Info<GRPLITLogger>($"{this.name}: Added");
-            }
+            base.ProximityStarted();
         }
 
         protected override void ProximityStopped()
         {
+            //if (_grabGesture != null && _currentHandHolding == RhinoxHand.Invalid)
+            //{
+            //    _grabGesture.RemoveListenerOnRecognized(TryGrab);
+            //    _grabGesture.RemoveListenerOnUnRecognized(TryDrop);
+            //    PLog.Info<GRPLITLogger>($"Removed:\t{this.name}");
+            //}
+
             base.ProximityStopped();
-
-            if (_grabGesture != null)
-            {
-                _grabGesture.RemoveListenerOnRecognized(TryGrab);
-                _grabGesture.RemoveListenerOnUnRecognized(TryDrop);
-                PLog.Info<GRPLITLogger>($"{this.name}: Removed");
-            }
         }
-
 
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {

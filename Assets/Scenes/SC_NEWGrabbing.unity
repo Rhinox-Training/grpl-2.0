@@ -2355,7 +2355,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Instance: {fileID: 0}
-  _maxAmountOfProximatesPerHand: 1
+  _maxAmountOfProximatesPerHand: 5
   _proximateRadius: 1
   _proximateJointID: 12
   _interactibleGroups: []
@@ -2392,7 +2392,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1959799571
 Transform:
   m_ObjectHideFlags: 0
@@ -2970,7 +2970,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2055162655041060973}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.608, y: 0.0384, z: -0.55}
+  m_LocalPosition: {x: 0, y: 0.0384, z: -0.55}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2998,7 +2998,7 @@ MonoBehaviour:
   _proximateRadius: 0.5
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
-  _maxSocketDistance: 0.1
+  _maxSocketDistance: 0.15
   _sockets:
   - {fileID: 521542655210110409}
   - {fileID: 1680206003}
