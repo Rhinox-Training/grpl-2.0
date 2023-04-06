@@ -4,6 +4,7 @@ using UnityEngine.XR.Hands;
 using System.Linq;
 using UnityEngine;
 using Rhinox.Lightspeed;
+using Rhinox.Perceptor;
 using UnityEditor;
 
 #if UNITY_EDITOR
@@ -19,33 +20,40 @@ namespace Rhinox.XR.Grapple.It
 
         [SerializeField] private Transform _stemTransform;
         [SerializeField] private Transform _handleTransform;
-        [SerializeField] private float _interactMinAngle = 90f;
+
+        [SerializeField] [RangeField(0, "_leverMaxAngle")]
+        private float _interactMinAngle = 90f;
+
+        [SerializeField] [Range(0, 360f)] private float _leverMaxAngle = 180f;
+        [SerializeField] private Vector3 _leverFollowRange = new Vector3(.6f, .6f, .6f);
 
         [Header("Grab parameters")] [SerializeField]
         private string _grabGestureName = "Grab";
 
         [SerializeField] private float _grabRadius = .1f;
 
+        [Header("Debug Parameters")] [SerializeField]
+        private bool _drawDebug = false;
+
         public event Action<GRPLLever> LeverActivated;
         public event Action<GRPLLever> LeverStopped;
 
         private GRPLGestureRecognizer _gestureRecognizer;
-
-        private Vector3 _baseToHandle;
-        private Vector3 _baseToProjJoint;
 
         private Vector3 _initialHandlePos;
         private Vector3 _initialHandleRot;
         private RhinoxJoint _previousInteractJoint;
 
         private bool _isLeverActivated = false;
-        
+
         //-----------------------
         // MONO BEHAVIOUR METHODS
         //-----------------------
-
         private void Awake()
         {
+            // Clamp the activation angle
+            _interactMinAngle = Mathf.Clamp(_interactMinAngle, 0, _leverMaxAngle);
+
             //Force the ForcedInteractJoint
             ForceInteractibleJoint = true;
             ForcedInteractJointID = XRHandJointID.Palm;
@@ -58,14 +66,24 @@ namespace Rhinox.XR.Grapple.It
             _initialHandleRot = _handleTransform.rotation.eulerAngles;
         }
 
-        /// <summary>
-        /// Event reaction to the globalInitialized event of the Gesture Recognizer.<br />
-        /// Saves the recognizer in a private field.
-        /// </summary>
-        /// <param name="obj"></param>
-        private void OnGestureRecognizerGlobalInitialized(GRPLGestureRecognizer obj)
+        private void Update()
         {
-            _gestureRecognizer = obj;
+            if (State != GRPLInteractionState.Interacted)
+                return;
+
+            if (CheckLeverActivationAndSetLeverTransform(_previousInteractJoint.JointPosition))
+            {
+                if (!_isLeverActivated)
+                {
+                    LeverActivated?.Invoke(this);
+                    _isLeverActivated = true;
+                }
+            }
+            else if (_isLeverActivated)
+            {
+                LeverStopped?.Invoke(this);
+                _isLeverActivated = false;
+            }
         }
 
         //-----------------------
@@ -76,26 +94,20 @@ namespace Rhinox.XR.Grapple.It
         /// </summary>
         /// <param name="jointPos">The position of the interact joint</param>
         /// <returns>Whether the angle of the lever has exceeded the interact angle</returns>
-        private bool CheckInteractionAndSetLeverTransform(Vector3 jointPos)
+        private bool CheckLeverActivationAndSetLeverTransform(Vector3 jointPos)
         {
             // Project the joint on the lever plane
             Vector3 projectedPos =
                 jointPos.ProjectOnPlaneAndTranslate(_baseTransform.position, _baseTransform.right);
 
-            // If the projected position is behind the lever, return
-            if (!InteractableMathUtils.IsPositionInFrontOfPlane(projectedPos, _baseTransform.position,
-                    _baseTransform.forward))
-                return false;
-
             float angle = GetLeverRotation(projectedPos);
-
             // Set the final rotation
             Quaternion newRot = Quaternion.identity;
             newRot.eulerAngles = _initialHandleRot + new Vector3(angle, 0, 0);
 
             _stemTransform.rotation = newRot;
 
-            return angle > _interactMinAngle;
+            return angle >= _interactMinAngle;
         }
 
         /// <summary>
@@ -109,64 +121,56 @@ namespace Rhinox.XR.Grapple.It
 
             // Calculate vector from the base to the projected joint
             Vector3 baseToJoint = projectedPos - basePos;
-            _baseToProjJoint = baseToJoint;
-
-            // Calculate the vector from the base to the handle
-            Vector3 baseToHandle = _handleTransform.position - basePos;
-            _baseToHandle = baseToHandle;
 
             // Calculate the vector from the base to the initial handle pos
             Vector3 baseToInitialHandle = _initialHandlePos - basePos;
 
+            float angle = 0;
+
+            //----------------------------------------------
             // Calculate the angle between the two vectors
-            // Vector3.Angle return an angle in [0;180] degrees
-            return Vector3.Angle(baseToInitialHandle, baseToJoint);
+            //----------------------------------------------
+
+            // Calculate the rotation angle for th signedAngle calculation
+            Vector3 rotationVector = Vector3.Cross(baseToInitialHandle, baseToJoint);
+
+            //Check if the joint is in front of the plane defined by the lever
+            if (InteractableMathUtils.IsPositionInFrontOfPlane(projectedPos, basePos, _baseTransform.forward))
+            {
+                // Vector3.SignedAngle returns an angle in [-180;180] degrees
+                angle = Vector3.SignedAngle(baseToInitialHandle, baseToJoint, rotationVector);
+            }
+            else
+            {
+                angle = Vector3.SignedAngle(baseToInitialHandle, baseToJoint, -rotationVector);
+                angle = (180 - Mathf.Abs(angle)) + 180;
+            }
+
+            // Make sure the clamp to 0 functions well
+            float tempAngle = 360 - angle;
+            if (tempAngle < (360 - _leverMaxAngle) / 2)
+                angle = -tempAngle;
+
+            angle = Mathf.Clamp(angle, 0, _leverMaxAngle);
+            return angle;
         }
 
         //-----------------------
-        // INHERITED EVENTS
+        // EVENT REACTIONS
         //-----------------------
-        protected override void InteractStarted()
+        /// <summary>
+        /// Event reaction to the globalInitialized event of the Gesture Recognizer.<br />
+        /// Saves the recognizer in a private field.
+        /// </summary>
+        /// <param name="obj"></param>
+        private void OnGestureRecognizerGlobalInitialized(GRPLGestureRecognizer obj)
         {
-            if (!_isLeverActivated)
-            {
-                LeverActivated?.Invoke(this);
-                _isLeverActivated = true;                
-            }
-            base.InteractStarted();
-        }
-
-        protected override void InteractStopped()
-        {
-            if (_isLeverActivated)
-            {
-                LeverStopped?.Invoke(this);
-                _isLeverActivated = false;
-            }
-            base.InteractStopped();
+            _gestureRecognizer = obj;
         }
 
         //-----------------------
         // INHERITED METHODS
         //-----------------------
-        public override bool ShouldInteractionCheckStop()
-        {
-            if (State != GRPLInteractionState.Interacted)
-                return false;
-
-            // Check if the joint pos is in front of the plane that is defined by the button
-            if (!InteractableMathUtils.IsPositionInFrontOfPlane(_previousInteractJoint.JointPosition,
-                    _baseTransform.position,
-                    _baseTransform.forward))
-            {
-                ShouldPerformInteractCheck = false;
-                return true;
-            }
-
-            ShouldPerformInteractCheck = true;
-            return false;
-        }
-
         public override Vector3 GetReferencePoint()
         {
             return _handleTransform.position;
@@ -188,16 +192,12 @@ namespace Rhinox.XR.Grapple.It
             // Return whether the interact joint is in range
             float jointDistSq = joint.JointPosition.SqrDistanceTo(_handleTransform.position);
 
-            if (State == GRPLInteractionState.Interacted)
-            {
-                return CheckInteractionAndSetLeverTransform(joint.JointPosition);
-            }
-            
             if (jointDistSq < _grabRadius * _grabRadius)
             {
                 _previousInteractJoint = joint;
-                return CheckInteractionAndSetLeverTransform(joint.JointPosition);
+                return true;
             }
+
             return false;
         }
 
@@ -207,13 +207,15 @@ namespace Rhinox.XR.Grapple.It
 
             return joint != null;
         }
-        
+
         //-----------------------
         // EDITOR ONLY METHODS
         //-----------------------
 #if UNITY_EDITOR
         private void OnDrawGizmos()
         {
+            if (!_drawDebug)
+                return;
             Transform transform1 = transform;
             Vector3 basePos = _baseTransform.position;
             Vector3 handlePos = _handleTransform.position;
@@ -222,37 +224,62 @@ namespace Rhinox.XR.Grapple.It
             direction.Normalize();
             Gizmos.DrawSphere(basePos, .01f);
 
-            // Calculate the distance
-            float distance = Vector3.Distance(basePos, handlePos);
+            // Calculate the Arc radius
+            float arcRadius = Vector3.Distance(basePos, handlePos);
 
-            Handles.DrawWireArc(basePos, transform1.right, direction, 180, distance);
+            // Draw the arc itself
+            Handles.DrawWireArc(basePos, transform1.right, direction, _leverMaxAngle, arcRadius);
+
+            // Calculate the target point on the arc
+            using (new eUtility.GizmoColor(Color.green))
+            {
+                Vector3 center = basePos;
+                float angle = Mathf.Deg2Rad * _interactMinAngle;
+
+                // Calculate the X value
+                float targetX = center.y + (float)Math.Cos(-angle) * arcRadius;
+                // Calculate the Y value
+                float targetY = center.z + (float)Math.Sin(-angle) * arcRadius;
+
+                Vector3 result = center;
+
+                result.y = targetX;
+                result.z = targetY;
+                Gizmos.DrawSphere(result, .01f);
+            }
 
             using (new eUtility.GizmoColor(Color.green))
             {
                 // Draw lever begin
-                Vector3 beginPos = basePos + direction * distance;
+                Vector3 beginPos = basePos + direction * arcRadius;
                 Handles.Label(beginPos, "Arc begin");
                 Gizmos.DrawSphere(beginPos, .01f);
             }
 
             using (new eUtility.GizmoColor(Color.red))
             {
+                Vector3 center = basePos;
+                float angle = Mathf.Deg2Rad * _leverMaxAngle;
+
+                // Calculate the X value
+                float targetX = center.y + (float)Math.Cos(-angle) * arcRadius;
+                // Calculate the Y value
+                float targetY = center.z + (float)Math.Sin(-angle) * arcRadius;
+
+                Vector3 result = center;
+
+                result.y = targetX;
+                result.z = targetY;
+                Gizmos.DrawSphere(result, .01f);
+
                 // Draw lever end
-                Vector3 endPos = basePos - direction * distance;
-                Handles.Label(endPos, "Arc end");
-                Gizmos.DrawSphere(endPos, .005f);
+                Handles.Label(result, "Arc end");
+                Gizmos.DrawSphere(result, .005f);
             }
 
             using (new eUtility.GizmoColor(Color.black))
             {
-                // Draw the direction
-                Gizmos.DrawRay(basePos, _baseToHandle);
-            }
-
-            using (new eUtility.GizmoColor(Color.blue))
-            {
-                // Draw the direction
-                Gizmos.DrawRay(basePos, _baseToProjJoint);
+                Gizmos.DrawWireCube(basePos, _leverFollowRange);
             }
         }
 #endif
