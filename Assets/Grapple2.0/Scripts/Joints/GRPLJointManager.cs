@@ -21,6 +21,10 @@ namespace Rhinox.XR.Grapple
     /// <dependencies> <see cref="XRHandSubsystem"/> </dependencies>
     public class GRPLJointManager : MonoBehaviour
     {
+        [Header("Socket")]
+        //[SerializeField] private Vector3 _handSocketOffset = new Vector3(0f, -0.03f, 0.025f);//magic numbers got from testing
+        [SerializeField] private Vector3 _handSocketOffset = new Vector3(0f, -0.035f, 0.0725f);//magic numbers got from testing
+
         //-----------------------------
         // Finger bend fields
         //-----------------------------
@@ -65,7 +69,10 @@ namespace Rhinox.XR.Grapple
         public RhinoxJointCapsule[] RightHandCapsules => _rightHandCapsules;
 
         public GameObject LeftHandParentObj => _leftHandParent;
+        public GameObject LeftHandSocket => _leftHandSocket;
         public GameObject RightHandParentObj => _rightHandParent;
+        public GameObject RightHandSocket => _rightHandSocket;
+
 
         private bool _jointCollisionsEnabled = true;
 
@@ -81,7 +88,9 @@ namespace Rhinox.XR.Grapple
         private GameObject _rightHandCollidersParent;
 
         private GameObject _leftHandParent;
+        private GameObject _leftHandSocket;
         private GameObject _rightHandParent;
+        private GameObject _rightHandSocket;
 
         private bool _fixedUpdateAfterTrackingLeftFound = false;
         private bool _fixedUpdateAfterTrackingRightFound = false;
@@ -96,6 +105,8 @@ namespace Rhinox.XR.Grapple
 
         private event Action Initialized;
 
+
+
         //======================
         //Initialization Methods
         //======================
@@ -103,8 +114,22 @@ namespace Rhinox.XR.Grapple
         {
             _leftHandParent = new GameObject("Left Hand");
             _leftHandParent.transform.SetParent(transform);
+
+            _leftHandSocket = new GameObject("Socket");
+            _leftHandSocket.transform.SetParent(_leftHandParent.transform);
+            //needs to be rotate 90°, otherwise object would go through handpalm and this one is rotate antoher 180°, because it's the opposite of right hand
+            _leftHandSocket.transform.SetLocalPositionAndRotation(_handSocketOffset, Quaternion.Euler(0f, 0f, 270f));
+
+
+
             _rightHandParent = new GameObject("Right Hand");
             _rightHandParent.transform.SetParent(transform);
+
+            _rightHandSocket = new GameObject("Socket");
+            _rightHandSocket.transform.SetParent(_rightHandParent.transform);
+
+            //needs to be rotate 90°, otherwise object would go through handpalm.
+            _rightHandSocket.transform.SetLocalPositionAndRotation(_handSocketOffset, Quaternion.Euler(0f, 0f, 90f));
 
 
             InitializeHandJoints();

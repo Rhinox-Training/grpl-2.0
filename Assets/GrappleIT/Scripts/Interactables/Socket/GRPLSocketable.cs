@@ -1,21 +1,61 @@
 using Rhinox.Lightspeed;
 using Rhinox.Perceptor;
+//using Rhinox.Perceptor;
+using System.Collections.Generic;
+using System.Net.Sockets;
 using UnityEngine;
+using static PlasticPipe.PlasticProtocol.Client.ConnectionCreator.PlasticProtoSocketConnection;
 
 namespace Rhinox.XR.Grapple.It
 {
     public class GRPLSocketable : GRPLGrabbableInteractable
     {
-        public GameObject Socket = null;
 
-        public void OnValidate()
+        [Space(15f)]
+        [SerializeField] private float _maxSocketDistance = .025f;
+        [SerializeField] private List<Transform> _sockets = null;
+
+        private Transform _closestSocket = null;
+        private float _maxSocketDistanceSqrd = 0f;
+
+        protected override void Initialize()
         {
-            if (Socket == null)
-                PLog.Error<GRPLITLogger>($"{nameof(GRPLSocketable)} Socket was not set.", this);
+            base.Initialize();
+
+            int tempCnt = _sockets.Count;
+            _sockets.RemoveAll(s => s == null);
+            if (_sockets.Count != tempCnt)
+                PLog.Warn<GRPLITLogger>($"[GRPLSocketable:Initialize], " +
+                    $"Socket list had empties and have been purged", this);
+
+            _maxSocketDistanceSqrd = _maxSocketDistance * _maxSocketDistance;
         }
 
-        public override void GrabInternal(GameObject parent, RhinoxHand rhinoxHand)
+        public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
+            //TODO: maybe bounding box optimazition for early return?
+            _closestSocket = _sockets.GetClosestTo(joint.JointPosition, null, ref _maxSocketDistanceSqrd);
+
+            switch (hand)
+            {
+                case RhinoxHand.Left:
+                    _canHandGrabL = _closestSocket != null;
+                    break;
+                case RhinoxHand.Right:
+                    _canHandGrabR = _closestSocket != null;
+                    break;
+                default:
+                    break;
+            }
+
+            return IsGrabbed;
+        }
+
+        protected override void GrabInternal(GameObject parent, RhinoxHand rhinoxHand)
+        {
+            if (_closestSocket == null)
+                return;
+
             base.GrabInternal(parent, rhinoxHand);
 
             Matrix4x4 relativeMatrix;
@@ -25,22 +65,22 @@ namespace Rhinox.XR.Grapple.It
             {
                 //because the right rhinoxHand is mirror of the left one.
                 //the object needs to be flip around the X-axis to mirror it. 
-                Socket.transform.localRotation = new Quaternion(Socket.transform.localRotation.x * -1.0f,
-                                            Socket.transform.localRotation.y,
-                                            Socket.transform.localRotation.z,
-                                            Socket.transform.localRotation.w * -1.0f);
+                _closestSocket.localRotation = new Quaternion(_closestSocket.localRotation.x * -1.0f,
+                                                              _closestSocket.localRotation.y,
+                                                              _closestSocket.localRotation.z,
+                                                              _closestSocket.localRotation.w * -1.0f);
 
-                relativeMatrix = Socket.transform.GetMatrixRelativeTo(this.GetWorldMatrix());
+                relativeMatrix = _closestSocket.GetMatrixRelativeTo(this.GetWorldMatrix());
 
                 //is a component, so i can't take a copy of it, meaning i have to reset the orriginal back.
-                Socket.transform.localRotation = new Quaternion(Socket.transform.localRotation.x * -1.0f,
-                                            Socket.transform.localRotation.y,
-                                            Socket.transform.localRotation.z,
-                                            Socket.transform.localRotation.w * -1.0f);
+                _closestSocket.localRotation = new Quaternion(_closestSocket.localRotation.x * -1.0f,
+                                                              _closestSocket.localRotation.y,
+                                                              _closestSocket.localRotation.z,
+                                                              _closestSocket.localRotation.w * -1.0f);
             }
             else
             {
-                relativeMatrix = Socket.transform.GetMatrixRelativeTo(this.GetWorldMatrix());
+                relativeMatrix = _closestSocket.GetMatrixRelativeTo(this.GetWorldMatrix());
             }
 
             var relativeInverse = relativeMatrix.inverse;
