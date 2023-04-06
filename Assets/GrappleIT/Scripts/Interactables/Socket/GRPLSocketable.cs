@@ -65,12 +65,22 @@ namespace Rhinox.XR.Grapple.It
                         _canHandGrabL = true;
                         _closestSocketL = closestSocket;
                     }
+                    else
+                    {
+                        _canHandGrabL = false;
+                        _closestSocketL = null;
+                    }
                     break;
                 case RhinoxHand.Right:
                     if (closestSocket != null)
                     {
                         _canHandGrabR = true;
                         _closestSocketR = closestSocket;
+                    }
+                    else
+                    {
+                        _canHandGrabR = false;
+                        _closestSocketR = null;
                     }
                     break;
                 default:

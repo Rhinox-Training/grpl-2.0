@@ -124,31 +124,6 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
-
-        protected override void ProximityStarted()
-        {
-            //if (_grabGesture != null)
-            //{
-            //    _grabGesture.AddListenerOnRecognized(TryGrab);
-            //    _grabGesture.AddListenerOnUnRecognized(TryDrop);
-            //    //PLog.Info<GRPLITLogger>($"Added:\t{this.name}");
-            //}
-
-            base.ProximityStarted();
-        }
-
-        protected override void ProximityStopped()
-        {
-            //if (_grabGesture != null && _currentHandHolding == RhinoxHand.Invalid)
-            //{
-            //    _grabGesture.RemoveListenerOnRecognized(TryGrab);
-            //    _grabGesture.RemoveListenerOnUnRecognized(TryDrop);
-            //    PLog.Info<GRPLITLogger>($"Removed:\t{this.name}");
-            //}
-
-            base.ProximityStopped();
-        }
-
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
             //_currentHandHolding
