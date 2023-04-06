@@ -44,6 +44,22 @@ public static class UnityTypeExtensions
         return new Vector3() { x = -v.x, y = v.y, z = v.z };
     }
 
+    /// <summary>
+    /// Project the point on the plane define by planePosition and planeNormal.
+    /// </summary>
+    /// <param name="point">The point to project</param>
+    /// <param name="planePosition">A point on the desired plane</param>
+    /// <param name="planeNormal">The normal on the desired plane</param>
+    /// <returns></returns>
+    public static Vector3 ProjectOnPlaneAndTranslate(this Vector3 point, Vector3 planePosition, Vector3 planeNormal)
+    {
+        // Project the position on the plane defined by the given position and forward
+        var projectedPos = Vector3.ProjectOnPlane(point, planeNormal) +
+                           Vector3.Dot(planePosition, planeNormal) *
+                           planeNormal;
+        return projectedPos;
+    }
+    
     public static string ToPrefix(this RhinoxHand hand)
     {
         switch (hand)

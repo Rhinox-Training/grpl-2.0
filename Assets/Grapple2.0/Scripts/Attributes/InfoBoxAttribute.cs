@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 #if UNITY_EDITOR
-namespace Rhinox.XR.Grapple.It
+namespace Rhinox.XR.Grapple
 {
     /// <summary>
     /// Attribute to display an infobox above a field with optional MessageType.

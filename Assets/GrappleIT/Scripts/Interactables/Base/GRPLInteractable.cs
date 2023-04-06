@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.XR.Hands;
 
@@ -20,8 +21,8 @@ namespace Rhinox.XR.Grapple.It
         private float _proximateRadius = .5f;
 
         [Header("Interact detection parameters")] [SerializeField]
-        protected bool _forceInteractibleJoint = false;
-        [SerializeField] protected XRHandJointID _forcedInteractJointID = XRHandJointID.IndexTip;
+        protected bool ForceInteractibleJoint = false;
+        [SerializeField] protected XRHandJointID ForcedInteractJointID = XRHandJointID.IndexTip;
         
         public float ProximateRadius => _proximateRadius;
         public event Action<GRPLInteractable> OnInteractStarted;
@@ -36,9 +37,7 @@ namespace Rhinox.XR.Grapple.It
         public GRPLInteractionState State => _state;
         
         public bool ShouldPerformInteractCheck { set; get; } = true;
-        
-        
-        
+
         private void Start()
         {
             Initialize();
@@ -96,11 +95,19 @@ namespace Rhinox.XR.Grapple.It
         public virtual bool ShouldInteractionCheckStop() => false;
 
         /// <summary>
+        /// Returns the reference position for this interactible. <br />
+        /// This can be used for proximate interaction checking.
+        /// </summary>
+        /// <returns>The referencePoint</returns>
+        public virtual Vector3 GetReferencePoint() => transform.position; 
+        
+        /// <summary>
         /// Check whether the given joint activates the interaction for this interactable.
         /// </summary>
         /// <param name="joint">The joint to check with</param>
+        /// <param name="hand">The hand on which this joint is located</param>
         /// <returns>Whether the interaction is now happening</returns>
-        public abstract bool CheckForInteraction(RhinoxJoint joint);
+        public abstract bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand);
 
         /// <summary>
         /// This function defines which joint should get used when checking for interactions.  <br />
@@ -110,20 +117,5 @@ namespace Rhinox.XR.Grapple.It
         /// <param name="joint"> An out parameter for a valid joint, if one was found</param>
         /// <returns>Whether a valid joint was found.</returns>
         public abstract bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint joint);
-
-
-        /// <summary>
-        /// Checks if point p1 is closer to the interactible than point p2.
-        /// </summary>
-        /// <param name="p1">The main point</param>
-        /// <param name="p2">The other point</param>
-        /// <returns>A boolean representing whether the point is closer or not.</returns>
-        public virtual bool IsPointCloserThanOtherPoint(Vector3 p1, Vector3 p2)
-        {
-            var position = transform.position;
-            float distanceSqr1 = (position - p1).sqrMagnitude;
-            float distanceSqr2 = (position - p2).sqrMagnitude;
-            return distanceSqr1 < distanceSqr2;
-        }
     }
 }

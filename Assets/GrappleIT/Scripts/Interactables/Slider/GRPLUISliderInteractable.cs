@@ -1,10 +1,8 @@
 using Rhinox.GUIUtils;
-using Rhinox.Lightspeed;
 using Rhinox.Perceptor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 

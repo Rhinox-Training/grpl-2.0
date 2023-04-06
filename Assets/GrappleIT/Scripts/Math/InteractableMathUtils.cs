@@ -58,5 +58,19 @@ namespace Rhinox.XR.Grapple.It
             return Vector3.Dot(projectPoint - normalPoint,
                 normal);
         }
+
+        /// <summary>
+        /// Checks if point p1 is closer to the interactible than point p2.
+        /// </summary>
+        /// <param name="referencePoint">The main point</param>
+        /// <param name="p1">The first point</param>
+        /// <param name="p2">The second point</param>
+        /// <returns>A boolean representing whether the point is closer or not.</returns>
+        public static bool IsPointCloserThanOtherPoint(Vector3 referencePoint, Vector3 p1, Vector3 p2)
+        {
+            float distanceSqr1 = (referencePoint - p1).sqrMagnitude;
+            float distanceSqr2 = (referencePoint - p2).sqrMagnitude;
+            return distanceSqr1 < distanceSqr2;
+        }
     }
 }
