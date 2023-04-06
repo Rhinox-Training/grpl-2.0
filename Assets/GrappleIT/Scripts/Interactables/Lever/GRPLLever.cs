@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine.XR.Hands;
 using System.Linq;
 using UnityEngine;
 using Rhinox.Lightspeed;
 using Rhinox.Perceptor;
+using Sirenix.OdinInspector;
 using UnityEditor;
 
 #if UNITY_EDITOR
@@ -35,6 +37,16 @@ namespace Rhinox.XR.Grapple.It
         [Header("Debug Parameters")] [SerializeField]
         private bool _drawDebug = false;
 
+        [SerializeField] [HideIfFieldFalse("_drawDebug", 0f)]
+        private bool _drawArc = false;
+
+        [SerializeField] [HideIfFieldFalse("_drawDebug", 0f)]
+        private bool _drawGrabRange = false;
+
+        [SerializeField] [HideIfFieldFalse("_drawDebug", 0f)]
+        private bool _drawArcExtends = false;
+
+
         public event Action<GRPLLever> LeverActivated;
         public event Action<GRPLLever> LeverStopped;
 
@@ -43,6 +55,7 @@ namespace Rhinox.XR.Grapple.It
         private Vector3 _initialHandlePos;
         private Vector3 _initialHandleRot;
         private RhinoxJoint _previousInteractJoint;
+
 
         private bool _isLeverActivated = false;
 
@@ -216,6 +229,7 @@ namespace Rhinox.XR.Grapple.It
         {
             if (!_drawDebug)
                 return;
+
             Transform transform1 = transform;
             Vector3 basePos = _baseTransform.position;
             Vector3 handlePos = _handleTransform.position;
@@ -223,64 +237,80 @@ namespace Rhinox.XR.Grapple.It
             Vector3 direction = handlePos - basePos;
             direction.Normalize();
             Gizmos.DrawSphere(basePos, .01f);
-
-            // Calculate the Arc radius
             float arcRadius = Vector3.Distance(basePos, handlePos);
 
-            // Draw the arc itself
-            Handles.DrawWireArc(basePos, transform1.right, direction, _leverMaxAngle, arcRadius);
+            if (_drawArc)
+                DrawArcHandles(basePos, direction, transform1.right, arcRadius);
 
-            // Calculate the target point on the arc
-            using (new eUtility.GizmoColor(Color.green))
+            if (_drawGrabRange)
             {
-                Vector3 center = basePos;
-                float angle = Mathf.Deg2Rad * _interactMinAngle;
-
-                // Calculate the X value
-                float targetX = center.y + (float)Math.Cos(-angle) * arcRadius;
-                // Calculate the Y value
-                float targetY = center.z + (float)Math.Sin(-angle) * arcRadius;
-
-                Vector3 result = center;
-
-                result.y = targetX;
-                result.z = targetY;
-                Gizmos.DrawSphere(result, .01f);
+                Gizmos.DrawWireSphere(_handleTransform.position, _grabRadius);
             }
 
-            using (new eUtility.GizmoColor(Color.green))
+            if (_drawArcExtends)
+                DrawArcExtends(basePos, direction, transform1.right, arcRadius);
+        }
+
+        private void DrawArcHandles(Vector3 arcCenter, Vector3 direction, Vector3 arcNormal, float arcRadius)
+        {
+            // Calculate the Arc radius
+            Handles.color = Color.red;
+
+            // Draw the arc itself
+            Handles.DrawSolidArc(arcCenter, arcNormal, direction, _interactMinAngle, arcRadius);
+            {
+                var dir = direction;
+
+                dir = Quaternion.AngleAxis(_interactMinAngle, arcNormal) * dir; // rotate it
+                Handles.color = Color.green;
+                Handles.DrawSolidArc(arcCenter, arcNormal, dir, _leverMaxAngle - _interactMinAngle,
+                    arcRadius);
+            }
+        }
+
+        private void DrawArcExtends(Vector3 arcCenter, Vector3 direction, Vector3 arcNormal, float arcRadius)
+        {
+            using (new eUtility.GizmoColor(Color.black))
             {
                 // Draw lever begin
-                Vector3 beginPos = basePos + direction * arcRadius;
+                Vector3 beginPos = arcCenter + direction * arcRadius;
                 Handles.Label(beginPos, "Arc begin");
                 Gizmos.DrawSphere(beginPos, .01f);
-            }
 
-            using (new eUtility.GizmoColor(Color.red))
-            {
-                Vector3 center = basePos;
-                float angle = Mathf.Deg2Rad * _leverMaxAngle;
+                var dir = direction;
+                dir = Quaternion.AngleAxis(_leverMaxAngle, arcNormal) * dir; // rotate it
 
-                // Calculate the X value
-                float targetX = center.y + (float)Math.Cos(-angle) * arcRadius;
-                // Calculate the Y value
-                float targetY = center.z + (float)Math.Sin(-angle) * arcRadius;
-
-                Vector3 result = center;
-
-                result.y = targetX;
-                result.z = targetY;
-                Gizmos.DrawSphere(result, .01f);
-
-                // Draw lever end
+                Vector3 result = arcCenter + dir * arcRadius;
                 Handles.Label(result, "Arc end");
                 Gizmos.DrawSphere(result, .005f);
             }
+        }
 
-            using (new eUtility.GizmoColor(Color.black))
-            {
-                Gizmos.DrawWireCube(basePos, _leverFollowRange);
-            }
+        private void Reset()
+        {
+            _baseTransform = new GameObject("Base").transform;
+            _baseTransform.SetParent(this.transform);
+
+            _baseTransform.localPosition = Vector3.zero;
+
+            Transform baseVis = new GameObject("Base_Visuals").transform;
+            baseVis.SetParent(_baseTransform.transform, false);
+
+            _stemTransform = new GameObject("Stem").transform;
+            _stemTransform.SetParent(_baseTransform, false);
+
+            Transform stemVis = new GameObject("Stem_Visuals").transform;
+            stemVis.SetParent(_stemTransform.transform, false);
+
+            _handleTransform = new GameObject("Handle").transform;
+            _handleTransform.SetParent(_stemTransform, false);
+
+            var newLocalPos = Vector3.zero;
+            newLocalPos.y += _leverFollowRange.y / 4;
+            _handleTransform.localPosition = newLocalPos;
+
+            Transform handleVis = new GameObject("Handle_Visuals").transform;
+            handleVis.SetParent(_handleTransform.transform, false);
         }
 #endif
     }

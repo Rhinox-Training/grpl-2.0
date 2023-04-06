@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Rhinox.XR.Grapple.It
+namespace Rhinox.XR.Grapple
 {
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
     public class RangeFieldAttribute : PropertyAttribute
