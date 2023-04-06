@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using UnityEngine.XR.Hands;
 using System.Linq;
 using UnityEngine;
 using Rhinox.Lightspeed;
-using Rhinox.Perceptor;
-using Sirenix.OdinInspector;
 using UnityEditor;
 
 #if UNITY_EDITOR
@@ -25,9 +22,8 @@ namespace Rhinox.XR.Grapple.It
 
         [SerializeField] [RangeField(0, "_leverMaxAngle")]
         private float _interactMinAngle = 90f;
-
         [SerializeField] [Range(0, 360f)] private float _leverMaxAngle = 180f;
-        [SerializeField] private Vector3 _leverFollowRange = new Vector3(.6f, .6f, .6f);
+        [SerializeField] private bool _ignoreDistanceOnGrab = true;
 
         [Header("Grab parameters")] [SerializeField]
         private string _grabGestureName = "Grab";
@@ -45,7 +41,6 @@ namespace Rhinox.XR.Grapple.It
 
         [SerializeField] [HideIfFieldFalse("_drawDebug", 0f)]
         private bool _drawArcExtends = false;
-
 
         public event Action<GRPLLever> LeverActivated;
         public event Action<GRPLLever> LeverStopped;
@@ -138,7 +133,7 @@ namespace Rhinox.XR.Grapple.It
             // Calculate the vector from the base to the initial handle pos
             Vector3 baseToInitialHandle = _initialHandlePos - basePos;
 
-            float angle = 0;
+            float angle;
 
             //----------------------------------------------
             // Calculate the angle between the two vectors
@@ -202,16 +197,38 @@ namespace Rhinox.XR.Grapple.It
             if (!gestureOnHand.Name.Equals(_grabGestureName))
                 return false;
 
-            // Return whether the interact joint is in range
             float jointDistSq = joint.JointPosition.SqrDistanceTo(_handleTransform.position);
 
-            if (jointDistSq < _grabRadius * _grabRadius)
+            if (State != GRPLInteractionState.Interacted )
             {
-                _previousInteractJoint = joint;
-                return true;
+                bool gestureRecognizedThisFrame = hand == RhinoxHand.Left ? 
+                    _gestureRecognizer.LeftHandGestureRecognizedThisFrame :
+                    _gestureRecognizer.RightHandGestureRecognizedThisFrame;
+
+                if (!gestureRecognizedThisFrame)
+                    return false;
+
+                // Return whether the interact joint is in range
+                if (jointDistSq < _grabRadius * _grabRadius)
+                {
+                    _previousInteractJoint = joint;
+                    return true;
+                }
+
+                return false;
             }
 
-            return false;
+            if (State == GRPLInteractionState.Interacted && !_ignoreDistanceOnGrab)
+            {
+                if (jointDistSq < _grabRadius * _grabRadius)
+                {
+                    _previousInteractJoint = joint;
+                    return true;
+                }
+                return false;
+            }
+            
+            return State == GRPLInteractionState.Interacted;
         }
 
         public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint joint)
@@ -229,7 +246,7 @@ namespace Rhinox.XR.Grapple.It
         {
             if (!_drawDebug)
                 return;
-
+            
             Transform transform1 = transform;
             Vector3 basePos = _baseTransform.position;
             Vector3 handlePos = _handleTransform.position;
@@ -306,7 +323,7 @@ namespace Rhinox.XR.Grapple.It
             _handleTransform.SetParent(_stemTransform, false);
 
             var newLocalPos = Vector3.zero;
-            newLocalPos.y += _leverFollowRange.y / 4;
+            newLocalPos.y += .5f;
             _handleTransform.localPosition = newLocalPos;
 
             Transform handleVis = new GameObject("Handle_Visuals").transform;

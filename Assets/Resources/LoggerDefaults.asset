@@ -13,6 +13,16 @@ MonoBehaviour:
   m_Name: LoggerDefaults
   m_EditorClassIdentifier: 
   Settings:
+  - TypeName: GrappleLogger
+    FullTypeName: Rhinox.XR.Grapple.GrappleLogger
+    Muted: 0
+    Level: 2
+    ThrowExceptionOnFatal: 0
+  - TypeName: GRPLITLogger
+    FullTypeName: Rhinox.XR.Grapple.It.GRPLITLogger
+    Muted: 0
+    Level: 2
+    ThrowExceptionOnFatal: 0
   - TypeName: UtilityLogger
     FullTypeName: Rhinox.Utilities.UtilityLogger
     Muted: 0
@@ -20,16 +30,6 @@ MonoBehaviour:
     ThrowExceptionOnFatal: 0
   - TypeName: DefaultLogger
     FullTypeName: Rhinox.Perceptor.PLog+DefaultLogger
-    Muted: 0
-    Level: 2
-    ThrowExceptionOnFatal: 0
-  - TypeName: GrappleLogger
-    FullTypeName: Rhinox.XR.Grapple.GrappleLogger
-    Muted: 0
-    Level: 2
-    ThrowExceptionOnFatal: 0
-  - TypeName: GrappleItLogger
-    FullTypeName: Rhinox.XR.Grapple.It.GrappleItLogger
     Muted: 0
     Level: 2
     ThrowExceptionOnFatal: 0

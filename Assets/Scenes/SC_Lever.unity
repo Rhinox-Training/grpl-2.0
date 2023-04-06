@@ -455,15 +455,15 @@ MonoBehaviour:
   _baseTransform: {fileID: 1412511416}
   _stemTransform: {fileID: 653855579}
   _handleTransform: {fileID: 887746599}
-  _interactMinAngle: 121.2
+  _interactMinAngle: 87.5
   _leverMaxAngle: 180
-  _leverFollowRange: {x: 0.6, y: 0.6, z: 0.6}
+  _ignoreDistanceOnGrab: 0
   _grabGestureName: Grab
-  _grabRadius: 0.15
+  _grabRadius: 0.16
   _drawDebug: 1
-  _drawArc: 0
-  _drawGrabRange: 0
-  _drawArcExtends: 0
+  _drawArc: 1
+  _drawGrabRange: 1
+  _drawArcExtends: 1
 --- !u!1 &577370075
 GameObject:
   m_ObjectHideFlags: 0
@@ -1175,13 +1175,13 @@ MonoBehaviour:
   _handleTransform: {fileID: 345334689}
   _interactMinAngle: 70.2
   _leverMaxAngle: 147
-  _leverFollowRange: {x: 0.6, y: 0.6, z: 0.6}
+  _ignoreDistanceOnGrab: 1
   _grabGestureName: Grab
   _grabRadius: 0.1
-  _drawDebug: 1
+  _drawDebug: 0
   _drawArc: 1
   _drawGrabRange: 1
-  _drawArcExtends: 0
+  _drawArcExtends: 1
 --- !u!4 &1070097397
 Transform:
   m_ObjectHideFlags: 0
