@@ -7,6 +7,7 @@ using System.IO;
 using Newtonsoft.Json;
 using Rhinox.Perceptor;
 using UnityEngine.InputSystem;
+using System;
 
 namespace Rhinox.XR.Grapple
 {
@@ -17,10 +18,9 @@ namespace Rhinox.XR.Grapple
     /// <dependencies> <see cref="GRPLJointManager"/> </dependencies>
     public class GRPLGestureRecognizer : MonoBehaviour
     {
-        public bool ImportOnPlay = false;
-
-        public string ImportFilePath = "";
         public bool OverwriteGesturesOnImport;
+        public bool ImportOnPlay = false;
+        public string ImportFilePath = "";
 
         public bool ExportOnDestroy = false;
         public string ExportFilePath = "";
@@ -36,6 +36,8 @@ namespace Rhinox.XR.Grapple
         public float GestureForwardThreshold = 0.5f;
 
         public List<RhinoxGesture> Gestures = new List<RhinoxGesture>();
+
+        public static event Action<GRPLGestureRecognizer> GlobalInitialized;
 
         public UnityEvent<RhinoxHand, string> OnGestureRecognized;
         public UnityEvent<RhinoxHand, string> OnGestureUnrecognized;
@@ -66,10 +68,15 @@ namespace Rhinox.XR.Grapple
         /// <param name="jointManager"></param>
         private void Initialize(GRPLJointManager jointManager)
         {
+            if (_isInitialized)
+                return;
+
             _jointManager = jointManager;
             _jointManager.TrackingLost += OnTrackingLost;
             _isInitialized = true;
             GestureRecognizerGlobalInitialized?.Invoke(this);
+
+            GlobalInitialized?.Invoke(this);
         }
 
         private void Awake()
