@@ -2998,7 +2998,7 @@ MonoBehaviour:
   _proximateRadius: 0.5
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
-  _maxSocketDistance: 0.15
+  _maxSocketDistance: 0.075
   _sockets:
   - {fileID: 521542655210110409}
   - {fileID: 1680206003}

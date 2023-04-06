@@ -1,7 +1,4 @@
-using Codice.ThemeImages;
 using Rhinox.Lightspeed;
-using Rhinox.Perceptor;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -59,7 +56,6 @@ namespace Rhinox.XR.Grapple.It
             {
                 _jointManager = jointManager;
 
-                //_jointManager.TrackingAcquired += TrackingAcquired;
                 //No need to do something on TrackingAquired
                 _jointManager.TrackingLost += TrackingLost;
             }
@@ -125,7 +121,6 @@ namespace Rhinox.XR.Grapple.It
             {
                 _grabGesture.RemoveListenerOnRecognized(TryGrab);
                 _grabGesture.RemoveListenerOnUnRecognized(TryDrop);
-                //PLog.Info<GRPLITLogger>($"{this.name}: Removed");
             }
         }
 
@@ -156,6 +151,7 @@ namespace Rhinox.XR.Grapple.It
 
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
+            //_currentHandHolding
             switch (hand)
             {
                 case RhinoxHand.Left:
@@ -170,10 +166,6 @@ namespace Rhinox.XR.Grapple.It
             }
 
             return IsGrabbed;
-            //if (!IsGrabbed)
-            //return false;
-            //else
-            //return true;
         }
 
         public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint)

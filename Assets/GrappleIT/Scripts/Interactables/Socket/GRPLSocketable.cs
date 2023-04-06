@@ -1,12 +1,7 @@
 using Rhinox.Lightspeed;
 using Rhinox.Perceptor;
-using System;
-//using Rhinox.Perceptor;
 using System.Collections.Generic;
-using System.Net.Sockets;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static PlasticPipe.PlasticProtocol.Client.ConnectionCreator.PlasticProtoSocketConnection;
 
 namespace Rhinox.XR.Grapple.It
 {
@@ -17,7 +12,8 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField] private float _maxSocketDistance = .025f;
         [SerializeField] private List<Transform> _sockets = null;
 
-        private Transform _closestSocket = null;
+        private Transform _closestSocketL = null;
+        private Transform _closestSocketR = null;
         private float _maxSocketDistanceSqrd = 0f;
 
         protected override void Initialize()
@@ -33,24 +29,49 @@ namespace Rhinox.XR.Grapple.It
             _maxSocketDistanceSqrd = _maxSocketDistance * _maxSocketDistance;
         }
 
+        //TODO: maybe bounding box optimazition for early return?
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
-            //TODO: maybe bounding box optimazition for early return?
+            if (hand == _currentHandHolding)
+            {
+                switch (hand)
+                {
+                    case RhinoxHand.Left:
+                        _canHandGrabL = false;
+                        break;
+                    case RhinoxHand.Right:
+                        _canHandGrabR = false;
+                        break;
+                    default:
+                        break;
+                }
+
+                return IsGrabbed;
+            }
+
 
             //Predicate<Transform> predicate = (trans) => { return (joint.JointPosition - trans.position).sqrMagnitude <= _maxSocketDistanceSqrd; };
             //_closestSocket = _sockets.GetClosestTo(joint.JointPosition, predicate);
 
             //ask Jorian/Gaetan what to do with this
-            _closestSocket = _sockets.GetClosestTo(joint.JointPosition, null, ref _maxSocketDistanceSqrd);
+            var closestSocket = _sockets.GetClosestTo(joint.JointPosition, null, ref _maxSocketDistanceSqrd);
             _maxSocketDistanceSqrd = _maxSocketDistance * _maxSocketDistance;
 
             switch (hand)
             {
                 case RhinoxHand.Left:
-                    _canHandGrabL = _closestSocket != null;
+                    if (closestSocket != null)
+                    {
+                        _canHandGrabL = true;
+                        _closestSocketL = closestSocket;
+                    }
                     break;
                 case RhinoxHand.Right:
-                    _canHandGrabR = _closestSocket != null;
+                    if (closestSocket != null)
+                    {
+                        _canHandGrabR = true;
+                        _closestSocketR = closestSocket;
+                    }
                     break;
                 default:
                     break;
@@ -61,6 +82,18 @@ namespace Rhinox.XR.Grapple.It
 
         protected override void GrabInternal(GameObject parent, RhinoxHand rhinoxHand)
         {
+            Transform _closestSocket = null;
+
+            switch (rhinoxHand)
+            {
+                case RhinoxHand.Left:
+                    _closestSocket = _closestSocketL;
+                    break;
+                case RhinoxHand.Right:
+                    _closestSocket = _closestSocketR;
+                    break;
+            }
+
             if (_closestSocket == null)
                 return;
 
