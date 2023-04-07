@@ -1,4 +1,5 @@
 using Rhinox.Lightspeed;
+using Rhinox.Perceptor;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,6 +9,15 @@ namespace Rhinox.XR.Grapple.It
 {
     public class GRPLGrabbableInteractable : GRPLInteractable
     {
+        [Space(10f)]
+        [Header("Bounding box settings")]
+        [SerializeField] bool _useCollidersInsteadOfBoundingBox = false;
+        [SerializeField] List<Collider> _boundColliders;
+
+        [Space(15f)]
+        [SerializeField] bool _showBoundingBox;
+        [SerializeField] Vector3 _boundingBoxExtensionValues = new Vector3(0.5f, 0.5f, 0.5f);
+
         public bool IsGrabbed { get; protected set; } = false;
 
         protected Transform _previousParentTransform = null;
@@ -26,7 +36,7 @@ namespace Rhinox.XR.Grapple.It
         private RhinoxGesture _grabGesture;
         private static GRPLJointManager _jointManager;
 
-        private const float _boundsIncreasment = 1.4f;
+        //private const float _boundsIncreasment = 1.4f;
 
         //==========
         //INITIALIZE
@@ -35,10 +45,29 @@ namespace Rhinox.XR.Grapple.It
         {
             base.Initialize();
 
-            _bounds = gameObject.GetObjectBounds();
+            if (_useCollidersInsteadOfBoundingBox)
+            {
+                int tempCnt = _boundColliders.Count;
+                _boundColliders.RemoveAll(s => s == null);
+                if (_boundColliders.Count != tempCnt)
+                    PLog.Warn<GRPLITLogger>($"[{GetType()}:Initialize], " +
+                        $"Bound Colliders list had empties and have been purged", this);
 
-            //TODO: Refactor this
-            _bounds.extents *= _boundsIncreasment;//increase bouds a bit with magic number
+                foreach (var col in _boundColliders)
+                {
+                    if (!col.isTrigger)
+                    {
+                        col.isTrigger = true;
+                        PLog.Warn<GRPLITLogger>($"[{GetType()}:Initialize], " +
+                            $"Collider {col.name} was not a trigger, has been set to trigger.", this);
+                    }
+                }
+            }
+            else
+            {
+                _bounds = gameObject.GetObjectBounds();
+                _bounds.extents += _boundingBoxExtensionValues;
+            }
 
             if (TryGetComponent(out _rigidBody))
             {
@@ -130,10 +159,16 @@ namespace Rhinox.XR.Grapple.It
             switch (hand)
             {
                 case RhinoxHand.Left:
-                    _canHandGrabL = _bounds.Contains(joint.JointPosition);
+                    if (_useCollidersInsteadOfBoundingBox)
+                        _canHandGrabL = _boundColliders.Any(col => col.bounds.Contains(joint.JointPosition));
+                    else
+                        _canHandGrabL = _bounds.Contains(joint.JointPosition);
                     break;
                 case RhinoxHand.Right:
-                    _canHandGrabR = _bounds.Contains(joint.JointPosition);
+                    if (_useCollidersInsteadOfBoundingBox)
+                        _canHandGrabR = _boundColliders.Any(col => col.bounds.Contains(joint.JointPosition));
+                    else
+                        _canHandGrabR = _bounds.Contains(joint.JointPosition);
                     break;
                 case RhinoxHand.Invalid:
                 default:
@@ -152,7 +187,7 @@ namespace Rhinox.XR.Grapple.It
         private void Update()
         {
             _bounds = gameObject.GetObjectBounds();
-            _bounds.extents *= _boundsIncreasment;
+            _bounds.extents += _boundingBoxExtensionValues;
         }
 
         public void TryGrab(RhinoxHand hand)
@@ -233,7 +268,18 @@ namespace Rhinox.XR.Grapple.It
 #if UNITY_EDITOR
         private void OnDrawGizmos()
         {
-            Gizmos.DrawWireCube(_bounds.center, _bounds.size);
+            if (_useCollidersInsteadOfBoundingBox)
+            {
+
+            }
+            else if (_showBoundingBox)
+            {
+                _bounds = gameObject.GetObjectBounds();
+
+                _bounds.extents += _boundingBoxExtensionValues;
+
+                Gizmos.DrawWireCube(_bounds.center, _bounds.size);
+            }
         }
 #endif
     }
