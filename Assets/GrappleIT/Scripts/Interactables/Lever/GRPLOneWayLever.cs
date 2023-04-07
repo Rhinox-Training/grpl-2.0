@@ -11,7 +11,7 @@ using Rhinox.GUIUtils.Editor;
 
 namespace Rhinox.XR.Grapple.It
 {
-    public class GRPLLever : GRPLLeverBase
+    public class GRPLOneWayLever : GRPLLeverBase
     {
         [Header("Debug Parameters")] [SerializeField]
         private bool _drawDebug = false;
@@ -25,8 +25,9 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField] [HideIfFieldFalse("_drawDebug", 0f)]
         private bool _drawArcExtends = false;
 
-        public event Action<GRPLLever> LeverActivated;
-        public event Action<GRPLLever> LeverStopped;
+        public event Action<GRPLOneWayLever> LeverActivated;
+        public event Action<GRPLOneWayLever> LeverStopped;
+        
         private bool _isLeverActivated = false;
 
         //-----------------------
@@ -81,7 +82,7 @@ namespace Rhinox.XR.Grapple.It
         /// </summary>
         /// <param name="projectedPos">The position of the projected joint on the plane defined by the lever.</param>
         /// <returns></returns>
-        private float GetLeverRotation(Vector3 projectedPos)
+        protected override float GetLeverRotation(Vector3 projectedPos)
         {
             Vector3 basePos = _baseTransform.position;
 
@@ -124,6 +125,12 @@ namespace Rhinox.XR.Grapple.It
         //-----------------------
         // INHERITED METHODS
         //-----------------------
+        protected override void Initialize()
+        {
+            _initialHandlePos = _handleTransform.position;
+            _initialHandleRot = _handleTransform.rotation.eulerAngles;
+        }
+        
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
             // Get the current gesture from the target hand
