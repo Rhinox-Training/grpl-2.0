@@ -11,6 +11,11 @@ using Rhinox.GUIUtils.Editor;
 
 namespace Rhinox.XR.Grapple.It
 {
+    /// <summary>
+    /// The GRPLOneWayLever class is a subclass of GRPLLeverBase and provides functionality for one-way levers in a 3D environment. <br /><br />
+    /// The class contains the {LeverActivated} and {LeverStopped} events for lever activation and lever stopping.<br /><br />
+    /// Additionally, the class includes fields for debugging and drawing.
+    /// </summary>
     public class GRPLOneWayLever : GRPLLeverBase
     {
         [Header("Debug Parameters")] [SerializeField]

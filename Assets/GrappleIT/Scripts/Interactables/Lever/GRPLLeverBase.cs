@@ -6,6 +6,10 @@ using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple.It
 {
+     /// <summary>
+     /// The GRPLLeverBase class is an abstract class that extends from GRPLInteractable. <br /> <br />
+     ///  The class is used to derive lever-type interactable objects, and it includes additional methods and properties for the purpose of that functionality.
+     /// </summary>
     public abstract class GRPLLeverBase : GRPLInteractable
     {
         [Space(5)] [Header("Lever parameters")] [SerializeField]
@@ -14,7 +18,7 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField] protected Transform _stemTransform;
         [SerializeField] protected Transform _handleTransform;
 
-        [SerializeField] [RangeField(0, "_leverMaxAngle")]
+        [SerializeField]
         protected float _interactMinAngle = 90f;
 
         [SerializeField] [Range(0, 360f)] protected float _leverMaxAngle = 180f;
@@ -34,6 +38,12 @@ namespace Rhinox.XR.Grapple.It
         //-----------------------
         // MONO BEHAVIOUR METHODS
         //-----------------------
+
+        private void OnValidate()
+        {
+            _interactMinAngle = Mathf.Clamp(_interactMinAngle, 0, _leverMaxAngle);
+        }
+
         protected void Awake()
         {
             //Force the ForcedInteractJoint
@@ -93,7 +103,7 @@ namespace Rhinox.XR.Grapple.It
         // EDITOR ONLY METHODS
         //-----------------------
         #if UNITY_EDITOR
-        protected void Reset()
+        private void Reset()
         {
             _baseTransform = new GameObject("Base").transform;
             _baseTransform.SetParent(this.transform);

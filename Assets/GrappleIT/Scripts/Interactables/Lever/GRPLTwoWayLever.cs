@@ -7,6 +7,12 @@ using UnityEngine;
 
 namespace Rhinox.XR.Grapple.It
 {
+    /// <summary>
+    /// The GRPLOneWayLever class is a subclass of GRPLLeverBase and provides functionality for two-way levers in a 3D environment. <br /><br />
+    /// It has four events (LeverForwardActivated, LeverForwardStopped, LeverBackwardActivated, LeverBackwardStopped) to notify when the lever is activated or stopped in either direction. <br /><br />
+    /// It also has some properties that can be used for debugging. <br /><br />
+    /// The OnValidate method is used to set the minimum angle that the lever can move, while the Update method is used to update the lever's rotation and process the current angle.
+    /// </summary>
     public class GRPLTwoWayLever : GRPLLeverBase
     {
         public event Action<GRPLTwoWayLever> LeverForwardActivated;
@@ -32,6 +38,11 @@ namespace Rhinox.XR.Grapple.It
         //-----------------------
         // MONO BEHAVIOUR METHODS
         //-----------------------
+        private void OnValidate()
+        {
+            _interactMinAngle = Mathf.Clamp(_interactMinAngle, 0, _leverMaxAngle/2);
+        }
+        
         private void Update()
         {
             if (State != GRPLInteractionState.Interacted)
@@ -205,17 +216,57 @@ namespace Rhinox.XR.Grapple.It
                 DrawArc(basePos, direction, transform1.right, arcRadius);
 
             if (_drawLeverExtends)
-                DrawLeverExtends();
+                DrawLeverExtends(basePos, direction, transform1.right, arcRadius);
         }
 
-        private void DrawLeverExtends()
+        private void DrawLeverExtends(Vector3 arcCenter, Vector3 direction, Vector3 arcNormal, float arcRadius)
         {
+            {
+                // Draw lever start
+                Vector3 beginPos = arcCenter + direction * arcRadius;
+                Handles.Label(beginPos, "Lever start");
+                Gizmos.DrawSphere(beginPos, .01f);
+            }
+
+            float maxAngleOneSide = _leverMaxAngle / 2;
+            {
+                // Draw forward MaxPos
+                var dir = direction;
+                dir = Quaternion.AngleAxis(-maxAngleOneSide, arcNormal) * dir; // rotate it
+                Vector3 result = arcCenter + dir * arcRadius;
+                Handles.Label(result, "Forward max");
+                Gizmos.DrawSphere(result, .005f);
+            }
+            {
+                // Draw forward MinPos
+                var dir = direction;
+                dir = Quaternion.AngleAxis(-_interactMinAngle, arcNormal) * dir; // rotate it
+                Vector3 result = arcCenter + dir * arcRadius;
+                Handles.Label(result, "Forward min");
+                Gizmos.DrawSphere(result, .005f);
+            }
+            {
+                // Draw backward MaxPos
+                var dir = direction;
+                dir = Quaternion.AngleAxis(maxAngleOneSide, arcNormal) * dir; // rotate it
+                Vector3 result = arcCenter + dir * arcRadius;
+                Handles.Label(result, "Backward min");
+                Gizmos.DrawSphere(result, .005f);
+            }
+            {
+                // Draw backward MinPos
+                var dir = direction;
+                dir = Quaternion.AngleAxis(_interactMinAngle, arcNormal) * dir; // rotate it
+                Vector3 result = arcCenter + dir * arcRadius;
+                Handles.Label(result, "Backward min");
+                Gizmos.DrawSphere(result, .005f);
+            }
         }
 
         private void DrawArc(Vector3 arcCenter, Vector3 direction, Vector3 arcNormal, float arcRadius)
         {
             float maxAngleOneSide = _leverMaxAngle / 2;
-
+            // TODO: Draw the arc using custom gizmo DrawArc() extension
             {
                 Handles.color = Color.green;
                 var backDir = direction;
@@ -229,10 +280,41 @@ namespace Rhinox.XR.Grapple.It
                 forwardDir = Quaternion.AngleAxis(-maxAngleOneSide, arcNormal) * forwardDir; // rotate it
                 Handles.DrawSolidArc(arcCenter, arcNormal, forwardDir, (maxAngleOneSide - _interactMinAngle),
                     arcRadius);
-                
-                
             }
-            
+            {
+                Handles.color = Color.red;
+                var forwardDir = direction;
+                forwardDir = Quaternion.AngleAxis(-_interactMinAngle, arcNormal) * forwardDir; // rotate it
+                Handles.DrawSolidArc(arcCenter, arcNormal, forwardDir, 2 * _interactMinAngle,
+                    arcRadius);
+            }
+        }
+
+        private void Reset()
+        {
+            _baseTransform = new GameObject("Base").transform;
+            _baseTransform.SetParent(this.transform);
+
+            _baseTransform.localPosition = Vector3.zero;
+
+            Transform baseVis = new GameObject("Base_Visuals").transform;
+            baseVis.SetParent(_baseTransform.transform, false);
+
+            _stemTransform = new GameObject("Stem").transform;
+            _stemTransform.SetParent(_baseTransform, false);
+
+            Transform stemVis = new GameObject("Stem_Visuals").transform;
+            stemVis.SetParent(_stemTransform.transform, false);
+
+            _handleTransform = new GameObject("Handle").transform;
+            _handleTransform.SetParent(_stemTransform, false);
+
+            var newLocalPos = Vector3.zero;
+            newLocalPos.z += .5f;
+            _handleTransform.localPosition = newLocalPos;
+
+            Transform handleVis = new GameObject("Handle_Visuals").transform;
+            handleVis.SetParent(_handleTransform.transform, false);
         }
 #endif
     }
