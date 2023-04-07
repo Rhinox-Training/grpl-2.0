@@ -10,8 +10,8 @@ namespace Rhinox.XR.Grapple.It
 
         public void OnValidate()
         {
-            if (Socket == null)
-                PLog.Error<GRPLITLogger>($"{nameof(GRPLSocketable)} Socket was not set.", this);
+            //if (Socket == null)
+                //PLog.Error<GRPLITLogger>($"{nameof(GRPLSocketable)} Socket was not set.", this);
         }
 
         public override void Grabbed(GameObject parent, RhinoxHand rhinoxHand)
