@@ -7,7 +7,6 @@ using System.IO;
 using Newtonsoft.Json;
 using Rhinox.Perceptor;
 using UnityEngine.InputSystem;
-using System;
 
 namespace Rhinox.XR.Grapple
 {
@@ -42,7 +41,7 @@ namespace Rhinox.XR.Grapple
         public UnityEvent<RhinoxHand, string> OnGestureRecognized;
         public UnityEvent<RhinoxHand, string> OnGestureUnrecognized;
 
-        public static event Action<GRPLGestureRecognizer> GestureRecognizerGlobalInitialized;
+        //public static event Action<GRPLGestureRecognizer> GlobalInitialized;
 
         public RhinoxGesture CurrentLeftGesture => _currentLeftGesture;
         public RhinoxGesture CurrentRightGesture => _currentRightGesture;
@@ -51,9 +50,10 @@ namespace Rhinox.XR.Grapple
 
         public bool LeftHandGestureRecognizedThisFrame => _leftHandGestureRecognizedThisFrame;
         public bool RightHandGestureRecognizedThisFrame => _rightHandGestureRecognizedThisFrame;
+
+
         private bool _leftHandGestureRecognizedThisFrame;
         private bool _rightHandGestureRecognizedThisFrame;
-
 
         private RhinoxGesture _lastLeftGesture;
         private RhinoxGesture _lastRightGesture;
@@ -74,7 +74,6 @@ namespace Rhinox.XR.Grapple
             _jointManager = jointManager;
             _jointManager.TrackingLost += OnTrackingLost;
             _isInitialized = true;
-            GestureRecognizerGlobalInitialized?.Invoke(this);
 
             GlobalInitialized?.Invoke(this);
         }

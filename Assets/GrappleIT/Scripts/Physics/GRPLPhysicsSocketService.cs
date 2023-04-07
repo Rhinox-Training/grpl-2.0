@@ -68,7 +68,7 @@ namespace Rhinox.XR.Grapple.It
                 _socketObjL = new GameObject("Socket Left");
                 _socketObjL.transform.parent = _colliderObjL.transform;
 
-                //needs to be rotate 90°, otherwise object would go through handpalm and this one is rotate antoher 180°, because it's the opposite of left hand
+                //needs to be rotate 90°, otherwise object would go through handpalm and this one is rotate antoher 180°, because it's the opposite of right hand
                 _socketObjL.transform.SetLocalPositionAndRotation(_handSocketAndColliderOffset, Quaternion.Euler(0f, 0f, 270f));
 
                 var colliderEventsL = _colliderObjL.AddComponent<PhysicsEventHandler>();
@@ -262,13 +262,13 @@ namespace Rhinox.XR.Grapple.It
                 //switch hand if the potential object is currently grabbed by the other hand
                 if (potentialGrabItem == grabbedItemOtherHand)
                 {
-                    grabbedItemOtherHand.GetComponent<GRPLBaseInteractable>().Dropped();
+                    //grabbedItemOtherHand.GetComponent<GRPLGrabbableInteractable>().DropInternal();
                     OnObjectDropped.Invoke(hand, grabbedItemOtherHand);
                     OnGrabEnded.Invoke(hand);
                     grabbedItemOtherHand = null;
                 }
 
-                potentialGrabItem.GetComponent<GRPLBaseInteractable>().Grabbed(socket, hand);
+                //potentialGrabItem.GetComponent<GRPLGrabbableInteractable>().GrabInternal(socket, hand);
 
                 grabbedItemCurrentHand = potentialGrabItem;
 
@@ -283,7 +283,7 @@ namespace Rhinox.XR.Grapple.It
             {
                 if (grabbedItemCurrentHand != grabbedItemOtherHand)
                 {
-                    grabbedItemCurrentHand.GetComponent<GRPLBaseInteractable>().Dropped();
+                    //grabbedItemCurrentHand.GetComponent<GRPLGrabbableInteractable>().DropInternal();
 
                     OnObjectDropped.Invoke(hand, grabbedItemCurrentHand);
                     OnGrabEnded.Invoke(hand);
@@ -295,7 +295,7 @@ namespace Rhinox.XR.Grapple.It
 
         public void OnHandTriggerEnter(GameObject triggerObj, GameObject otherObj, RhinoxHand hand)
         {
-            var grplInteractableCmp = otherObj.GetComponent<GRPLBaseInteractable>();
+            var grplInteractableCmp = otherObj.GetComponent<GRPLGrabbableInteractable>();
             if (grplInteractableCmp == null)
                 return;
 

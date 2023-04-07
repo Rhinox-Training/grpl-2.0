@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace Rhinox.XR.Grapple.It
+namespace Rhinox.XR.Grapple
 {
     [CustomPropertyDrawer(typeof(HideIfFieldFalseAttribute))]
     public class HideIfFieldFalseAttributeDrawer : PropertyDrawer

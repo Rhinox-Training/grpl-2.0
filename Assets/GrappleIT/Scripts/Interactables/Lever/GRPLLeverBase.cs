@@ -47,11 +47,11 @@ namespace Rhinox.XR.Grapple.It
         protected void Awake()
         {
             //Force the ForcedInteractJoint
-            ForceInteractibleJoint = true;
-            ForcedInteractJointID = XRHandJointID.Palm;
+            _forceInteractibleJoint = true;
+            _forcedInteractJointID = XRHandJointID.Palm;
 
             // Link to gesture recognizer
-            GRPLGestureRecognizer.GestureRecognizerGlobalInitialized += OnGestureRecognizerGlobalInitialized;
+            GRPLGestureRecognizer.GlobalInitialized += OnGestureRecognizerGlobalInitialized;
             
             Initialize();
         }
