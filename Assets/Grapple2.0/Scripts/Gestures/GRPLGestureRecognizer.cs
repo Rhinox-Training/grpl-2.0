@@ -1,11 +1,12 @@
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.XR.Hands;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
+using Rhinox.Perceptor;
 using UnityEngine.InputSystem;
-using System;
 
 namespace Rhinox.XR.Grapple
 {
@@ -40,8 +41,19 @@ namespace Rhinox.XR.Grapple
         public UnityEvent<RhinoxHand, string> OnGestureRecognized;
         public UnityEvent<RhinoxHand, string> OnGestureUnrecognized;
 
+        public static event Action<GRPLGestureRecognizer> GlobalInitialized;
+
+        public RhinoxGesture CurrentLeftGesture => _currentLeftGesture;
+        public RhinoxGesture CurrentRightGesture => _currentRightGesture;
         private RhinoxGesture _currentLeftGesture;
         private RhinoxGesture _currentRightGesture;
+
+        public bool LeftHandGestureRecognizedThisFrame => _leftHandGestureRecognizedThisFrame;
+        public bool RightHandGestureRecognizedThisFrame => _rightHandGestureRecognizedThisFrame;
+
+
+        private bool _leftHandGestureRecognizedThisFrame;
+        private bool _rightHandGestureRecognizedThisFrame;
 
         private RhinoxGesture _lastLeftGesture;
         private RhinoxGesture _lastRightGesture;
@@ -211,10 +223,54 @@ namespace Rhinox.XR.Grapple
 
             if (currentGesture != lastGesture)
             {
+                if (handedness == RhinoxHand.Left)
+                    _leftHandGestureRecognizedThisFrame = true;
+                else
+                    _rightHandGestureRecognizedThisFrame = true;
                 lastGesture?.InvokeOnUnRecognized(handedness);
                 OnGestureUnrecognized?.Invoke(handedness, lastGesture?.Name);
                 currentGesture?.InvokeOnRecognized(handedness);
                 if (currentGesture != null) OnGestureRecognized?.Invoke(handedness, currentGesture.Name);
+            }
+            else
+            {
+                if (handedness == RhinoxHand.Left)
+                    _leftHandGestureRecognizedThisFrame = false;
+                else
+                    _rightHandGestureRecognizedThisFrame = false;
+            }
+        }
+
+        public RhinoxGesture GetGestureOnHand(RhinoxHand hand)
+        {
+            switch (hand)
+            {
+                case RhinoxHand.Left:
+                    return _currentLeftGesture;
+                case RhinoxHand.Right:
+                    return _currentRightGesture;
+                case RhinoxHand.Invalid:
+                default:
+                    PLog.Error<GrappleLogger>(
+                        $"GRPLGestureRecognizer.cs - GetGestureOnHand({hand}), " +
+                        $"function called with invalid hand: {hand}.");
+                    return null;
+            }
+        }
+
+        public bool WasRecognizedGestureStartedThisFrame(RhinoxHand hand)
+        {
+            switch (hand)
+            {
+                case RhinoxHand.Left:
+                    return LeftHandGestureRecognizedThisFrame;
+                case RhinoxHand.Right:
+                    return RightHandGestureRecognizedThisFrame;
+                case RhinoxHand.Invalid:
+                default:
+                    PLog.Error<GrappleLogger>($"GRPLGestureRecognizer.cs - GetGestureOnHand({hand}), " +
+                                              $"function called with invalid hand: {hand}.");
+                    return false;
             }
         }
 

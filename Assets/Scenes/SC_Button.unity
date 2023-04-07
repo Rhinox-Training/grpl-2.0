@@ -303,7 +303,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Instance: {fileID: 0}
   _maxAmountOfProximatesPerHand: 9
-  _proximateRadius: 0.5
+  _proximateRadius: 0.25
   _proximateJointID: 12
   _interactibleGroups:
   - {fileID: 1110593844}
@@ -602,8 +602,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _proximateRadius: 0.5
-  _forceInteractibleJoint: 0
-  _forcedInteractJointID: 11
+  ForceInteractibleJoint: 0
+  ForcedInteractJointID: 11
   _drawDebug: 0
   _interactableBaseTransform: {fileID: 370884511}
   _interactObject: {fileID: 951720752}
@@ -997,8 +997,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _proximateRadius: 0.5
-  _forceInteractibleJoint: 0
-  _forcedInteractJointID: 11
+  ForceInteractibleJoint: 0
+  ForcedInteractJointID: 11
   _drawDebug: 0
   _interactableBaseTransform: {fileID: 1159259492}
   _interactObject: {fileID: 1020492204}
@@ -2872,8 +2872,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _proximateRadius: 0.5
-  _forceInteractibleJoint: 0
-  _forcedInteractJointID: 11
+  ForceInteractibleJoint: 0
+  ForcedInteractJointID: 11
   _drawDebug: 0
   _interactableBaseTransform: {fileID: 1804658658}
   _interactObject: {fileID: 1937194935}
@@ -3161,8 +3161,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _proximateRadius: 0.5
-  _forceInteractibleJoint: 0
-  _forcedInteractJointID: 11
+  ForceInteractibleJoint: 0
+  ForcedInteractJointID: 11
   _drawDebug: 0
   _interactableBaseTransform: {fileID: 1840236698}
   _interactObject: {fileID: 1350784501}
@@ -5587,8 +5587,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _proximateRadius: 0.5
-  _forceInteractibleJoint: 0
-  _forcedInteractJointID: 11
+  ForceInteractibleJoint: 0
+  ForcedInteractJointID: 11
   _drawDebug: 0
   _interactableBaseTransform: {fileID: 2006563335}
   _interactObject: {fileID: 2138547903}
@@ -6019,8 +6019,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _proximateRadius: 0.5
-  _forceInteractibleJoint: 0
-  _forcedInteractJointID: 11
+  ForceInteractibleJoint: 0
+  ForcedInteractJointID: 11
   _drawDebug: 0
   _interactableBaseTransform: {fileID: 1107230079}
   _interactObject: {fileID: 821127323}
@@ -8169,8 +8169,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _proximateRadius: 0.5
-  _forceInteractibleJoint: 0
-  _forcedInteractJointID: 11
+  ForceInteractibleJoint: 0
+  ForcedInteractJointID: 11
   _drawDebug: 0
   _interactableBaseTransform: {fileID: 961948665}
   _interactObject: {fileID: 63877137}
@@ -9047,8 +9047,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _proximateRadius: 0.5
-  _forceInteractibleJoint: 1
-  _forcedInteractJointID: 11
+  ForceInteractibleJoint: 0
+  ForcedInteractJointID: 11
   _drawDebug: 0
   _interactableBaseTransform: {fileID: 2080736830}
   _interactObject: {fileID: 1650147529}
@@ -9563,8 +9563,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _proximateRadius: 0.5
-  _forceInteractibleJoint: 0
-  _forcedInteractJointID: 11
+  ForceInteractibleJoint: 0
+  ForcedInteractJointID: 11
   _drawDebug: 0
   _interactableBaseTransform: {fileID: 394207465}
   _interactObject: {fileID: 42276286}
@@ -9881,7 +9881,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5210042141153954088, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
       propertyPath: _drawDebug
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5210042141153954088, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
       propertyPath: _interactDelay
@@ -9938,6 +9938,14 @@ PrefabInstance:
     - target: {fileID: 5210042141153954091, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5210042141849322308, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5210042141849322308, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.0367
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}

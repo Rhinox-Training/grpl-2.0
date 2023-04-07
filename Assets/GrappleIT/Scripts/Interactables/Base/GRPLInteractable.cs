@@ -36,8 +36,7 @@ namespace Rhinox.XR.Grapple.It
         public GRPLInteractionState State => _state;
 
         public bool ShouldPerformInteractCheck { set; get; } = true;
-        
-        
+
 
         private void Start()
         {
@@ -96,6 +95,13 @@ namespace Rhinox.XR.Grapple.It
         public virtual bool ShouldInteractionCheckStop() => false;
 
         /// <summary>
+        /// Returns the reference position for this interactible. <br />
+        /// This can be used for proximate interaction checking.
+        /// </summary>
+        /// <returns>The referencePoint</returns>
+        public virtual Vector3 GetReferencePoint() => transform.position; 
+        
+        /// <summary>
         /// Check whether the given joint activates the interaction for this interactable.
         /// </summary>
         /// <param name="joint">The joint to check with</param>
@@ -118,13 +124,5 @@ namespace Rhinox.XR.Grapple.It
         /// </summary>
         /// <param name="p1">The main point</param>
         /// <param name="p2">The other point</param>
-        /// <returns>A boolean representing whether the first point "p1" is closer or not.</returns>
-        public virtual bool IsPointCloserThanOtherPoint(Vector3 p1, Vector3 p2)
-        {
-            var position = transform.position;
-            float distanceSqr1 = (position - p1).sqrMagnitude;
-            float distanceSqr2 = (position - p2).sqrMagnitude;
-            return distanceSqr1 < distanceSqr2;
-        }
     }
 }

@@ -22,7 +22,6 @@ namespace Rhinox.XR.Grapple
     public class GRPLJointManager : MonoBehaviour
     {
         [Header("Socket")]
-        //[SerializeField] private Vector3 _handSocketOffset = new Vector3(0f, -0.03f, 0.025f);//magic numbers got from testing
         [SerializeField] private Vector3 _handSocketOffset = new Vector3(0f, -0.035f, 0.0725f);//magic numbers got from testing
 
         //-----------------------------
