@@ -1,4 +1,3 @@
-using Codice.Utils;
 using Rhinox.Lightspeed;
 using Rhinox.Perceptor;
 using System;
@@ -227,15 +226,5 @@ namespace Rhinox.XR.Grapple.It
             if (isFadeIn)
                 _fadeCorotine = StartCoroutine(Fade(false));
         }
-
-#if UNITY_EDITOR
-        private void OnDrawGizmos()
-        {
-            //Gizmos.DrawWireCube(_pressBounds.center, _pressBounds.extents);
-            //GUIContentHelper.PushColor(new Color(1f, 0f, 1f, 1f));
-            //Gizmos.DrawRay(_pressBounds.center, -transform.forward);
-            //GUIContentHelper.PopColor();
-        }
-#endif
     }
 }

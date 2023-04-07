@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine.XR.Hands;
 using System.Linq;
 using UnityEngine;
 using Rhinox.Lightspeed;
@@ -12,24 +11,13 @@ using Rhinox.GUIUtils.Editor;
 
 namespace Rhinox.XR.Grapple.It
 {
-    public class GRPLLever : GRPLInteractable
+    /// <summary>
+    /// The GRPLOneWayLever class is a subclass of GRPLLeverBase and provides functionality for one-way levers in a 3D environment. <br /><br />
+    /// The class contains the {LeverActivated} and {LeverStopped} events for lever activation and lever stopping.<br /><br />
+    /// Additionally, the class includes fields for debugging and drawing.
+    /// </summary>
+    public class GRPLOneWayLever : GRPLLeverBase
     {
-        [Space(5)] [Header("Lever parameters")] [SerializeField]
-        private Transform _baseTransform;
-
-        [SerializeField] private Transform _stemTransform;
-        [SerializeField] private Transform _handleTransform;
-
-        [SerializeField] [RangeField(0, "_leverMaxAngle")]
-        private float _interactMinAngle = 90f;
-        [SerializeField] [Range(0, 360f)] private float _leverMaxAngle = 180f;
-        [SerializeField] private bool _ignoreDistanceOnGrab = true;
-
-        [Header("Grab parameters")] [SerializeField]
-        private string _grabGestureName = "Grab";
-
-        [SerializeField] private float _grabRadius = .1f;
-
         [Header("Debug Parameters")] [SerializeField]
         private bool _drawDebug = false;
 
@@ -42,38 +30,14 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField] [HideIfFieldFalse("_drawDebug", 0f)]
         private bool _drawArcExtends = false;
 
-        public event Action<GRPLLever> LeverActivated;
-        public event Action<GRPLLever> LeverStopped;
-
-        private GRPLGestureRecognizer _gestureRecognizer;
-
-        private Vector3 _initialHandlePos;
-        private Vector3 _initialHandleRot;
-        private RhinoxJoint _previousInteractJoint;
-
-
+        public event Action<GRPLOneWayLever> LeverActivated;
+        public event Action<GRPLOneWayLever> LeverStopped;
+        
         private bool _isLeverActivated = false;
 
         //-----------------------
         // MONO BEHAVIOUR METHODS
         //-----------------------
-        private void Awake()
-        {
-            // Clamp the activation angle
-            _interactMinAngle = Mathf.Clamp(_interactMinAngle, 0, _leverMaxAngle);
-
-            //Force the ForcedInteractJoint
-            _forceInteractibleJoint = true;
-            _forcedInteractJointID = XRHandJointID.Palm;
-
-            // Link to gesture recognizer
-            GRPLGestureRecognizer.GlobalInitialized += OnGestureRecognizerGlobalInitialized;
-
-            // Set initial state
-            _initialHandlePos = _handleTransform.position;
-            _initialHandleRot = _handleTransform.rotation.eulerAngles;
-        }
-
         private void Update()
         {
             if (State != GRPLInteractionState.Interacted)
@@ -123,7 +87,7 @@ namespace Rhinox.XR.Grapple.It
         /// </summary>
         /// <param name="projectedPos">The position of the projected joint on the plane defined by the lever.</param>
         /// <returns></returns>
-        private float GetLeverRotation(Vector3 projectedPos)
+        protected override float GetLeverRotation(Vector3 projectedPos)
         {
             Vector3 basePos = _baseTransform.position;
 
@@ -164,24 +128,12 @@ namespace Rhinox.XR.Grapple.It
         }
 
         //-----------------------
-        // EVENT REACTIONS
-        //-----------------------
-        /// <summary>
-        /// Event reaction to the globalInitialized event of the Gesture Recognizer.<br />
-        /// Saves the recognizer in a private field.
-        /// </summary>
-        /// <param name="obj"></param>
-        private void OnGestureRecognizerGlobalInitialized(GRPLGestureRecognizer obj)
-        {
-            _gestureRecognizer = obj;
-        }
-
-        //-----------------------
         // INHERITED METHODS
         //-----------------------
-        public override Vector3 GetReferencePoint()
+        protected override void Initialize()
         {
-            return _handleTransform.position;
+            _initialHandlePos = _handleTransform.position;
+            _initialHandleRot = _handleTransform.rotation.eulerAngles;
         }
 
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
@@ -199,11 +151,11 @@ namespace Rhinox.XR.Grapple.It
 
             float jointDistSq = joint.JointPosition.SqrDistanceTo(_handleTransform.position);
 
-            if (State != GRPLInteractionState.Interacted )
+            if (State != GRPLInteractionState.Interacted)
             {
-                bool gestureRecognizedThisFrame = hand == RhinoxHand.Left ? 
-                    _gestureRecognizer.LeftHandGestureRecognizedThisFrame :
-                    _gestureRecognizer.RightHandGestureRecognizedThisFrame;
+                bool gestureRecognizedThisFrame = hand == RhinoxHand.Left
+                    ? _gestureRecognizer.LeftHandGestureRecognizedThisFrame
+                    : _gestureRecognizer.RightHandGestureRecognizedThisFrame;
 
                 if (!gestureRecognizedThisFrame)
                     return false;
@@ -225,9 +177,10 @@ namespace Rhinox.XR.Grapple.It
                     _previousInteractJoint = joint;
                     return true;
                 }
+
                 return false;
             }
-            
+
             return State == GRPLInteractionState.Interacted;
         }
 
@@ -242,11 +195,11 @@ namespace Rhinox.XR.Grapple.It
         // EDITOR ONLY METHODS
         //-----------------------
 #if UNITY_EDITOR
-        private void OnDrawGizmos()
+        private void OnDrawGizmosSelected()
         {
             if (!_drawDebug)
                 return;
-            
+
             Transform transform1 = transform;
             Vector3 basePos = _baseTransform.position;
             Vector3 handlePos = _handleTransform.position;
@@ -301,33 +254,6 @@ namespace Rhinox.XR.Grapple.It
                 Handles.Label(result, "Arc end");
                 Gizmos.DrawSphere(result, .005f);
             }
-        }
-
-        private void Reset()
-        {
-            _baseTransform = new GameObject("Base").transform;
-            _baseTransform.SetParent(this.transform);
-
-            _baseTransform.localPosition = Vector3.zero;
-
-            Transform baseVis = new GameObject("Base_Visuals").transform;
-            baseVis.SetParent(_baseTransform.transform, false);
-
-            _stemTransform = new GameObject("Stem").transform;
-            _stemTransform.SetParent(_baseTransform, false);
-
-            Transform stemVis = new GameObject("Stem_Visuals").transform;
-            stemVis.SetParent(_stemTransform.transform, false);
-
-            _handleTransform = new GameObject("Handle").transform;
-            _handleTransform.SetParent(_stemTransform, false);
-
-            var newLocalPos = Vector3.zero;
-            newLocalPos.y += .5f;
-            _handleTransform.localPosition = newLocalPos;
-
-            Transform handleVis = new GameObject("Handle_Visuals").transform;
-            handleVis.SetParent(_handleTransform.transform, false);
         }
 #endif
     }
