@@ -150,7 +150,7 @@ namespace Rhinox.XR.Grapple.It
 
             foreach (var joint in joints)
             {
-                if (ForceInteractibleJoint && joint.JointID != ForcedInteractJointID)
+                if (_forceInteractibleJoint && joint.JointID != _forcedInteractJointID)
                     continue;
 
                 if (!InteractableMathUtils.IsPlaneProjectedPointInBounds(joint.JointPosition,

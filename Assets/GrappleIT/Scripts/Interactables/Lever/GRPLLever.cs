@@ -63,11 +63,11 @@ namespace Rhinox.XR.Grapple.It
             _interactMinAngle = Mathf.Clamp(_interactMinAngle, 0, _leverMaxAngle);
 
             //Force the ForcedInteractJoint
-            ForceInteractibleJoint = true;
-            ForcedInteractJointID = XRHandJointID.Palm;
+            _forceInteractibleJoint = true;
+            _forcedInteractJointID = XRHandJointID.Palm;
 
             // Link to gesture recognizer
-            GRPLGestureRecognizer.GestureRecognizerGlobalInitialized += OnGestureRecognizerGlobalInitialized;
+            GRPLGestureRecognizer.GlobalInitialized += OnGestureRecognizerGlobalInitialized;
 
             // Set initial state
             _initialHandlePos = _handleTransform.position;
@@ -233,7 +233,7 @@ namespace Rhinox.XR.Grapple.It
 
         public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint joint)
         {
-            joint = joints.FirstOrDefault(x => x.JointID == ForcedInteractJointID);
+            joint = joints.FirstOrDefault(x => x.JointID == _forcedInteractJointID);
 
             return joint != null;
         }

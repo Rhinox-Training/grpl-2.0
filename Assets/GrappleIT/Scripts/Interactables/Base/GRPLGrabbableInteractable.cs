@@ -1,6 +1,8 @@
 using Rhinox.Lightspeed;
 using Rhinox.Perceptor;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.XR.Hands;
@@ -11,12 +13,23 @@ namespace Rhinox.XR.Grapple.It
     {
         [Space(10f)]
         [Header("Bounding box settings")]
-        [SerializeField] bool _useCollidersInsteadOfBoundingBox = false;
-        [SerializeField] List<Collider> _boundColliders;
+        [SerializeField] private bool _useCollidersInsteadOfBoundingBox = false;
 
-        [Space(15f)]
-        [SerializeField] bool _showBoundingBox;
-        [SerializeField] Vector3 _boundingBoxExtensionValues = new Vector3(0.5f, 0.5f, 0.5f);
+        [SerializeField]
+        [HideIfField(true, nameof(_useCollidersInsteadOfBoundingBox))]
+        private bool _showBoundingBox;
+        [SerializeField]
+        [HideIfField(true, nameof(_useCollidersInsteadOfBoundingBox))]
+        private Vector3 _boundingBoxExtensionValues = new Vector3(0.5f, 0.5f, 0.5f);
+
+        [SerializeField]//TODO: ASK SENSIORS
+        [HideIfField(false, nameof(_useCollidersInsteadOfBoundingBox))]
+        private List<Collider> _boundColliders;
+        //private Collider[] _boundColliders;
+
+
+        //[Conditional(nameof(_useCollidersInsteadOfBoundingBox))]
+
 
         public bool IsGrabbed { get; protected set; } = false;
 

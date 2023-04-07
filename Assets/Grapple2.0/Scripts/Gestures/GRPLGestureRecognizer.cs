@@ -41,7 +41,7 @@ namespace Rhinox.XR.Grapple
         public UnityEvent<RhinoxHand, string> OnGestureRecognized;
         public UnityEvent<RhinoxHand, string> OnGestureUnrecognized;
 
-        public static event Action<GRPLGestureRecognizer> GlobalInitialized;
+        //public static event Action<GRPLGestureRecognizer> GlobalInitialized;
 
         public RhinoxGesture CurrentLeftGesture => _currentLeftGesture;
         public RhinoxGesture CurrentRightGesture => _currentRightGesture;
