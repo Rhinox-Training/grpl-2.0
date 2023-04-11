@@ -108,11 +108,11 @@ namespace Rhinox.XR.Grapple.It
         public virtual bool ShouldInteractionCheckStop() => false;
 
         /// <summary>
-        /// Returns the reference position for this interactible. <br />
+        /// Returns the reference transform for this interactible. <br />
         /// This can be used for proximate interaction checking.
         /// </summary>
-        /// <returns>The referencePoint</returns>
-        public virtual Vector3 GetReferencePoint() => transform.position;
+        /// <returns>The reference transform</returns>
+        public virtual Transform GetReferenceTransform() => transform;
 
         /// <summary>
         /// Check whether the given joint activates the interaction for this interactable.

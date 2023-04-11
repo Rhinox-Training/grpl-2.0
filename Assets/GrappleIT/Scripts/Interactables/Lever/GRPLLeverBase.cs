@@ -78,9 +78,9 @@ namespace Rhinox.XR.Grapple.It
         /// <returns>The angle in degrees.</returns>
         protected abstract float GetLeverRotation(Vector3 projectedPos);
 
-        public override Vector3 GetReferencePoint()
+        public override Transform GetReferenceTransform()
         {
-            return _handleTransform.position;
+            return _handleTransform;
         }
         
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)

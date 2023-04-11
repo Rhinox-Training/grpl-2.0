@@ -256,6 +256,7 @@ GameObject:
   m_Component:
   - component: {fileID: 26352020}
   - component: {fileID: 26352023}
+  - component: {fileID: 26352024}
   m_Layer: 0
   m_Name: InteractibleManager
   m_TagString: Untagged
@@ -294,6 +295,20 @@ MonoBehaviour:
   _maxAmountOfProximatesPerHand: 3
   _interactibleGroups:
   - {fileID: 1110593844}
+--- !u!114 &26352024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 26352018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e9fbccb7570e0841a3fb60540b513f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _interactableManager: {fileID: 26352023}
+  _defaultBakeOptions: 0
 --- !u!1 &42276285
 GameObject:
   m_ObjectHideFlags: 0
@@ -3376,6 +3391,11 @@ Transform:
   m_Father: {fileID: 1551564766}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &824993581 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4674662002763616798, guid: 06631454105e27943b52048bbf77a9b0, type: 3}
+  m_PrefabInstance: {fileID: 1502868226}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &851484698
 GameObject:
   m_ObjectHideFlags: 0
@@ -5105,6 +5125,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4117710423749119231, guid: 0d02162cdf83cdf4c8d7acdc0d7029d7, type: 3}
   m_PrefabInstance: {fileID: 4117710422361238685}
   m_PrefabAsset: {fileID: 0}
+--- !u!224 &1333053584 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4674662000978036376, guid: 06631454105e27943b52048bbf77a9b0, type: 3}
+  m_PrefabInstance: {fileID: 1502868226}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1350784500
 GameObject:
   m_ObjectHideFlags: 0
@@ -5608,6 +5633,10 @@ PrefabInstance:
       propertyPath: m_AdditionalShaderChannelsFlag
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4674662002763616796, guid: 06631454105e27943b52048bbf77a9b0, type: 3}
+      propertyPath: _handleTransform
+      value: 
+      objectReference: {fileID: 1333053584}
     - target: {fileID: 4674662002763616797, guid: 06631454105e27943b52048bbf77a9b0, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -5707,6 +5736,19 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4674662002763616797, guid: 06631454105e27943b52048bbf77a9b0, type: 3}
   m_PrefabInstance: {fileID: 1502868226}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1502868231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 824993581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80854d80b93067442a3a0b7c6fc6118a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _bakeOptions: 2
 --- !u!1 &1512132840
 GameObject:
   m_ObjectHideFlags: 0

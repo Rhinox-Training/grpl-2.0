@@ -187,9 +187,9 @@ namespace Rhinox.XR.Grapple.It
             return false;
         }
 
-        public override Vector3 GetReferencePoint()
+        public override Transform GetReferenceTransform()
         {
-            return _interactObject.position;
+            return _interactObject;
         }
 
         //-----------------------

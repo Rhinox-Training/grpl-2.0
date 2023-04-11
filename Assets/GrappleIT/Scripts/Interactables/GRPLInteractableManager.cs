@@ -180,7 +180,7 @@ namespace Rhinox.XR.Grapple.It
                     continue;
 
                 // Calculate the vector from the joint to the interactable reference point
-                Vector3 fromJointToInteractable = interactable.GetReferencePoint() - proximateJoint.JointPosition;
+                Vector3 fromJointToInteractable = interactable.GetReferenceTransform().position - proximateJoint.JointPosition;
 
                 // Calculate the distance from the interactable to the reference pos
                 float sqrDistance = fromJointToInteractable.sqrMagnitude;

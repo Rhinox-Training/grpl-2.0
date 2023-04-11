@@ -19,6 +19,9 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField] float _fadeInDuration = .15f;
         [SerializeField] float _fadeOutDuration = .5f;
 
+        [Header("Transforms")]
+        [SerializeField] private Transform _handleTransform;
+        
         public float SliderValue => _slider.value;
         public event Action<float> OnValueUpdate;
 
@@ -84,6 +87,11 @@ namespace Rhinox.XR.Grapple.It
                     extents = new Vector3(maxX - minX, maxY - minY, maxZ - minZ)
                 };
             }
+        }
+
+        public override Transform GetReferenceTransform()
+        {
+            return _handleTransform;
         }
 
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
