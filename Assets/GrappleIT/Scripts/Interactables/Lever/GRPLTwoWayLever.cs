@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Rhinox.GUIUtils.Editor;
 using Rhinox.Lightspeed;
 using UnityEditor;
 using UnityEngine;
@@ -40,9 +41,9 @@ namespace Rhinox.XR.Grapple.It
         //-----------------------
         private void OnValidate()
         {
-            _interactMinAngle = Mathf.Clamp(_interactMinAngle, 0, _leverMaxAngle/2);
+            _interactMinAngle = Mathf.Clamp(_interactMinAngle, 0, _leverMaxAngle / 2);
         }
-        
+
         private void Update()
         {
             if (State != GRPLInteractionState.Interacted)
@@ -266,27 +267,33 @@ namespace Rhinox.XR.Grapple.It
         private void DrawArc(Vector3 arcCenter, Vector3 direction, Vector3 arcNormal, float arcRadius)
         {
             float maxAngleOneSide = _leverMaxAngle / 2;
-            // TODO: Draw the arc using custom gizmo DrawArc() extension
             {
-                Handles.color = Color.green;
                 var backDir = direction;
-                backDir = Quaternion.AngleAxis(maxAngleOneSide, arcNormal) * backDir; // rotate it
-                Handles.DrawSolidArc(arcCenter, arcNormal, backDir, -(maxAngleOneSide - _interactMinAngle),
-                    arcRadius);
+                using (new eUtility.GizmoColor(Color.green))
+                {
+                    backDir = Quaternion.AngleAxis(_interactMinAngle, arcNormal) * backDir; // rotate it
+                    GizmoExtensions.DrawSolidArc(arcCenter, backDir, arcNormal, (maxAngleOneSide - _interactMinAngle),
+                        arcRadius);
+                }
             }
             {
-                Handles.color = Color.green;
                 var forwardDir = direction;
-                forwardDir = Quaternion.AngleAxis(-maxAngleOneSide, arcNormal) * forwardDir; // rotate it
-                Handles.DrawSolidArc(arcCenter, arcNormal, forwardDir, (maxAngleOneSide - _interactMinAngle),
-                    arcRadius);
+                using (new eUtility.GizmoColor(Color.green))
+                {
+                    forwardDir = Quaternion.AngleAxis(-maxAngleOneSide, arcNormal) * forwardDir; // rotate it
+                    GizmoExtensions.DrawSolidArc(arcCenter, forwardDir, arcNormal,
+                        (maxAngleOneSide - _interactMinAngle),
+                        arcRadius);
+                }
             }
             {
-                Handles.color = Color.red;
                 var forwardDir = direction;
                 forwardDir = Quaternion.AngleAxis(-_interactMinAngle, arcNormal) * forwardDir; // rotate it
-                Handles.DrawSolidArc(arcCenter, arcNormal, forwardDir, 2 * _interactMinAngle,
-                    arcRadius);
+                using (new eUtility.GizmoColor(Color.red))
+                {
+                    GizmoExtensions.DrawSolidArc(arcCenter, forwardDir, arcNormal, 2 * _interactMinAngle,
+                        arcRadius);
+                }
             }
         }
 

@@ -223,18 +223,25 @@ namespace Rhinox.XR.Grapple.It
 
         private void DrawArcHandles(Vector3 arcCenter, Vector3 direction, Vector3 arcNormal, float arcRadius)
         {
-            // Calculate the Arc radius
-            Handles.color = Color.red;
-
-            // Draw the arc itself
-            Handles.DrawSolidArc(arcCenter, arcNormal, direction, _interactMinAngle, arcRadius);
+            int totalAmountOfSegments = 36;
+            float angleStep = 360f / totalAmountOfSegments;
+            
+            using (new eUtility.GizmoColor(Color.red))
+            {
+                GizmoExtensions.DrawWireArc(arcCenter, direction, arcNormal, _interactMinAngle, arcRadius,(int)
+                    (_interactMinAngle / angleStep));
+            }   
+            
             {
                 var dir = direction;
 
                 dir = Quaternion.AngleAxis(_interactMinAngle, arcNormal) * dir; // rotate it
-                Handles.color = Color.green;
-                Handles.DrawSolidArc(arcCenter, arcNormal, dir, _leverMaxAngle - _interactMinAngle,
-                    arcRadius);
+                using (new eUtility.GizmoColor(Color.green))
+                {
+                    float arcAngle = _leverMaxAngle - _interactMinAngle;
+                    GizmoExtensions.DrawSolidArc(arcCenter, dir, arcNormal, arcAngle, arcRadius,
+                        (int)(arcAngle / angleStep));
+                }  
             }
         }
 
