@@ -187,6 +187,10 @@ namespace Rhinox.XR.Grapple.It
             return false;
         }
 
+        public override Vector3 GetReferencePoint()
+        {
+            return _interactObject.position;
+        }
 
         //-----------------------
         // EDITOR ONLY METHODS
