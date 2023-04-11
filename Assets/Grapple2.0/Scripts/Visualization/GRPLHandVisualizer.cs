@@ -36,11 +36,11 @@ namespace Rhinox.XR.Grapple
         {
             GRPLJointManager.GlobalInitialized += OnJointManagerInitialized;
 
-            _leftHandRoot = new GameObject("Left Hand");
+            _leftHandRoot = new GameObject("Hand model Root");
             InstantiateHand(RhinoxHand.Left, _leftJoints, _leftHandRoot.transform, _leftHandPrefab,
                 out _leftHandRenderer);
 
-            _rightHandRoot = new GameObject("Right Hand");
+            _rightHandRoot = new GameObject("Hand model Root");
             InstantiateHand(RhinoxHand.Right, _rightJoints, _rightHandRoot.transform, _rightHandPrefab,
                 out _rightHandRenderer);
         }

@@ -97,7 +97,7 @@ namespace Rhinox.XR.Grapple.It
 
             float closestDistance = _maxPressDistance;
 
-            // Cache the button fields that get reused
+            // Cache the button fields that get re-used
             Transform buttonBaseTransform = _interactableBaseTransform;
 
             var forward = buttonBaseTransform.forward;
@@ -150,7 +150,7 @@ namespace Rhinox.XR.Grapple.It
 
             foreach (var joint in joints)
             {
-                if (ForceInteractibleJoint && joint.JointID != ForcedInteractJointID)
+                if (_forceInteractibleJoint && joint.JointID != _forcedInteractJointID)
                     continue;
 
                 if (!InteractableMathUtils.IsPlaneProjectedPointInBounds(joint.JointPosition,

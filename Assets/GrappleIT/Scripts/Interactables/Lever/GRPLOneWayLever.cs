@@ -135,7 +135,7 @@ namespace Rhinox.XR.Grapple.It
             _initialHandlePos = _handleTransform.position;
             _initialHandleRot = _handleTransform.rotation.eulerAngles;
         }
-        
+
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
             // Get the current gesture from the target hand
@@ -186,7 +186,7 @@ namespace Rhinox.XR.Grapple.It
 
         public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint joint)
         {
-            joint = joints.FirstOrDefault(x => x.JointID == ForcedInteractJointID);
+            joint = joints.FirstOrDefault(x => x.JointID == _forcedInteractJointID);
 
             return joint != null;
         }

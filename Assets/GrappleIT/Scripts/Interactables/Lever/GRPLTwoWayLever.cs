@@ -188,7 +188,7 @@ namespace Rhinox.XR.Grapple.It
 
         public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint joint)
         {
-            joint = joints.FirstOrDefault(x => x.JointID == ForcedInteractJointID);
+            joint = joints.FirstOrDefault(x => x.JointID == _forcedInteractJointID);
 
             return joint != null;
         }

@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Rhinox.XR.Grapple.It
+namespace Rhinox.XR.Grapple
 {
     [CustomPropertyDrawer(typeof(InfoBoxAttribute))]
     public class InfoBoxAttributeDrawer : PropertyDrawer

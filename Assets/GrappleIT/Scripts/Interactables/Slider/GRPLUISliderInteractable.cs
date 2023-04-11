@@ -3,7 +3,6 @@ using Rhinox.Perceptor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Rhinox.Lightspeed;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,10 +25,9 @@ namespace Rhinox.XR.Grapple.It
         private Bounds _pressBounds;
         private Slider _slider;
         private Vector3[] _corners = new Vector3[4];
-        private Vector3 _slidDirHor = Vector3.zero;
         private float _sliderWitdth = 0f;
-        private bool _boolToBeNamed = false;
 
+        private Coroutine _fadeCorotine;
         private Image _handleImage = null;
         private RhinoxJoint _previousInteractJoint;
 
@@ -54,6 +52,9 @@ namespace Rhinox.XR.Grapple.It
             CalculateBounds();
         }
 
+        /// <summary>
+        /// Helper method to get the bounds of a <see cref="RectTransform"/>.
+        /// </summary>
         private void CalculateBounds()
         {
             var trans = (RectTransform)transform;
@@ -61,9 +62,7 @@ namespace Rhinox.XR.Grapple.It
 
             if (trans != null)
             {
-                Vector3[] cornersLocal = new Vector3[4];
                 trans.GetWorldCorners(_corners);
-                trans.GetLocalCorners(cornersLocal);
 
                 float minX = float.PositiveInfinity, minY = float.PositiveInfinity, minZ = float.PositiveInfinity;
                 float maxX = float.NegativeInfinity, maxY = float.NegativeInfinity, maxZ = float.NegativeInfinity;
@@ -84,8 +83,6 @@ namespace Rhinox.XR.Grapple.It
                     center = transform.position,
                     extents = new Vector3(maxX - minX, maxY - minY, maxZ - minZ)
                 };
-
-                _slidDirHor = _corners[3] - _corners[0];
             }
         }
 
@@ -128,24 +125,19 @@ namespace Rhinox.XR.Grapple.It
                 return false;
         }
 
-        //protected override 
-
         /// <summary>
-        /// Calculates the slider value (0f->1f) range depending on the <see cref="SliderDirections"/> 
+        /// Calculates the slider value (0f->1f) range depending. 
         /// </summary>
-        /// <param name="sliderPos">The worldposition of the slider object</param>
-        /// <param name="sliderForward">The forward vector of the slider</param>
         /// <param name="jointPos">The position of the joint that is trying to interact with the slider</param>
         /// <returns></returns>
         private float CalculateSliderValueFromSliderDirection(Vector3 jointPos)
         {
-            Vector3 jointDir = jointPos - _corners[0];
-            Vector3 projectedjoint = Vector3.Project(jointDir, _slidDirHor);
+            var projectedJointOnPlane = Vector3.ProjectOnPlane(jointPos, -transform.forward);
+            var projectedPointInLocalSpace = transform.InverseTransformPoint(projectedJointOnPlane);
 
-            //if (!_boolToBeNamed)
-            _slider.handleRect.GetChild(0).transform.SetPosition(jointPos.x, jointPos.y);
+            _slider.handleRect.GetChild(0).transform.SetLocalPosition(0f, projectedPointInLocalSpace.y, 0f);
 
-            return projectedjoint.magnitude / _sliderWitdth;
+            return projectedPointInLocalSpace.x.Map(_sliderWitdth * -.5f, _sliderWitdth * .5f, 0f, 1f);
         }
 
         public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint)
@@ -179,7 +171,7 @@ namespace Rhinox.XR.Grapple.It
                 return false;
 
             // Check if the joint pos is in front of the plane that is defined by the button
-            if (!InteractableMathUtils.IsPositionInFrontOfPlane(_previousInteractJoint.JointPosition, 
+            if (!InteractableMathUtils.IsPositionInFrontOfPlane(_previousInteractJoint.JointPosition,
                                                                 transform.position, -transform.forward))
             {
                 ShouldPerformInteractCheck = false;
@@ -198,18 +190,19 @@ namespace Rhinox.XR.Grapple.It
         protected override void InteractStarted()
         {
             base.InteractStarted();
+            //stop coroutine so that the previous doesn't influence the current one
+            if (_fadeCorotine != null)
+                StopCoroutine(_fadeCorotine);
 
-            _boolToBeNamed = true;
-            StartCoroutine(Fade());
+            _fadeCorotine = StartCoroutine(Fade());
         }
 
-        protected override void InteractStopped()
-        {
-            base.InteractStopped();
-
-            _boolToBeNamed = false;
-        }
-
+        /// <summary>
+        /// Coroutine to fade in/out the handle icon on the slider.
+        /// </summary>
+        /// <param name="isFadeIn">Bool that changes the internal logic to act as fade in
+        /// if <see langword="true"/> or as a fade out if <see langword="false"/></param>
+        /// <returns></returns>
         private IEnumerator Fade(bool isFadeIn = true)
         {
             Color initialColor = _handleImage.color;
@@ -231,16 +224,7 @@ namespace Rhinox.XR.Grapple.It
             }
 
             if (isFadeIn)
-                StartCoroutine(Fade(false));
-        }
-
-
-        private void OnDrawGizmos()
-        {
-            //Gizmos.DrawWireCube(_pressBounds.center, _pressBounds.extents);
-            //GUIContentHelper.PushColor(new Color(1f, 0f, 1f, 1f));
-            //Gizmos.DrawRay(_pressBounds.center, -transform.forward);
-            //GUIContentHelper.PopColor();
+                _fadeCorotine = StartCoroutine(Fade(false));
         }
     }
 }
