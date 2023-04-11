@@ -13,13 +13,13 @@ namespace Rhinox.XR.Grapple.It
     /// <dependencies> <see cref="GRPLJointManager"/> </dependencies>
     public class GRPLInteractableManager : Singleton<GRPLInteractableManager>
     {
-        [Header("Proximate detection parameters")]
-        [SerializeField] private int _maxAmountOfProximatesPerHand = 3;
-        [SerializeField] private float _proximateRadius = 1f;
+        [Header("Proximate detection parameters")] [SerializeField]
+        private int _maxAmountOfProximatesPerHand = 3;
+
         [SerializeField] private XRHandJointID _proximateJointID = XRHandJointID.MiddleMetacarpal;
 
-        [Header("Interactible Groups")]
-        [SerializeField] private List<GRPLInteractibleGroup> _interactibleGroups;
+        [Header("Interactible Groups")] [SerializeField]
+        private List<GRPLInteractibleGroup> _interactibleGroups;
 
         //[HideInInspector] public GRPLInteractableManager Instance;
 
@@ -221,7 +221,6 @@ namespace Rhinox.XR.Grapple.It
 
             var newProximateInteractables =
                 new SortedDictionary<float, GRPLInteractable>();
-            float proximateRadiusSqr = _proximateRadius * _proximateRadius;
             foreach (var interactable in _interactables)
             {
                 if (interactable.State == GRPLInteractionState.Disabled)
@@ -235,6 +234,7 @@ namespace Rhinox.XR.Grapple.It
 
                 // If the calculated distance is larger than the squared proximate radius
                 // continue
+                float proximateRadiusSqr = interactable.ProximateRadius * interactable.ProximateRadius;
                 if (sqrDistance > proximateRadiusSqr)
                     continue;
 
