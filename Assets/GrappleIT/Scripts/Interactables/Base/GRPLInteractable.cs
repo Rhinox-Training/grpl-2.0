@@ -13,24 +13,37 @@ namespace Rhinox.XR.Grapple.It
     public abstract class GRPLInteractable : MonoBehaviour
     {
         public delegate void InteractableEvent(GRPLInteractable grappleInteractable);
+
         public static InteractableEvent InteractableCreated = null;
         public static InteractableEvent InteractableDestroyed = null;
 
-        [Header("Proximate detection parameters")]
-        [SerializeField] private float _proximateRadius = .5f;
+        [Header("Proximate detection parameters")] [SerializeField]
+        private float _proximateRadius = .5f;
 
-        [Header("Interact detection parameters")]
-        [SerializeField] protected bool _forceInteractibleJoint = false;
-        [SerializeField] protected XRHandJointID _forcedInteractJointID = XRHandJointID.IndexTip;
+        [SerializeField] private XRHandJointID _proximateJointID = XRHandJointID.MiddleMetacarpal;
+
+        [Header("Interact detection parameters")] [SerializeField]
+        protected bool _forceInteractibleJoint = false;
+
+        [SerializeField] [HideIfField(false, "_forceInteractibleJoint")]
+        protected XRHandJointID _forcedInteractJointID = XRHandJointID.IndexTip;
+        [SerializeField] private bool _allowMultiHandInteraction = false;
         
+        public bool AllowMultiHandInteraction => _allowMultiHandInteraction;
+        public XRHandJointID ProximateJointID => _proximateJointID;
         public float ProximateRadius => _proximateRadius;
         public event Action<GRPLInteractable> OnInteractStarted;
         public event Action<GRPLInteractable> OnInteractEnded;
         public event Action<GRPLInteractable> OnProximityStarted;
         public event Action<GRPLInteractable> OnProximityEnded;
 
-        protected virtual void Initialize() { }
-        protected virtual void Destroyed() { }
+        protected virtual void Initialize()
+        {
+        }
+
+        protected virtual void Destroyed()
+        {
+        }
 
         private GRPLInteractionState _state = GRPLInteractionState.Active;
         public GRPLInteractionState State => _state;
@@ -58,7 +71,7 @@ namespace Rhinox.XR.Grapple.It
         {
             if (_state == newState)
                 return;
-            
+
             switch (_state)
             {
                 case GRPLInteractionState.Proximate:
@@ -68,7 +81,7 @@ namespace Rhinox.XR.Grapple.It
                     InteractStopped();
                     break;
             }
-            
+
             switch (newState)
             {
                 case GRPLInteractionState.Proximate:
@@ -99,8 +112,8 @@ namespace Rhinox.XR.Grapple.It
         /// This can be used for proximate interaction checking.
         /// </summary>
         /// <returns>The referencePoint</returns>
-        public virtual Vector3 GetReferencePoint() => transform.position; 
-        
+        public virtual Vector3 GetReferencePoint() => transform.position;
+
         /// <summary>
         /// Check whether the given joint activates the interaction for this interactable.
         /// </summary>
