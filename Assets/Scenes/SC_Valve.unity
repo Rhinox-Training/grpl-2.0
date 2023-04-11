@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 17702459}
   - component: {fileID: 17702458}
+  - component: {fileID: 17702460}
   m_Layer: 0
   m_Name: ValveRotation
   m_TagString: Untagged
@@ -184,6 +185,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 1}
   m_SizeDelta: {x: 0.5, y: 0.5}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &17702460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 17702457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b83b4ceb3009f7d4c80f1cf5ec09cbd2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _screen: {fileID: 894671759}
+  _valve: {fileID: 2035669845}
 --- !u!1 &79708307
 GameObject:
   m_ObjectHideFlags: 0
@@ -758,6 +773,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: ImportOnPlay
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: ImportFilePath
+      value: C:/Users/Rhinox/UnityProjects/grpl-2.0/Assets/GrappleIT/Resources/StandardGestures.json
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: OverwriteGesturesOnImport
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437769, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: m_Name
       value: Grapple_Player
@@ -791,7 +818,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 814317146}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1437,7 +1464,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2035669843}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.85, z: -0.120000005}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1445,7 +1472,7 @@ Transform:
   - {fileID: 814317147}
   m_Father: {fileID: 467568586}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
 --- !u!114 &2035669845
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1461,7 +1488,10 @@ MonoBehaviour:
   _proximateRadius: 0.5
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
+  _visualTransform: {fileID: 814317147}
   _grabGestureName: Grab
   _grabRadius: 0.09
   _grabTolaranceRadius: 0.03
+  _fullyOpenAngle: 0
+  _fullyClosedAngle: 360
   _drawGizmos: 1
