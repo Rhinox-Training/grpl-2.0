@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Rhinox.Perceptor;
 using UnityEngine;
@@ -12,10 +13,15 @@ namespace Rhinox.XR.Grapple.It
     /// <see cref="GRPLInteractableManager"/> <see cref="MeshBaker"/> </dependencies>
     public class MeshBakerInteractibleManagerLink : MonoBehaviour
     {
+        [Header("Dependencies")]
         [SerializeField] private GRPLInteractableManager _interactableManager;
-        private MeshBaker _meshBaker;
 
-        private List<GRPLInteractable> _pausedInteractables = new List<GRPLInteractable>();
+        [Header("Bake parameters")]
+        [Tooltip("Parameter to specify what bake should be used, if the GRPLInteractableBakeSettings component is not found.")]
+        [SerializeField] private GRPLBakeOptions _defaultBakeOptions = GRPLBakeOptions.NoBake;
+        
+        private MeshBaker _meshBaker;
+        private HashSet<GRPLInteractable> _pausedInteractables = new HashSet<GRPLInteractable>();
 
         private void Awake()
         {
@@ -52,9 +58,26 @@ namespace Rhinox.XR.Grapple.It
 
         private void OnInteractibleInteractionCheckPaused(RhinoxHand hand, GRPLInteractable interactable)
         {
-            _pausedInteractables.Add(interactable);
+            if(_pausedInteractables.Add(interactable))
+                PLog.Warn<GRPLITLogger>("[MeshBakerInteractibleManagerLink:OnInteractibleInteractionCheckPaused] Interactable is already paused");
 
-            _meshBaker.BakeMesh(hand);
+            var bakeSettings = interactable.GetComponent<GRPLInteractableBakeSettings>();
+            GRPLBakeOptions bakeOption = bakeSettings == null ? _defaultBakeOptions : bakeSettings.BakeOptions;
+
+            switch (bakeOption)
+            {
+                case GRPLBakeOptions.NoBake:
+                    return;
+                case GRPLBakeOptions.StandardBake:
+                    _meshBaker.BakeMesh(hand);
+                    break;
+                case GRPLBakeOptions.BakeAndParent:
+                    _meshBaker.BakeMeshAndParentToTransform(hand, interactable.GetReferenceTransform());
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            
         }
 
         private void OnInteractibleInteractionCheckResumed(RhinoxHand hand, GRPLInteractable interactable)

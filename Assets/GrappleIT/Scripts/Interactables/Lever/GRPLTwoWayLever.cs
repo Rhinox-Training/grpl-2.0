@@ -133,9 +133,9 @@ namespace Rhinox.XR.Grapple.It
             return angle;
         }
 
-        public override Vector3 GetReferencePoint()
+        public override Transform GetReferenceTransform()
         {
-            return _handleTransform.position;
+            return _handleTransform;
         }
 
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
