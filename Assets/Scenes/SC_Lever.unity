@@ -673,7 +673,7 @@ MonoBehaviour:
   _leverMaxAngle: 180
   _grabGestureName: Grab
   _grabRadius: 0.12
-  _drawDebug: 0
+  _drawDebug: 1
   _drawArc: 1
   _drawGrabRange: 1
   _drawArcExtends: 1
@@ -1980,7 +1980,7 @@ MonoBehaviour:
   _leverMaxAngle: 180
   _grabGestureName: Grab
   _grabRadius: 0.1
-  _drawDebug: 0
+  _drawDebug: 1
   _drawLeverParts: 0
   _drawArc: 1
   _drawLeverExtends: 1
