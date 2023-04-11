@@ -24,16 +24,20 @@ namespace Rhinox.XR.Grapple.It
         private bool _forwardActive;
         private bool _backwardActive;
 
-        [Header("Debug Parameters")] [SerializeField]
+        [Header("Debug Parameters")]
+        [SerializeField]
         private bool _drawDebug = false;
 
-        [SerializeField] [HideIfFieldFalse("_drawDebug", 0f)]
+        [SerializeField]
+        [HideIfFieldFalse("_drawDebug", 0f)]
         private bool _drawLeverParts = false;
 
-        [SerializeField] [HideIfFieldFalse("_drawDebug", 0f)]
+        [SerializeField]
+        [HideIfFieldFalse("_drawDebug", 0f)]
         private bool _drawArc = false;
 
-        [SerializeField] [HideIfFieldFalse("_drawDebug", 0f)]
+        [SerializeField]
+        [HideIfFieldFalse("_drawDebug", 0f)]
         private bool _drawLeverExtends = false;
 
         //-----------------------
@@ -141,7 +145,7 @@ namespace Rhinox.XR.Grapple.It
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
             // Get the current gesture from the target hand
-            RhinoxGesture gestureOnHand = _gestureRecognizer.GetGestureOnHand(hand);
+            RhinoxGesture gestureOnHand = _gestureRecognizer.GetCurrentGestureOfHand(hand);
 
             // If there is currently no gesture on the target hand
             if (gestureOnHand == null)
@@ -272,8 +276,8 @@ namespace Rhinox.XR.Grapple.It
                 using (new eUtility.GizmoColor(Color.green))
                 {
                     backDir = Quaternion.AngleAxis(_interactMinAngle, arcNormal) * backDir; // rotate it
-                    GizmoExtensions.DrawSolidArc(arcCenter, backDir, arcNormal, (maxAngleOneSide - _interactMinAngle),
-                        arcRadius);
+                    GizmoExtensions.DrawSolidArc(arcCenter, backDir, arcNormal, arcRadius,
+                        (maxAngleOneSide - _interactMinAngle));
                 }
             }
             {
@@ -281,9 +285,8 @@ namespace Rhinox.XR.Grapple.It
                 using (new eUtility.GizmoColor(Color.green))
                 {
                     forwardDir = Quaternion.AngleAxis(-maxAngleOneSide, arcNormal) * forwardDir; // rotate it
-                    GizmoExtensions.DrawSolidArc(arcCenter, forwardDir, arcNormal,
-                        (maxAngleOneSide - _interactMinAngle),
-                        arcRadius);
+                    GizmoExtensions.DrawSolidArc(arcCenter, forwardDir, arcNormal, arcRadius,
+                        (maxAngleOneSide - _interactMinAngle));
                 }
             }
             {
@@ -291,8 +294,8 @@ namespace Rhinox.XR.Grapple.It
                 forwardDir = Quaternion.AngleAxis(-_interactMinAngle, arcNormal) * forwardDir; // rotate it
                 using (new eUtility.GizmoColor(Color.red))
                 {
-                    GizmoExtensions.DrawSolidArc(arcCenter, forwardDir, arcNormal, 2 * _interactMinAngle,
-                        arcRadius);
+                    GizmoExtensions.DrawSolidArc(arcCenter, forwardDir, arcNormal, arcRadius,
+                        2 * _interactMinAngle);
                 }
             }
         }

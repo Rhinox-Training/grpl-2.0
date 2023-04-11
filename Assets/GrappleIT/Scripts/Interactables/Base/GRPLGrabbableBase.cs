@@ -15,6 +15,9 @@ namespace Rhinox.XR.Grapple.It
     public class GRPLGrabbableBase : GRPLInteractable
     {
         [Space(10f)]
+        [Header("Grab parameters")]
+        [SerializeField] private string _grabGestureName = "Grab";
+
         [Header("Bounding box settings")]
         [SerializeField] private bool _useCollidersInsteadOfBoundingBox = false;
 
@@ -52,11 +55,15 @@ namespace Rhinox.XR.Grapple.It
         private RhinoxGesture _grabGesture;
         private static GRPLJointManager _jointManager;
 
-        //private const float _boundsIncreasment = 1.4f;
-
         //==========
         //INITIALIZE
         //==========
+        protected void Awake()
+        {
+            _forceInteractibleJoint = true;
+            _forcedInteractJointID = XRHandJointID.MiddleProximal;
+        }
+
         protected override void Initialize()
         {
             base.Initialize();
@@ -111,7 +118,7 @@ namespace Rhinox.XR.Grapple.It
         {
             if (_grabGesture == null)
             {
-                _grabGesture = gestureRecognizer.Gestures.Find(x => x.Name == "Grab");
+                _grabGesture = gestureRecognizer.Gestures.Find(x => x.Name == _grabGestureName);
 
                 if (_grabGesture != null)
                 {
@@ -181,7 +188,6 @@ namespace Rhinox.XR.Grapple.It
         //=========
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
-            //_currentHandHolding
             switch (hand)
             {
                 case RhinoxHand.Left:
@@ -206,7 +212,7 @@ namespace Rhinox.XR.Grapple.It
 
         public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint)
         {
-            outJoint = joints.FirstOrDefault(x => x.JointID == XRHandJointID.MiddleProximal);
+            outJoint = joints.FirstOrDefault(x => x.JointID == _forcedInteractJointID);
             return outJoint != null;
         }
 

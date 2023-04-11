@@ -63,10 +63,10 @@ namespace Rhinox.XR.Grapple.It
         /// Event reaction to the globalInitialized event of the Gesture Recognizer.<br />
         /// Saves the recognizer in a private field.
         /// </summary>
-        /// <param name="obj"></param>
-        private void OnGestureRecognizerGlobalInitialized(GRPLGestureRecognizer obj)
+        /// <param name="gestureRecognizer"></param>
+        private void OnGestureRecognizerGlobalInitialized(GRPLGestureRecognizer gestureRecognizer)
         {
-            _gestureRecognizer = obj;
+            _gestureRecognizer = gestureRecognizer;
         }
         //-----------------------
         // INHERITABLE METHODS

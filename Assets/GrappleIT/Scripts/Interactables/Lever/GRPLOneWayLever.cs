@@ -18,21 +18,25 @@ namespace Rhinox.XR.Grapple.It
     /// </summary>
     public class GRPLOneWayLever : GRPLLeverBase
     {
-        [Header("Debug Parameters")] [SerializeField]
+        [Header("Debug Parameters")]
+        [SerializeField]
         private bool _drawDebug = false;
 
-        [SerializeField] [HideIfFieldFalse("_drawDebug", 0f)]
+        [SerializeField]
+        [HideIfFieldFalse("_drawDebug", 0f)]
         private bool _drawArc = false;
 
-        [SerializeField] [HideIfFieldFalse("_drawDebug", 0f)]
+        [SerializeField]
+        [HideIfFieldFalse("_drawDebug", 0f)]
         private bool _drawGrabRange = false;
 
-        [SerializeField] [HideIfFieldFalse("_drawDebug", 0f)]
+        [SerializeField]
+        [HideIfFieldFalse("_drawDebug", 0f)]
         private bool _drawArcExtends = false;
 
         public event Action<GRPLOneWayLever> LeverActivated;
         public event Action<GRPLOneWayLever> LeverStopped;
-        
+
         private bool _isLeverActivated = false;
 
         //-----------------------
@@ -139,7 +143,7 @@ namespace Rhinox.XR.Grapple.It
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
             // Get the current gesture from the target hand
-            RhinoxGesture gestureOnHand = _gestureRecognizer.GetGestureOnHand(hand);
+            RhinoxGesture gestureOnHand = _gestureRecognizer.GetCurrentGestureOfHand(hand);
 
             // If there is currently no gesture on the target hand
             if (gestureOnHand == null)
@@ -225,13 +229,13 @@ namespace Rhinox.XR.Grapple.It
         {
             int totalAmountOfSegments = 36;
             float angleStep = 360f / totalAmountOfSegments;
-            
+
             using (new eUtility.GizmoColor(Color.red))
             {
-                GizmoExtensions.DrawWireArc(arcCenter, direction, arcNormal, _interactMinAngle, arcRadius,(int)
+                GizmoExtensions.DrawWireArc(arcCenter, direction, arcNormal, arcRadius, _interactMinAngle, (int)
                     (_interactMinAngle / angleStep));
-            }   
-            
+            }
+
             {
                 var dir = direction;
 
@@ -239,9 +243,9 @@ namespace Rhinox.XR.Grapple.It
                 using (new eUtility.GizmoColor(Color.green))
                 {
                     float arcAngle = _leverMaxAngle - _interactMinAngle;
-                    GizmoExtensions.DrawSolidArc(arcCenter, dir, arcNormal, arcAngle, arcRadius,
+                    GizmoExtensions.DrawSolidArc(arcCenter, dir, arcNormal, arcRadius, arcAngle,
                         (int)(arcAngle / angleStep));
-                }  
+                }
             }
         }
 
