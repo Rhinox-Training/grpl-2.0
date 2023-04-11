@@ -1,15 +1,18 @@
 using Rhinox.Lightspeed;
 using Rhinox.Perceptor;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple.It
 {
-    public class GRPLGrabbableInteractable : GRPLInteractable
+    /// <summary>
+    /// Base class to make an object grabbele, this can be via a bounding box or via a list of trigge rcolliders used as bounding box.
+    /// </summary>
+    /// <remarks />
+    /// <dependencies><see cref="GRPLGestureRecognizer"/></dependencies>
+    public class GRPLGrabbableBase : GRPLInteractable
     {
         [Space(10f)]
         [Header("Bounding box settings")]
@@ -118,14 +121,14 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
+        //============
+        //STATE CHANGE
+        //============
         private void TrackingLost(RhinoxHand hand)
         {
             TryDrop(hand);
         }
 
-        //=========
-        //
-        //=========
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -166,6 +169,16 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
+
+        private void Update()
+        {
+            _bounds = gameObject.GetObjectBounds();
+            _bounds.extents += _boundingBoxExtensionValues;
+        }
+
+        //=========
+        //OVERRIDES
+        //=========
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
             //_currentHandHolding
@@ -197,12 +210,9 @@ namespace Rhinox.XR.Grapple.It
             return outJoint != null;
         }
 
-        private void Update()
-        {
-            _bounds = gameObject.GetObjectBounds();
-            _bounds.extents += _boundingBoxExtensionValues;
-        }
-
+        //==============
+        //PUBLIC METHODS
+        //==============
         public void TryGrab(RhinoxHand hand)
         {
             //if the given hand was invalid or the given hand cannot grab this object, do early return
@@ -246,6 +256,9 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
+        //=================
+        //PROTECTED METHODS
+        //=================
         //save and change the rigidbody settings so it can properly move along with the handand it is now attached to
         protected virtual void GrabInternal(GameObject parent, RhinoxHand rhinoxHand)
         {
@@ -281,11 +294,7 @@ namespace Rhinox.XR.Grapple.It
 #if UNITY_EDITOR
         private void OnDrawGizmos()
         {
-            if (_useCollidersInsteadOfBoundingBox)
-            {
-
-            }
-            else if (_showBoundingBox)
+            if (!_useCollidersInsteadOfBoundingBox && _showBoundingBox)
             {
                 _bounds = gameObject.GetObjectBounds();
 

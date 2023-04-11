@@ -10,6 +10,8 @@ namespace Rhinox.XR.Grapple.It
     /// If all pure abstract methods are correctly implemented, the derived interactables should work seamlessly with
     /// the <see cref="GRPLInteractableManager"/>. 
     /// </summary>
+    /// <remarks />
+    /// <dependencies />
     public abstract class GRPLInteractable : MonoBehaviour
     {
         public delegate void InteractableEvent(GRPLInteractable grappleInteractable);
@@ -22,7 +24,7 @@ namespace Rhinox.XR.Grapple.It
         [Header("Interact detection parameters")]
         [SerializeField] protected bool _forceInteractibleJoint = false;
         [SerializeField] protected XRHandJointID _forcedInteractJointID = XRHandJointID.IndexTip;
-        
+
         public float ProximateRadius => _proximateRadius;
         public event Action<GRPLInteractable> OnInteractStarted;
         public event Action<GRPLInteractable> OnInteractEnded;
@@ -58,7 +60,7 @@ namespace Rhinox.XR.Grapple.It
         {
             if (_state == newState)
                 return;
-            
+
             switch (_state)
             {
                 case GRPLInteractionState.Proximate:
@@ -68,7 +70,7 @@ namespace Rhinox.XR.Grapple.It
                     InteractStopped();
                     break;
             }
-            
+
             switch (newState)
             {
                 case GRPLInteractionState.Proximate:
@@ -99,8 +101,8 @@ namespace Rhinox.XR.Grapple.It
         /// This can be used for proximate interaction checking.
         /// </summary>
         /// <returns>The referencePoint</returns>
-        public virtual Vector3 GetReferencePoint() => transform.position; 
-        
+        public virtual Vector3 GetReferencePoint() => transform.position;
+
         /// <summary>
         /// Check whether the given joint activates the interaction for this interactable.
         /// </summary>
