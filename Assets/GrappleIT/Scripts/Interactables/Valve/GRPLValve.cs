@@ -189,7 +189,7 @@ namespace Rhinox.XR.Grapple.It
                 return;
 
             IsGrabbed = true;
-            _grabbedVec = _interactingJoint.JointPosition;
+            _grabbedVec = _interactingJoint.JointPosition - transform.position;
             _currentHandHolding = hand;
         }
 
@@ -209,10 +209,11 @@ namespace Rhinox.XR.Grapple.It
             {
                 //var proj = _interactingJoint.JointPosition.ProjectOnPlaneAndTranslate(transform.position, -transform.forward);
                 //var smrse = Vector3.ProjectOnPlane(_interactingJoint.JointPosition, -transform.forward);
-                float dAngle = Vector3.SignedAngle(_grabbedVec, _interactingJoint.JointPosition, -transform.forward);
+                float dAngle = Vector3.SignedAngle(_grabbedVec,
+                    (_interactingJoint.JointPosition - transform.position), -transform.forward);
 
-                //if (Mathf.Abs(dAngle) < .5f)
-                //return;
+                //if (Mathf.Abs(dAngle) < 1f)
+                //    return;
 
                 _currentValveRotation -= dAngle;
                 if (_currentValveRotation >= _fullyClosedAngle)
@@ -225,15 +226,13 @@ namespace Rhinox.XR.Grapple.It
                     _currentValveRotation = _fullyOpenAngle;
                     OnFullyOpen?.Invoke(this);
                 }
-                _grabbedVec = _interactingJoint.JointPosition;
+                _grabbedVec = _interactingJoint.JointPosition - transform.position;
 
 
                 OnValueUpdate?.Invoke(this, _currentValveRotation);
 
                 //ROTATE VISUAL
                 _visualTransform.localEulerAngles = _visualTransform.localEulerAngles.With(null, null, _currentValveRotation);
-                // (0f,0f,0f,Space.Self);
-                //_visualTransform.localEulerAngles.With(null,null,)
             }
         }
 
