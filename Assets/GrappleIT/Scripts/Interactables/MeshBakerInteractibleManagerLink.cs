@@ -13,7 +13,7 @@ namespace Rhinox.XR.Grapple.It
     public class MeshBakerInteractibleManagerLink : MonoBehaviour
     {
         [SerializeField] private GRPLInteractableManager _interactableManager;
-        [SerializeField] private MeshBaker _meshBaker;
+        private MeshBaker _meshBaker;
 
         private List<GRPLInteractable> _pausedInteractables = new List<GRPLInteractable>();
 
