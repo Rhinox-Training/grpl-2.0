@@ -36,6 +36,9 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField] [HideIfFieldFalse("_drawDebug", 0f)]
         private bool _drawLeverExtends = false;
 
+        [SerializeField] [HideIfFieldFalse("_drawDebug", 0f)]
+        private bool _drawGrabRange = false;
+
         //-----------------------
         // MONO BEHAVIOUR METHODS
         //-----------------------
@@ -219,6 +222,9 @@ namespace Rhinox.XR.Grapple.It
 
             if (_drawLeverExtends)
                 DrawLeverExtends(basePos, direction, transform1.right, arcRadius);
+            
+            if(_drawGrabRange)
+                DrawGrabRange();
         }
 
         private void DrawLeverExtends(Vector3 arcCenter, Vector3 direction, Vector3 arcNormal, float arcRadius)

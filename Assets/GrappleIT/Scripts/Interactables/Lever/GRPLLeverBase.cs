@@ -4,12 +4,16 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.XR.Hands;
 
+#if UNITY_EDITOR
+using Rhinox.GUIUtils.Editor;
+#endif
+
 namespace Rhinox.XR.Grapple.It
 {
-     /// <summary>
-     /// The GRPLLeverBase class is an abstract class that extends from GRPLInteractable. <br /> <br />
-     ///  The class is used to derive lever-type interactable objects, and it includes additional methods and properties for the purpose of that functionality.
-     /// </summary>
+    /// <summary>
+    /// The GRPLLeverBase class is an abstract class that extends from GRPLInteractable. <br /> <br />
+    ///  The class is used to derive lever-type interactable objects, and it includes additional methods and properties for the purpose of that functionality.
+    /// </summary>
     public abstract class GRPLLeverBase : GRPLInteractable
     {
         [Space(5)] [Header("Lever parameters")] [SerializeField]
@@ -18,8 +22,7 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField] protected Transform _stemTransform;
         [SerializeField] protected Transform _handleTransform;
 
-        [SerializeField]
-        protected float _interactMinAngle = 90f;
+        [SerializeField] protected float _interactMinAngle = 90f;
 
         [SerializeField] [Range(0, 360f)] protected float _leverMaxAngle = 180f;
         protected bool _ignoreDistanceOnGrab = true;
@@ -52,7 +55,7 @@ namespace Rhinox.XR.Grapple.It
 
             // Link to gesture recognizer
             GRPLGestureRecognizer.GlobalInitialized += OnGestureRecognizerGlobalInitialized;
-            
+
             Initialize();
         }
 
@@ -68,6 +71,7 @@ namespace Rhinox.XR.Grapple.It
         {
             _gestureRecognizer = obj;
         }
+
         //-----------------------
         // INHERITABLE METHODS
         //-----------------------
@@ -82,11 +86,12 @@ namespace Rhinox.XR.Grapple.It
         {
             return _handleTransform;
         }
-        
+
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
-            PLog.Info<GRPLITLogger>("[GRPLLeverBase:CheckForInteraction], This is a GRPLLeverBase, which does not implement the functionality of an interactable. " +
-                                    "Please derive from this class.");
+            PLog.Info<GRPLITLogger>(
+                "[GRPLLeverBase:CheckForInteraction], This is a GRPLLeverBase, which does not implement the functionality of an interactable. " +
+                "Please derive from this class.");
             return false;
         }
 
@@ -103,7 +108,7 @@ namespace Rhinox.XR.Grapple.It
         //-----------------------
         // EDITOR ONLY METHODS
         //-----------------------
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         private void Reset()
         {
             _baseTransform = new GameObject("Base").transform;
@@ -140,7 +145,14 @@ namespace Rhinox.XR.Grapple.It
             Handles.Label(_handleTransform.position, "Handle");
             Gizmos.DrawSphere(_handleTransform.position, .01f);
         }
-        
-        #endif
+
+        protected void DrawGrabRange()
+        {
+            using (new eUtility.GizmoColor(Color.magenta))
+            {
+                Gizmos.DrawSphere(GetReferenceTransform().position, _grabRadius);
+            }
+        }
+#endif
     }
 }

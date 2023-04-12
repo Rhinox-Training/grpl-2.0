@@ -196,7 +196,7 @@ namespace Rhinox.XR.Grapple.It
         // EDITOR ONLY METHODS
         //-----------------------
 #if UNITY_EDITOR
-        private void OnDrawGizmosSelected()
+        private void OnDrawGizmos()
         {
             if (!_drawDebug)
                 return;
@@ -214,12 +214,13 @@ namespace Rhinox.XR.Grapple.It
                 DrawArcHandles(basePos, direction, transform1.right, arcRadius);
 
             if (_drawGrabRange)
-            {
                 Gizmos.DrawWireSphere(_handleTransform.position, _grabRadius);
-            }
 
             if (_drawArcExtends)
                 DrawArcExtends(basePos, direction, transform1.right, arcRadius);
+
+            if (_drawGrabRange)
+                DrawGrabRange();
         }
 
         private void DrawArcHandles(Vector3 arcCenter, Vector3 direction, Vector3 arcNormal, float arcRadius)
@@ -229,13 +230,13 @@ namespace Rhinox.XR.Grapple.It
             
             using (new eUtility.GizmoColor(Color.red))
             {
-                GizmoExtensions.DrawWireArc(arcCenter, direction, arcNormal, _interactMinAngle, arcRadius,(int)
+                GizmoExtensions.DrawSolidArc(arcCenter, direction, arcNormal, _interactMinAngle, arcRadius,(int)
                     (_interactMinAngle / angleStep));
             }   
             
             {
-                var dir = direction;
 
+                var dir = direction;
                 dir = Quaternion.AngleAxis(_interactMinAngle, arcNormal) * dir; // rotate it
                 using (new eUtility.GizmoColor(Color.green))
                 {

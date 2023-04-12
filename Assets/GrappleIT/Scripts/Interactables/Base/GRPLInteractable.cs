@@ -27,8 +27,9 @@ namespace Rhinox.XR.Grapple.It
 
         [SerializeField] [HideIfField(false, "_forceInteractibleJoint")]
         protected XRHandJointID _forcedInteractJointID = XRHandJointID.IndexTip;
+
         [SerializeField] private bool _allowMultiHandInteraction = false;
-        
+
         public bool AllowMultiHandInteraction => _allowMultiHandInteraction;
         public XRHandJointID ProximateJointID => _proximateJointID;
         public float ProximateRadius => _proximateRadius;
@@ -132,5 +133,6 @@ namespace Rhinox.XR.Grapple.It
         /// <returns>Whether a valid joint was found.</returns>
         public abstract bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint,
             RhinoxHand hand);
+        
     }
 }

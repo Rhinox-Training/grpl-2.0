@@ -669,10 +669,10 @@ MonoBehaviour:
   _baseTransform: {fileID: 1412511416}
   _stemTransform: {fileID: 653855579}
   _handleTransform: {fileID: 887746599}
-  _interactMinAngle: 90
+  _interactMinAngle: 105
   _leverMaxAngle: 180
   _grabGestureName: Grab
-  _grabRadius: 0.12
+  _grabRadius: 0.08
   _drawDebug: 1
   _drawArc: 1
   _drawGrabRange: 1
@@ -1981,11 +1981,12 @@ MonoBehaviour:
   _interactMinAngle: 45
   _leverMaxAngle: 180
   _grabGestureName: Grab
-  _grabRadius: 0.35
+  _grabRadius: 0.08
   _drawDebug: 1
   _drawLeverParts: 0
   _drawArc: 1
   _drawLeverExtends: 1
+  _drawGrabRange: 1
 --- !u!4 &1202716409
 Transform:
   m_ObjectHideFlags: 0
