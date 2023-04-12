@@ -90,7 +90,8 @@ namespace Rhinox.XR.Grapple.It
             return false;
         }
 
-        public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint joint)
+        public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint joint,
+            RhinoxHand hand)
         {
             PLog.Info<GRPLITLogger>(
                 "[GRPLLeverBase:CheckForInteraction], This is a GRPLLeverBase, which does not implement the functionality of an interactable. " +

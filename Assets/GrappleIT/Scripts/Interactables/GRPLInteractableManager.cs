@@ -84,7 +84,7 @@ namespace Rhinox.XR.Grapple.It
                     continue;
 
                 // Try to get a valid interactJoint
-                if (!proximate.TryGetCurrentInteractJoint(joints, out var interactJoint))
+                if (!proximate.TryGetCurrentInteractJoint(joints, out var interactJoint, hand))
                 {
                     if (proximate.State == GRPLInteractionState.Interacted)
                         proximate.SetState(GRPLInteractionState.Proximate);

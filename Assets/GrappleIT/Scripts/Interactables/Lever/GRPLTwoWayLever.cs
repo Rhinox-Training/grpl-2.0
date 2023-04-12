@@ -186,7 +186,8 @@ namespace Rhinox.XR.Grapple.It
             return State == GRPLInteractionState.Interacted;
         }
 
-        public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint joint)
+        public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint joint,
+            RhinoxHand hand)
         {
             joint = joints.FirstOrDefault(x => x.JointID == _forcedInteractJointID);
 
