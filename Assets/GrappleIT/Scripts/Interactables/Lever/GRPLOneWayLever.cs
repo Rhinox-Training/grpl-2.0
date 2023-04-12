@@ -19,8 +19,7 @@ namespace Rhinox.XR.Grapple.It
     public class GRPLOneWayLever : GRPLLeverBase
     {
         [Header("Debug Parameters")]
-        [SerializeField]
-        private bool _drawDebug = false;
+        [SerializeField] private bool _drawDebug = false;
 
         [SerializeField]
         [HideIfFieldFalse("_drawDebug", 0f)]
@@ -188,7 +187,8 @@ namespace Rhinox.XR.Grapple.It
             return State == GRPLInteractionState.Interacted;
         }
 
-        public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint joint)
+        public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint joint,
+            RhinoxHand hand)
         {
             joint = joints.FirstOrDefault(x => x.JointID == _forcedInteractJointID);
 
@@ -199,8 +199,10 @@ namespace Rhinox.XR.Grapple.It
         // EDITOR ONLY METHODS
         //-----------------------
 #if UNITY_EDITOR
-        private void OnDrawGizmosSelected()
+        protected override void OnDrawGizmos()
         {
+            base.OnDrawGizmos();
+
             if (!_drawDebug)
                 return;
 
@@ -217,12 +219,13 @@ namespace Rhinox.XR.Grapple.It
                 DrawArcHandles(basePos, direction, transform1.right, arcRadius);
 
             if (_drawGrabRange)
-            {
                 Gizmos.DrawWireSphere(_handleTransform.position, _grabRadius);
-            }
 
             if (_drawArcExtends)
                 DrawArcExtends(basePos, direction, transform1.right, arcRadius);
+
+            if (_drawGrabRange)
+                DrawGrabRange();
         }
 
         private void DrawArcHandles(Vector3 arcCenter, Vector3 direction, Vector3 arcNormal, float arcRadius)
@@ -232,13 +235,13 @@ namespace Rhinox.XR.Grapple.It
 
             using (new eUtility.GizmoColor(Color.red))
             {
-                GizmoExtensions.DrawWireArc(arcCenter, direction, arcNormal, arcRadius, _interactMinAngle, (int)
+                GizmoExtensions.DrawSolidArc(arcCenter, direction, arcNormal, arcRadius, _interactMinAngle, (int)
                     (_interactMinAngle / angleStep));
             }
 
             {
-                var dir = direction;
 
+                var dir = direction;
                 dir = Quaternion.AngleAxis(_interactMinAngle, arcNormal) * dir; // rotate it
                 using (new eUtility.GizmoColor(Color.green))
                 {

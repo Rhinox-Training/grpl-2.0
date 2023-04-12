@@ -169,7 +169,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interactableManager: {fileID: 26352023}
-  _meshBaker: {fileID: 0}
+  _defaultBakeOptions: 0
 --- !u!114 &26352023
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -184,8 +184,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Instance: {fileID: 0}
   _maxAmountOfProximatesPerHand: 9
-  _proximateRadius: 0.5
-  _proximateJointID: 12
   _interactibleGroups: []
 --- !u!1 &51455675
 GameObject:
@@ -664,15 +662,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _proximateRadius: 0.5
-  ForceInteractibleJoint: 0
-  ForcedInteractJointID: 11
+  _proximateJointID: 12
+  _forceInteractibleJoint: 0
+  _forcedInteractJointID: 11
+  _allowMultiHandInteraction: 0
   _baseTransform: {fileID: 1412511416}
   _stemTransform: {fileID: 653855579}
   _handleTransform: {fileID: 887746599}
-  _interactMinAngle: 90
+  _interactMinAngle: 105
   _leverMaxAngle: 180
   _grabGestureName: Grab
-  _grabRadius: 0.12
+  _grabRadius: 0.08
   _drawDebug: 1
   _drawArc: 1
   _drawGrabRange: 1
@@ -1971,19 +1971,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _proximateRadius: 0.5
-  ForceInteractibleJoint: 0
-  ForcedInteractJointID: 11
+  _proximateJointID: 12
+  _forceInteractibleJoint: 0
+  _forcedInteractJointID: 11
+  _allowMultiHandInteraction: 0
   _baseTransform: {fileID: 2133925277}
   _stemTransform: {fileID: 674427315}
   _handleTransform: {fileID: 1827444779}
   _interactMinAngle: 45
   _leverMaxAngle: 180
   _grabGestureName: Grab
-  _grabRadius: 0.1
+  _grabRadius: 0.08
   _drawDebug: 1
   _drawLeverParts: 0
   _drawArc: 1
   _drawLeverExtends: 1
+  _drawGrabRange: 1
 --- !u!4 &1202716409
 Transform:
   m_ObjectHideFlags: 0

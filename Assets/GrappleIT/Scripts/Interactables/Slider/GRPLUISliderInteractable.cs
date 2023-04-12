@@ -19,6 +19,9 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField] float _fadeInDuration = .15f;
         [SerializeField] float _fadeOutDuration = .5f;
 
+        [Header("Transforms")]
+        [SerializeField] private Transform _handleTransform;
+        
         public float SliderValue => _slider.value;
         public event Action<float> OnValueUpdate;
 
@@ -86,6 +89,11 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
+        public override Transform GetReferenceTransform()
+        {
+            return _handleTransform;
+        }
+
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
             if (!gameObject.activeInHierarchy)
@@ -140,7 +148,8 @@ namespace Rhinox.XR.Grapple.It
             return projectedPointInLocalSpace.x.Map(_sliderWitdth * -.5f, _sliderWitdth * .5f, 0f, 1f);
         }
 
-        public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint)
+        public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint,
+            RhinoxHand hand)
         {
             outJoint = null;
             float closestDist = float.MaxValue;

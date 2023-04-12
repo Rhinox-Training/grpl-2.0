@@ -1,3 +1,4 @@
+using System;
 using Rhinox.Perceptor;
 using UnityEngine;
 
@@ -76,6 +77,26 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
+        public void BakeMeshAndParentToTransform(RhinoxHand hand,Transform parent , bool disableRenderer = false)
+        {
+            BakeMesh(hand, disableRenderer);
+            GameObject bakeParent;
+            switch (hand)
+            {
+                case RhinoxHand.Left:
+                    bakeParent = _leftBakedMeshObject;
+                    break;
+                case RhinoxHand.Right:
+                    bakeParent = _rightBakedMeshObject;
+                    break;
+                case RhinoxHand.Invalid:
+                default:
+                    PLog.Error<GRPLITLogger>("[MeshBaker:BakeMeshAndParentToTransform], function called with invalid hand value: {hand}");
+                    return;
+            }
+            bakeParent.transform.SetParent(parent,true);
+        }
+        
         private void BakeMeshDelegate(SkinnedMeshRenderer meshRenderer, GameObject parent)
         {
             MeshRenderer bakeRenderer = null;
@@ -86,13 +107,14 @@ namespace Rhinox.XR.Grapple.It
             bakeFilter = bakeChild.AddComponent<MeshFilter>();
 
             bakeRenderer.material = _bakedMeshMaterial;
-            meshRenderer.BakeMesh(bakeFilter.mesh);
+            meshRenderer.BakeMesh(bakeFilter.mesh, true);
 
+            bakeFilter.mesh.RecalculateBounds();
             meshRenderer.material = _handAfterBakeMaterial;
-            var transform1 = meshRenderer.transform;
+            Transform transform1 = meshRenderer.transform;
             bakeChild.transform.position = transform1.position;
             bakeChild.transform.rotation = transform1.rotation;
-            bakeChild.transform.SetParent(parent.transform, true);
+            bakeChild.transform.SetParent(parent.transform,true);
         }
 
         /// <summary>
