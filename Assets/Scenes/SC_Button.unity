@@ -550,7 +550,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5210042141153954088, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
   m_PrefabInstance: {fileID: 5210042140651655625}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1497850029}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2ac7812c106125c4a87a301f554ab8f5, type: 3}
@@ -5600,24 +5600,6 @@ MonoBehaviour:
   _useInteractDelay: 1
   _interactDelay: 0.25
   _selectStartPercentage: 0.25
---- !u!1 &1497850029 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5210042141153954089, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
-  m_PrefabInstance: {fileID: 5210042140651655625}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1497850031
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1497850029}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3d5ea838fc2414478ba25b5d6425b69, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _button: {fileID: 66390152}
 --- !u!1 &1498657494
 GameObject:
   m_ObjectHideFlags: 0
@@ -9792,7 +9774,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5210042141153954088, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
       propertyPath: _proximateRadius
-      value: 0.17
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5210042141153954088, guid: ce46c1fb672cfac4590a19ba9e2cdab0, type: 3}
       propertyPath: _forceInteractibleJoint

@@ -191,7 +191,8 @@ namespace Rhinox.XR.Grapple.It
             return IsGrabbed;
         }
 
-        public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint)
+        public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint,
+            RhinoxHand hand)
         {
             outJoint = joints.FirstOrDefault(x => x.JointID == XRHandJointID.MiddleProximal);
             return outJoint != null;

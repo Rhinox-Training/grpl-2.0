@@ -45,7 +45,7 @@ namespace Rhinox.XR.Grapple.It
         private bool _isOnCooldown = false;
         private bool _buttonPressed = false;
         private RhinoxJoint _previousInteractJoint;
-        
+        private RhinoxHand _interactHand = RhinoxHand.Invalid;
         
         //-----------------------
         // MONO BEHAVIOUR METHODS
@@ -142,7 +142,7 @@ namespace Rhinox.XR.Grapple.It
             _interactObject.transform.position = _interactableBaseTransform.position +
                                                  _maxPressDistance * _interactableBaseTransform.forward;
 
-
+            _interactHand = RhinoxHand.Invalid;
             base.InteractStopped();
         }
 
@@ -171,6 +171,13 @@ namespace Rhinox.XR.Grapple.It
             if (!gameObject.activeInHierarchy || _isOnCooldown)
                 return false;
 
+            // Return true if the state is interacted, but the current hand is not the interact hand
+            if (State == GRPLInteractionState.Interacted)
+            {
+                if (hand != _interactHand)
+                    return true;
+            }
+            
             // Cache the button fields that get re-used
             Transform buttonBaseTransform = _interactableBaseTransform;
 
@@ -200,14 +207,22 @@ namespace Rhinox.XR.Grapple.It
             if (pokeDistance < _maxPressDistance)
             {
                 _previousInteractJoint = joint;
+                _interactHand = hand;
                 return true;
             }
 
             return false;
         }
 
-        public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint)
+        public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint,
+            RhinoxHand hand)
         {
+            if(State == GRPLInteractionState.Interacted && hand != _interactHand)
+            {
+                outJoint = _previousInteractJoint;
+                return true;
+            }
+            
             outJoint = null;
             float closestDist = float.MaxValue;
 

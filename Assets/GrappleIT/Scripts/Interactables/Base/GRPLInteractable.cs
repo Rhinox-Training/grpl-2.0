@@ -111,15 +111,15 @@ namespace Rhinox.XR.Grapple.It
         /// Returns the reference transform for this interactible. <br />
         /// This can be used for proximate interaction checking.
         /// </summary>
-        /// <returns>The reference transform</returns>
+        /// <returns>The reference transform.</returns>
         public virtual Transform GetReferenceTransform() => transform;
 
         /// <summary>
         /// Check whether the given joint activates the interaction for this interactable.
         /// </summary>
-        /// <param name="joint">The joint to check with</param>
-        /// <param name="hand">The hand that the joint is from</param>
-        /// <returns>Whether the interaction is now happening</returns>
+        /// <param name="joint">The joint to check with.</param>
+        /// <param name="hand">The hand that the joint is from.</param>
+        /// <returns>Whether the interaction is now happening.</returns>
         public abstract bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand);
 
         /// <summary>
@@ -127,15 +127,10 @@ namespace Rhinox.XR.Grapple.It
         /// An example could be a projected distance check, where the joint with the lowest distance gets returned.
         /// </summary>
         /// <param name="joints"> A collection of joints to check.</param>
-        /// <param name="outJoint"> An out parameter for a valid joint, if one was found</param>
+        /// <param name="outJoint"> An out parameter for a valid joint, if one was found.</param>
+        /// <param name="hand">The hand that is currently getting checked.</param>
         /// <returns>Whether a valid joint was found.</returns>
-        public abstract bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint);
-
-
-        /// <summary>
-        /// Checks if point p1 is closer to the interactible than point p2.
-        /// </summary>
-        /// <param name="p1">The main point</param>
-        /// <param name="p2">The other point</param>
+        public abstract bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint,
+            RhinoxHand hand);
     }
 }
