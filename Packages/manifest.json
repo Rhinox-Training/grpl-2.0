@@ -1,8 +1,8 @@
 {
   "dependencies": {
-    "com.rhinox.open.guiutils": "2.5.0",
+    "com.rhinox.open.guiutils": "2.6.0",
     "com.rhinox.open.lightspeed": "1.4.2",
-    "com.rhinox.open.utilities": "1.5.0",
+    "com.rhinox.open.utilities": "1.5.2",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.collab-proxy": "2.0.0",
     "com.unity.feature.development": "1.0.1",

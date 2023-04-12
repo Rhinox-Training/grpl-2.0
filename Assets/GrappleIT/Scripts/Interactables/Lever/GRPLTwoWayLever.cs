@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Rhinox.GUIUtils.Editor;
 using Rhinox.Lightspeed;
 using UnityEditor;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using Rhinox.GUIUtils.Editor;
+#endif
 
 namespace Rhinox.XR.Grapple.It
 {
@@ -222,8 +225,8 @@ namespace Rhinox.XR.Grapple.It
 
             if (_drawLeverExtends)
                 DrawLeverExtends(basePos, direction, transform1.right, arcRadius);
-            
-            if(_drawGrabRange)
+
+            if (_drawGrabRange)
                 DrawGrabRange();
         }
 
