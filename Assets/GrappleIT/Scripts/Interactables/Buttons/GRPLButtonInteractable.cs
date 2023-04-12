@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Rhinox.Lightspeed;
+using Rhinox.Perceptor;
 using UnityEditor;
 using UnityEngine;
 
@@ -19,26 +20,36 @@ namespace Rhinox.XR.Grapple.It
     /// <remarks> The vector from the base to the surface should follow the local forward vector!</remarks>
     public class GRPLButtonInteractable : GRPLInteractable
     {
-        [Header("Debug drawing")]
-        [SerializeField] private bool _drawDebug;
+        [Header("Debug drawing")] [SerializeField]
+        private bool _drawDebug;
 
-        [Header("Poke parameters")]
-        [SerializeField] private Transform _interactableBaseTransform;
+        [Header("Poke parameters")] [SerializeField]
+        private Transform _interactableBaseTransform;
+
         [SerializeField] private Transform _interactObject;
 
-        [Header("Activation parameters")]
-        [SerializeField] private bool _useInteractDelay = true;
+        [Header("Activation parameters")] [SerializeField]
+        private bool _useInteractDelay = true;
+
         [SerializeField] private float _interactDelay = 0.25f;
-        [Range(0f, 1f)][SerializeField] private float _selectStartPercentage = 0.25f;
+        [Range(0f, 1f)] [SerializeField] private float _selectStartPercentage = 0.25f;
 
+        public event Action<GRPLButtonInteractable> ButtonDown;
+        public event Action<GRPLButtonInteractable> ButtonUp;
+        public event Action<GRPLButtonInteractable> ButtonPressed;
+        
+        
         private Bounds _pressBounds;
-
-
-        private RhinoxJoint _previousInteractJoint;
         private float _maxPressDistance;
         private const float INITIAL_INTERACT_OFFSET = 0.25f;
         private bool _isOnCooldown = false;
-
+        private bool _buttonPressed = false;
+        private RhinoxJoint _previousInteractJoint;
+        
+        
+        //-----------------------
+        // MONO BEHAVIOUR METHODS
+        //-----------------------
         protected override void Initialize()
         {
             // Calculate the initial distance between the interact object and base transform
@@ -54,6 +65,71 @@ namespace Rhinox.XR.Grapple.It
                 center = position,
                 extents = boundExtends
             };
+        }
+
+        private void Update()
+        {
+            if (State != GRPLInteractionState.Interacted)
+                return;
+
+            RhinoxJoint joint = _previousInteractJoint;
+
+            // Cache the button fields that get re-used
+            Transform buttonBaseTransform = _interactableBaseTransform;
+
+            Vector3 forward = buttonBaseTransform.forward;
+
+            // Projects the joint pos onto the normal out of the button and gets the distance
+            float pokeDistance =
+                InteractableMathUtils.GetProjectedDistanceFromPointOnNormal(joint.JointPosition,
+                    buttonBaseTransform.position, forward);
+
+
+            pokeDistance -= joint.JointRadius;
+            if (pokeDistance < 0f)
+            {
+                pokeDistance = 0f;
+            }
+
+            _interactObject.transform.position = buttonBaseTransform.position +
+                                                 pokeDistance * buttonBaseTransform.forward;
+
+            float pressPercentage = 1 - (pokeDistance / _maxPressDistance);
+
+            if (pressPercentage > _selectStartPercentage)
+            {
+                //Throw the event
+                SetButtonState(true);
+                return;
+            }
+            SetButtonState(false);
+        }
+        
+        //-----------------------
+        // OWN METHODS
+        //-----------------------
+        /// <summary>
+        /// Sets the state of the button and invokes the correct events.
+        /// </summary>
+        /// <param name="state"></param>
+        private void SetButtonState(bool state)
+        {
+            // Button down
+            if (!_buttonPressed && state)
+            {
+                ButtonDown?.Invoke(this);
+            }
+            else if (_buttonPressed && state)
+            {
+                // Button stay
+                ButtonPressed?.Invoke(this);
+            }
+            else if (_buttonPressed && !state)
+            {
+                // Button up
+                ButtonUp?.Invoke(this);
+            }
+            _buttonPressed = state;
         }
 
         //-----------------------
@@ -95,12 +171,10 @@ namespace Rhinox.XR.Grapple.It
             if (!gameObject.activeInHierarchy || _isOnCooldown)
                 return false;
 
-            float closestDistance = _maxPressDistance;
-
             // Cache the button fields that get re-used
             Transform buttonBaseTransform = _interactableBaseTransform;
 
-            var forward = buttonBaseTransform.forward;
+            Vector3 forward = buttonBaseTransform.forward;
 
             // Check if the joint pos is in front of the plane that is defined by the button
             if (!InteractableMathUtils.IsPositionInFrontOfPlane(joint.JointPosition, buttonBaseTransform.position,
@@ -117,21 +191,13 @@ namespace Rhinox.XR.Grapple.It
                 InteractableMathUtils.GetProjectedDistanceFromPointOnNormal(joint.JointPosition,
                     buttonBaseTransform.position, forward);
 
-
             pokeDistance -= joint.JointRadius;
             if (pokeDistance < 0f)
             {
                 pokeDistance = 0f;
             }
 
-            closestDistance = Math.Min(pokeDistance, closestDistance);
-
-            _interactObject.transform.position = buttonBaseTransform.position +
-                                                 closestDistance * buttonBaseTransform.forward;
-
-            float pressPercentage = 1 - (closestDistance / _maxPressDistance);
-
-            if (pressPercentage > _selectStartPercentage)
+            if (pokeDistance < _maxPressDistance)
             {
                 _previousInteractJoint = joint;
                 return true;
