@@ -217,8 +217,10 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
-        private void OnDrawGizmos()
+        protected override void OnDrawGizmos()
         {
+            base.OnDrawGizmos();
+
             if (!_drawDebug)
                 return;
 

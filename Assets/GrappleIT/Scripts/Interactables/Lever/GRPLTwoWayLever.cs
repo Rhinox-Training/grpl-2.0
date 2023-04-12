@@ -199,8 +199,10 @@ namespace Rhinox.XR.Grapple.It
 
 
 #if UNITY_EDITOR
-        private void OnDrawGizmos()
+        protected override void OnDrawGizmos()
         {
+            base.OnDrawGizmos();
+
             if (!_drawDebug)
                 return;
 

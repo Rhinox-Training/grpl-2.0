@@ -5,6 +5,7 @@ using Rhinox.Perceptor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.XR.Hands;
 
@@ -12,12 +13,18 @@ namespace Rhinox.XR.Grapple.It
 {
     public class GRPLValve : GRPLInteractable
     {
+        [Space(10f)]
+        [Header("Valve Settings")]
+        [Space(5f)]
         [SerializeField] private Transform _visualTransform = null;
+        [SerializeField] private GameObject _TEST = null;
+
 
         [Header("Grab parameters")]
         [SerializeField] private string _grabGestureName = "Grab";
-        [SerializeField] private float _grabRadius = .1f;
-        [SerializeField] private float _grabTolaranceRadius = .025f;
+        [SerializeField][Range(0f, .5f)] private float _grabRadius = .1f;
+        [SerializeField][Range(0f, .1f)] private float _grabTolaranceRadius = .025f;
+        //[SerializeField][Range(0f, 1f)] private float _maxGrabHoldingDistance = .5f;
 
         [Header("Valve Settings")]
         [SerializeField] float _fullyOpenAngle = 0f;
@@ -73,8 +80,8 @@ namespace Rhinox.XR.Grapple.It
 
             _currentValveRotation = _visualTransform.localEulerAngles.z;
 
-            _minRadius = _grabRadius - _grabTolaranceRadius;
-            _maxRadius = _grabRadius + _grabTolaranceRadius;
+            _minRadius = _grabRadius - (_grabTolaranceRadius / 2f);
+            _maxRadius = _grabRadius + (_grabTolaranceRadius / 2f);
         }
 
         private void JointManagerInitialized(GRPLJointManager jointManager)
@@ -149,10 +156,12 @@ namespace Rhinox.XR.Grapple.It
 
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
-            float dst = transform.position.SqrDistanceTo(joint.JointPosition);
+            var projectedJoint = joint.JointPosition.ProjectOnPlaneAndTranslate(transform.position, -transform.forward);
+            float dstValveToPrjJointSqr = transform.position.SqrDistanceTo(projectedJoint);
+            float dstPrjJointToJointSqr = MathF.Abs(projectedJoint.SqrDistanceTo(joint.JointPosition));
 
-            //                      min radius                 max radius
-            bool isInRange = dst >= _minRadius * _minRadius && dst <= _maxRadius * _maxRadius;
+            bool isInRange = dstValveToPrjJointSqr >= _minRadius * _minRadius && dstValveToPrjJointSqr <= _maxRadius * _maxRadius;
+            isInRange &= dstPrjJointToJointSqr <= (_grabTolaranceRadius / 2f) * (_grabTolaranceRadius / 2f);
 
             if (isInRange)
                 _interactingJoint = joint;
@@ -177,6 +186,13 @@ namespace Rhinox.XR.Grapple.It
         {
             outJoint = joints.FirstOrDefault(x => x.JointID == _forcedInteractJointID);
             return outJoint != null;
+        }
+
+        protected override void InteractStopped()
+        {
+            TryLetGo(_currentHandHolding);
+
+            base.InteractStopped();
         }
 
         public void TryGrab(RhinoxHand hand)
@@ -207,8 +223,6 @@ namespace Rhinox.XR.Grapple.It
         {
             if (IsGrabbed && _interactingJoint != null)
             {
-                //var proj = _interactingJoint.JointPosition.ProjectOnPlaneAndTranslate(transform.position, -transform.forward);
-                //var smrse = Vector3.ProjectOnPlane(_interactingJoint.JointPosition, -transform.forward);
                 float dAngle = Vector3.SignedAngle(_grabbedVec,
                     (_interactingJoint.JointPosition - transform.position), -transform.forward);
 
@@ -237,16 +251,57 @@ namespace Rhinox.XR.Grapple.It
         }
 
 #if UNITY_EDITOR
-        private void OnDrawGizmos()
+        protected override void OnDrawGizmos()
         {
+            base.OnDrawGizmos();
+
             if (_drawGizmos)
             {
                 var trans = transform;
 
                 using (new eUtility.GizmoColor(0f, 1f, 0f, .5f))
                 {
-                    GizmoExtensions.DrawSolidDonut(trans.position, trans.right, -trans.forward,
-                        _minRadius, _maxRadius);
+                    GizmoExtensions.DrawSolidAnnulusWidth(trans.position, trans.right, -trans.forward, _grabRadius, _grabTolaranceRadius, 16);
+                }
+            }
+            if (_TEST == null)
+                return;
+
+            //Vector3 poss = new Vector3(0.08f, 1.03f, 0.25f);
+            Vector3 poss = _TEST.transform.position;
+
+            Gizmos.DrawSphere(poss, 0.01f);
+
+            var poins = poss.ProjectOnPlaneAndTranslate(transform.position, -transform.forward);
+
+            float dst = transform.position.SqrDistanceTo(poins);
+            float minRadius = _grabRadius - (_grabTolaranceRadius / 2f);
+            float maxRadius = _grabRadius + (_grabTolaranceRadius / 2f);
+
+            bool isInRange = dst >= minRadius * minRadius && dst <= maxRadius * maxRadius;
+
+            float dst2 = MathF.Abs(poins.SqrDistanceTo(poss));
+            bool isInRange2 = dst2 <= (_grabTolaranceRadius / 2f) * (_grabTolaranceRadius / 2f);
+
+            if (isInRange && isInRange2)
+            {
+                using (new eUtility.GizmoColor(0f, 1f, 0f, .5f))
+                {
+                    Gizmos.DrawSphere(poins, 0.005f);
+                }
+            }
+            else if (isInRange || isInRange2)
+            {
+                using (new eUtility.GizmoColor(1f, 1f, 0f, .5f))
+                {
+                    Gizmos.DrawSphere(poins, 0.005f);
+                }
+            }
+            else
+            {
+                using (new eUtility.GizmoColor(1f, 0f, 0f, .5f))
+                {
+                    Gizmos.DrawSphere(poins, 0.005f);
                 }
             }
         }
