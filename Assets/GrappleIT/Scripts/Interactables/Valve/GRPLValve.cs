@@ -264,46 +264,46 @@ namespace Rhinox.XR.Grapple.It
                     GizmoExtensions.DrawSolidAnnulusWidth(trans.position, trans.right, -trans.forward, _grabRadius, _grabTolaranceRadius, 16);
                 }
             }
-            if (_TEST == null)
-                return;
+            //if (_TEST == null)
+            //    return;
 
-            //Vector3 poss = new Vector3(0.08f, 1.03f, 0.25f);
-            Vector3 poss = _TEST.transform.position;
+            ////Vector3 poss = new Vector3(0.08f, 1.03f, 0.25f);
+            //Vector3 poss = _TEST.transform.position;
 
-            Gizmos.DrawSphere(poss, 0.01f);
+            //Gizmos.DrawSphere(poss, 0.01f);
 
-            var poins = poss.ProjectOnPlaneAndTranslate(transform.position, -transform.forward);
+            //var poins = poss.ProjectOnPlaneAndTranslate(transform.position, -transform.forward);
 
-            float dst = transform.position.SqrDistanceTo(poins);
-            float minRadius = _grabRadius - (_grabTolaranceRadius / 2f);
-            float maxRadius = _grabRadius + (_grabTolaranceRadius / 2f);
+            //float dst = transform.position.SqrDistanceTo(poins);
+            //float minRadius = _grabRadius - (_grabTolaranceRadius / 2f);
+            //float maxRadius = _grabRadius + (_grabTolaranceRadius / 2f);
 
-            bool isInRange = dst >= minRadius * minRadius && dst <= maxRadius * maxRadius;
+            //bool isInRange = dst >= minRadius * minRadius && dst <= maxRadius * maxRadius;
 
-            float dst2 = MathF.Abs(poins.SqrDistanceTo(poss));
-            bool isInRange2 = dst2 <= (_grabTolaranceRadius / 2f) * (_grabTolaranceRadius / 2f);
+            //float dst2 = MathF.Abs(poins.SqrDistanceTo(poss));
+            //bool isInRange2 = dst2 <= (_grabTolaranceRadius / 2f) * (_grabTolaranceRadius / 2f);
 
-            if (isInRange && isInRange2)
-            {
-                using (new eUtility.GizmoColor(0f, 1f, 0f, .5f))
-                {
-                    Gizmos.DrawSphere(poins, 0.005f);
-                }
-            }
-            else if (isInRange || isInRange2)
-            {
-                using (new eUtility.GizmoColor(1f, 1f, 0f, .5f))
-                {
-                    Gizmos.DrawSphere(poins, 0.005f);
-                }
-            }
-            else
-            {
-                using (new eUtility.GizmoColor(1f, 0f, 0f, .5f))
-                {
-                    Gizmos.DrawSphere(poins, 0.005f);
-                }
-            }
+            //if (isInRange && isInRange2)
+            //{
+            //    using (new eUtility.GizmoColor(0f, 1f, 0f, .5f))
+            //    {
+            //        Gizmos.DrawSphere(poins, 0.005f);
+            //    }
+            //}
+            //else if (isInRange || isInRange2)
+            //{
+            //    using (new eUtility.GizmoColor(1f, 1f, 0f, .5f))
+            //    {
+            //        Gizmos.DrawSphere(poins, 0.005f);
+            //    }
+            //}
+            //else
+            //{
+            //    using (new eUtility.GizmoColor(1f, 0f, 0f, .5f))
+            //    {
+            //        Gizmos.DrawSphere(poins, 0.005f);
+            //    }
+            //}
         }
 
         private void Reset()

@@ -1257,7 +1257,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &901800465
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1272,8 +1272,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _proximateRadius: 0.5
   _showProximateRadius: 0
+  _proximateJointID: 12
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
+  _allowMultiHandInteraction: 0
   _grabGestureName: Grab
   _useCollidersInsteadOfBoundingBox: 0
   _showBoundingBox: 0
@@ -1341,14 +1343,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _proximateRadius: 0.5
   _showProximateRadius: 0
+  _proximateJointID: 12
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
+  _allowMultiHandInteraction: 0
   _visualTransform: {fileID: 1744755800}
   _TEST: {fileID: 0}
   _grabGestureName: Grab
   _grabRadius: 0.185
   _grabTolaranceRadius: 0.09
-  _maxGrabHoldingDistance: 0.5
   _fullyOpenAngle: -180
   _fullyClosedAngle: 360
   _drawGizmos: 1
@@ -1542,14 +1545,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _proximateRadius: 0.5
   _showProximateRadius: 0
+  _proximateJointID: 12
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
+  _allowMultiHandInteraction: 0
   _visualTransform: {fileID: 1498280198}
   _TEST: {fileID: 0}
   _grabGestureName: Grab
   _grabRadius: 0.185
   _grabTolaranceRadius: 0.09
-  _maxGrabHoldingDistance: 0.5
   _fullyOpenAngle: -180
   _fullyClosedAngle: 360
   _drawGizmos: 1
@@ -1584,8 +1588,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Instance: {fileID: 0}
   _maxAmountOfProximatesPerHand: 3
-  _proximateRadius: 0.25
-  _proximateJointID: 12
   _interactibleGroups: []
 --- !u!4 &1574513739
 Transform:
@@ -1683,7 +1685,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1921074505
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1698,8 +1700,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _proximateRadius: 0.5
   _showProximateRadius: 0
+  _proximateJointID: 12
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
+  _allowMultiHandInteraction: 0
   _baseTransform: {fileID: 478300358}
   _stemTransform: {fileID: 1805927983}
   _handleTransform: {fileID: 79708308}
@@ -1965,14 +1969,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _proximateRadius: 0.4
   _showProximateRadius: 0
+  _proximateJointID: 12
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
+  _allowMultiHandInteraction: 0
   _visualTransform: {fileID: 814317147}
   _TEST: {fileID: 901800464}
   _grabGestureName: Grab
   _grabRadius: 0.185
   _grabTolaranceRadius: 0.09
-  _maxGrabHoldingDistance: 0.5
   _fullyOpenAngle: -180
   _fullyClosedAngle: 360
   _drawGizmos: 1
