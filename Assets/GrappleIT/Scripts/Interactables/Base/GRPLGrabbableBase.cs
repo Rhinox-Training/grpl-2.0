@@ -1,17 +1,23 @@
 using Rhinox.Lightspeed;
 using Rhinox.Perceptor;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple.It
 {
-    public class GRPLGrabbableInteractable : GRPLInteractable
+    /// <summary>
+    /// Base class to make an object grabbele, this can be via a bounding box or via a list of trigge rcolliders used as bounding box.
+    /// </summary>
+    /// <remarks />
+    /// <dependencies><see cref="GRPLGestureRecognizer"/></dependencies>
+    public class GRPLGrabbableBase : GRPLInteractable
     {
         [Space(10f)]
+        [Header("Grab parameters")]
+        [SerializeField] private string _grabGestureName = "Grab";
+
         [Header("Bounding box settings")]
         [SerializeField] private bool _useCollidersInsteadOfBoundingBox = false;
 
@@ -49,11 +55,15 @@ namespace Rhinox.XR.Grapple.It
         private RhinoxGesture _grabGesture;
         private static GRPLJointManager _jointManager;
 
-        //private const float _boundsIncreasment = 1.4f;
-
         //==========
         //INITIALIZE
         //==========
+        protected void Awake()
+        {
+            _forceInteractibleJoint = true;
+            _forcedInteractJointID = XRHandJointID.MiddleProximal;
+        }
+
         protected override void Initialize()
         {
             base.Initialize();
@@ -108,7 +118,7 @@ namespace Rhinox.XR.Grapple.It
         {
             if (_grabGesture == null)
             {
-                _grabGesture = gestureRecognizer.Gestures.Find(x => x.Name == "Grab");
+                _grabGesture = gestureRecognizer.Gestures.Find(x => x.Name == _grabGestureName);
 
                 if (_grabGesture != null)
                 {
@@ -118,14 +128,14 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
+        //============
+        //STATE CHANGE
+        //============
         private void TrackingLost(RhinoxHand hand)
         {
             TryDrop(hand);
         }
 
-        //=========
-        //
-        //=========
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -166,9 +176,18 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
+
+        private void Update()
+        {
+            _bounds = gameObject.GetObjectBounds();
+            _bounds.extents += _boundingBoxExtensionValues;
+        }
+
+        //=========
+        //OVERRIDES
+        //=========
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
-            //_currentHandHolding
             switch (hand)
             {
                 case RhinoxHand.Left:
@@ -194,16 +213,13 @@ namespace Rhinox.XR.Grapple.It
         public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint,
             RhinoxHand hand)
         {
-            outJoint = joints.FirstOrDefault(x => x.JointID == XRHandJointID.MiddleProximal);
+            outJoint = joints.FirstOrDefault(x => x.JointID == _forcedInteractJointID);
             return outJoint != null;
         }
 
-        private void Update()
-        {
-            _bounds = gameObject.GetObjectBounds();
-            _bounds.extents += _boundingBoxExtensionValues;
-        }
-
+        //==============
+        //PUBLIC METHODS
+        //==============
         public void TryGrab(RhinoxHand hand)
         {
             //if the given hand was invalid or the given hand cannot grab this object, do early return
@@ -247,6 +263,9 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
+        //=================
+        //PROTECTED METHODS
+        //=================
         //save and change the rigidbody settings so it can properly move along with the handand it is now attached to
         protected virtual void GrabInternal(GameObject parent, RhinoxHand rhinoxHand)
         {
@@ -280,13 +299,11 @@ namespace Rhinox.XR.Grapple.It
         }
 
 #if UNITY_EDITOR
-        private void OnDrawGizmos()
+        protected override void OnDrawGizmos()
         {
-            if (_useCollidersInsteadOfBoundingBox)
-            {
+            base.OnDrawGizmos();
 
-            }
-            else if (_showBoundingBox)
+            if (!_useCollidersInsteadOfBoundingBox && _showBoundingBox)
             {
                 _bounds = gameObject.GetObjectBounds();
 

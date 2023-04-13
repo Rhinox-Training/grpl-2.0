@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rhinox.GUIUtils.Editor;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Hands;
@@ -10,6 +11,9 @@ namespace Rhinox.XR.Grapple.It
     /// If all pure abstract methods are correctly implemented, the derived interactables should work seamlessly with
     /// the <see cref="GRPLInteractableManager"/>. 
     /// </summary>
+    /// <remarks>The <see cref="Start"/> and <see cref="OnDestroy"/> should NOT be overwritten.<br />
+    /// Use <see cref="Initialize"/> <see cref="Destroyed"/> respectively instead.</remarks>
+    /// <dependencies />
     public abstract class GRPLInteractable : MonoBehaviour
     {
         public delegate void InteractableEvent(GRPLInteractable grappleInteractable);
@@ -17,8 +21,11 @@ namespace Rhinox.XR.Grapple.It
         public static InteractableEvent InteractableCreated = null;
         public static InteractableEvent InteractableDestroyed = null;
 
-        [Header("Proximate detection parameters")] [SerializeField]
-        private float _proximateRadius = .5f;
+        [Header("Proximate detection parameters")]
+        [SerializeField] private float _proximateRadius = .5f;
+#if UNITY_EDITOR
+        [SerializeField] private bool _showProximateRadius = false;
+#endif
 
         [SerializeField] private XRHandJointID _proximateJointID = XRHandJointID.MiddleMetacarpal;
 
@@ -38,27 +45,21 @@ namespace Rhinox.XR.Grapple.It
         public event Action<GRPLInteractable> OnProximityStarted;
         public event Action<GRPLInteractable> OnProximityEnded;
 
-        protected virtual void Initialize()
-        {
-        }
-
-        protected virtual void Destroyed()
-        {
-        }
+        protected virtual void Initialize() { }
+        protected virtual void Destroyed() { }
 
         private GRPLInteractionState _state = GRPLInteractionState.Active;
         public GRPLInteractionState State => _state;
 
         public bool ShouldPerformInteractCheck { set; get; } = true;
 
-
-        private void Start()
+        protected virtual void Start()
         {
             Initialize();
             InteractableCreated?.Invoke(this);
         }
 
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
             InteractableDestroyed?.Invoke(this);
             Destroyed();
@@ -134,5 +135,17 @@ namespace Rhinox.XR.Grapple.It
         public abstract bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint,
             RhinoxHand hand);
         
+#if UNITY_EDITOR
+        protected virtual void OnDrawGizmos()
+        {
+            if (_showProximateRadius)
+            {
+                using (new eUtility.GizmoColor(1f, 1f, 1f, 1f))
+                {
+                    Gizmos.DrawWireSphere(transform.position, _proximateRadius);
+                }
+            }
+        }
+#endif
     }
 }

@@ -19,8 +19,8 @@ namespace Rhinox.XR.Grapple.It
     /// </summary>
     public class GRPLOneWayLever : GRPLLeverBase
     {
-        [Header("Debug Parameters")] [SerializeField]
-        private bool _drawDebug = false;
+        [Header("Debug Parameters")]
+        [SerializeField] private bool _drawDebug = false;
 
         [SerializeField] [HideIfFieldFalse("_drawDebug", 0f)]
         private bool _drawArc = false;
@@ -147,7 +147,7 @@ namespace Rhinox.XR.Grapple.It
 
 
             // Get the current gesture from the target hand
-            RhinoxGesture gestureOnHand = _gestureRecognizer.GetGestureOnHand(hand);
+            RhinoxGesture gestureOnHand = _gestureRecognizer.GetCurrentGestureOfHand(hand);
 
             // If there is currently no gesture on the target hand
             if (gestureOnHand == null)
@@ -204,8 +204,10 @@ namespace Rhinox.XR.Grapple.It
         // EDITOR ONLY METHODS
         //-----------------------
 #if UNITY_EDITOR
-        private void OnDrawGizmos()
+        protected override void OnDrawGizmos()
         {
+            base.OnDrawGizmos();
+
             if (!_drawDebug)
                 return;
 
@@ -238,7 +240,7 @@ namespace Rhinox.XR.Grapple.It
 
             using (new eUtility.GizmoColor(Color.red))
             {
-                GizmoExtensions.DrawSolidArc(arcCenter, direction, arcNormal, _interactMinAngle, arcRadius, (int)
+                GizmoExtensions.DrawSolidArc(arcCenter, direction, arcNormal, arcRadius, _interactMinAngle, (int)
                     (_interactMinAngle / angleStep));
             }
 
@@ -248,7 +250,7 @@ namespace Rhinox.XR.Grapple.It
                 using (new eUtility.GizmoColor(Color.green))
                 {
                     float arcAngle = _leverMaxAngle - _interactMinAngle;
-                    GizmoExtensions.DrawSolidArc(arcCenter, dir, arcNormal, arcAngle, arcRadius,
+                    GizmoExtensions.DrawSolidArc(arcCenter, dir, arcNormal, arcRadius, arcAngle,
                         (int)(arcAngle / angleStep));
                 }
             }

@@ -1917,6 +1917,11 @@ MonoBehaviour:
   _proximateRadius: 0.5
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
+  _grabGestureName: Grab
+  _useCollidersInsteadOfBoundingBox: 0
+  _showBoundingBox: 0
+  _boundingBoxExtensionValues: {x: 0.5, y: 0.5, z: 0.5}
+  _boundColliders: []
   _maxSocketDistance: 0.01
   _sockets: []
 --- !u!54 &1711070354
@@ -2307,6 +2312,11 @@ MonoBehaviour:
   _proximateRadius: 0.5
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
+  _grabGestureName: Grab
+  _useCollidersInsteadOfBoundingBox: 0
+  _showBoundingBox: 0
+  _boundingBoxExtensionValues: {x: 0.5, y: 0.5, z: 0.5}
+  _boundColliders: []
   _maxSocketDistance: 0.01
   _sockets: []
 --- !u!54 &1913588395
@@ -2892,7 +2902,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5576225494174647029}
   - component: {fileID: 5576225494174647030}
-  - component: {fileID: 2073526833691461281}
   - component: {fileID: 5027063037298874766}
   m_Layer: 0
   m_Name: HammerPrefab
@@ -2901,20 +2910,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!136 &2073526833691461281
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2055162655041060973}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 0
-  m_Radius: 0.03
-  m_Height: 0.12
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0.005}
 --- !u!33 &2321516798144033134
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -2998,6 +2993,11 @@ MonoBehaviour:
   _proximateRadius: 0.5
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
+  _grabGestureName: Grab
+  _useCollidersInsteadOfBoundingBox: 0
+  _showBoundingBox: 0
+  _boundingBoxExtensionValues: {x: 0.5, y: 0.5, z: 0.5}
+  _boundColliders: []
   _maxSocketDistance: 0.075
   _sockets:
   - {fileID: 521542655210110409}

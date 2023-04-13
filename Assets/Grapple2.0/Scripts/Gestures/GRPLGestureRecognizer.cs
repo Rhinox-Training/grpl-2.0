@@ -233,7 +233,7 @@ namespace Rhinox.XR.Grapple
             }
         }
 
-        public RhinoxGesture GetGestureOnHand(RhinoxHand hand)
+        public RhinoxGesture GetCurrentGestureOfHand(RhinoxHand hand)
         {
             switch (hand)
             {
@@ -244,7 +244,7 @@ namespace Rhinox.XR.Grapple
                 case RhinoxHand.Invalid:
                 default:
                     PLog.Error<GrappleLogger>(
-                        $"GRPLGestureRecognizer.cs - GetGestureOnHand({hand}), " +
+                        $"GRPLGestureRecognizer.cs - GetCurrentGestureOfHand({hand}), " +
                         $"function called with invalid hand: {hand}.");
                     return null;
             }
@@ -260,7 +260,7 @@ namespace Rhinox.XR.Grapple
                     return RightHandGestureRecognizedThisFrame;
                 case RhinoxHand.Invalid:
                 default:
-                    PLog.Error<GrappleLogger>($"GRPLGestureRecognizer.cs - GetGestureOnHand({hand}), " +
+                    PLog.Error<GrappleLogger>($"GRPLGestureRecognizer.cs - GetCurrentGestureOfHand({hand}), " +
                                               $"function called with invalid hand: {hand}.");
                     return false;
             }

@@ -5,9 +5,14 @@ using UnityEngine;
 
 namespace Rhinox.XR.Grapple.It
 {
-    public class GRPLSocketable : GRPLGrabbableInteractable
+    /// <summary>
+    /// Socktables objects inhert from <see cref="GRPLGrabbableBase"/> and extend this by adding sockets points.<br />
+    /// Each hand has its own socket, so the closest socket point get correctly orientated to the hands socket.
+    /// </summary>
+    /// <remarks>When the right hand grabs the object its orientation is mirrored compared to the left hand.</remarks>
+    /// <dependencies />
+    public class GRPLSocketable : GRPLGrabbableBase
     {
-
         [Space(15f)]
         [SerializeField] private float _maxSocketDistance = .025f;
         [SerializeField] private List<Transform> _sockets = null;
