@@ -365,7 +365,7 @@ namespace Rhinox.XR.Grapple
 
 #if UNITY_EDITOR
         /// <summary>
-        /// Saves the current pose of the "RhinoxHandToRecord" rhinoxHand as a new gesture under the name "SavedGestureName". <br />
+        /// Saves the current pose of the "RhinoxHandTo " rhinoxHand as a new gesture under the name "SavedGestureName". <br />
         /// This also includes the option to record the forward of the joint "ForwardJoint", for more restricted recognition. 
         /// </summary>
         /// <param name="ctx">See <see cref="InputAction.CallbackContext"/></param>

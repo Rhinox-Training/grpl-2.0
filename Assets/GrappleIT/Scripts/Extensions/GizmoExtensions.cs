@@ -210,8 +210,8 @@ public static class GizmoExtensions
     /// <param name="segments">Optional parameter specifying the number of line segments that will be used to draw the inner and outer circle borders of the annulus.</param>
     /// <remarks>The <paramref name="direction"/> and <paramref name="forwardVec"/> should be normalized otherwise the circle will be drawn incorrectly.</remarks>
     public static void DrawSolidAnnulusWidth(Vector3 center, Vector3 direction, Vector3 forwardVec,
-        float centerR, float totalWidth, int segments = 12)
+        float centerR, float haldWidth, int segments = 12)
     {
-        DrawSolidAnnulusArc(center, direction, forwardVec, centerR - (totalWidth / 2f), centerR + (totalWidth / 2f), 360f, segments);
+        DrawSolidAnnulusArc(center, direction, forwardVec, centerR - haldWidth, centerR + haldWidth, 360f, segments);
     }
 }
