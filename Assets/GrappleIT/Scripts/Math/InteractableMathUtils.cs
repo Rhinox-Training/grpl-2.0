@@ -9,6 +9,22 @@ namespace Rhinox.XR.Grapple.It
     public static class InteractableMathUtils
     {
         /// <summary>
+        /// Projects the given point onto a plane defined by a position and normal vector, and then translates the result by the position of the plane.
+        /// </summary>
+        /// <param name="point">The point to project.</param>
+        /// <param name="planePosition">A point on the desired plane.</param>
+        /// <param name="planeNormal">The normal vector of the desired plane.</param>
+        /// <returns>The projected point, translated by the position of the plane.</returns>
+        public static Vector3 ProjectOnPlaneAndTranslate(this Vector3 point, Vector3 planePosition, Vector3 planeNormal)
+        {
+            // Project the position on the plane defined by the given position and forward
+            var projectedPos = Vector3.ProjectOnPlane(point, planeNormal) +
+                               Vector3.Dot(planePosition, planeNormal) *
+                               planeNormal;
+            return projectedPos;
+        }
+        
+        /// <summary>
         /// Checks if the given position is in front of given plane. The plane is defined with a point and forward vector.
         /// </summary>
         /// <param name="pos">The position to check</param>

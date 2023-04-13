@@ -12,13 +12,30 @@ namespace Rhinox.XR.Grapple
     /// <dependencies> <see cref="GRPLJointManager"/> </dependencies>
     public class GRPLHandVisualizer : MonoBehaviour
     {
-        [SerializeField] private Transform _xrOrigin;
+        /// <summary>
+        /// A reference to the prefab used to represent the left hand.
+        /// </summary>
         [SerializeField] private GameObject _leftHandPrefab;
+        /// <summary>
+        /// A reference to the prefab used to represent the right hand.
+        /// </summary>
         [SerializeField] private GameObject _rightHandPrefab;
+        /// <summary>
+        /// A reference to the material used to render the hand prefabs.
+        /// </summary>
         [SerializeField] private Material _handMaterial;
 
+        /// <summary>
+        /// Returns the material used for the hand prefabs.
+        /// </summary>
         public Material HandMaterial => _handMaterial;
+        /// <summary>
+        /// Returns the store reference to the SkinnedMeshRenderer of the left hand.
+        /// </summary>
         public SkinnedMeshRenderer LeftHandRenderer => _leftHandRenderer;
+        /// <summary>
+        /// Returns the store reference to the SkinnedMeshRenderer of the right hand.
+        /// </summary>
         public SkinnedMeshRenderer RightHandRenderer => _rightHandRenderer;
 
 
@@ -102,7 +119,7 @@ namespace Rhinox.XR.Grapple
 
             if (handRederer == null)
             {
-                PLog.Error<GrappleLogger>(
+                PLog.Error<GRPLLogger>(
                     "[GRPLHandVisualizer:InstantiateHand], Could not find a skinned mesh renderer on the prefab");
                 gameObject.SetActive(false);
                 return;
@@ -154,7 +171,7 @@ namespace Rhinox.XR.Grapple
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    PLog.Error<GrappleLogger>(
+                    PLog.Error<GRPLLogger>(
                         $"[GRPLHandVisualizer,OnTrackingAcquired], function called with invalid hand value: {hand}");
                     return;
             }
@@ -176,7 +193,7 @@ namespace Rhinox.XR.Grapple
                     break;
                 case RhinoxHand.Invalid:
                 default:
-                    PLog.Error<GrappleLogger>(
+                    PLog.Error<GRPLLogger>(
                         $"[GRPLHandVisualizer,OnTrackingLost], function called with invalid hand value: {hand}");
                     return;
             }

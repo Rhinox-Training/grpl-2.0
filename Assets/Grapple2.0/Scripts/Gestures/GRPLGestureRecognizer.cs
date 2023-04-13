@@ -334,7 +334,7 @@ namespace Rhinox.XR.Grapple
                     return _currentRightGesture;
                 case RhinoxHand.Invalid:
                 default:
-                    PLog.Error<GrappleLogger>(
+                    PLog.Error<GRPLLogger>(
                         $"GRPLGestureRecognizer.cs - GetCurrentGestureOfHand({hand}), " +
                         $"function called with invalid hand: {hand}.");
                     return null;
@@ -357,7 +357,7 @@ namespace Rhinox.XR.Grapple
                     return RightHandGestureRecognizedThisFrame;
                 case RhinoxHand.Invalid:
                 default:
-                    PLog.Error<GrappleLogger>($"GRPLGestureRecognizer.cs - GetCurrentGestureOfHand({hand}), " +
+                    PLog.Error<GRPLLogger>($"GRPLGestureRecognizer.cs - GetCurrentGestureOfHand({hand}), " +
                                               $"function called with invalid hand: {hand}.");
                     return false;
             }
@@ -404,7 +404,7 @@ namespace Rhinox.XR.Grapple
             {
                 if (!_jointManager.TryGetFingerBend(HandToRecord, finger, out float bendValue))
                 {
-                    PLog.Error<GrappleLogger>("[GRPLGestureRecognizer:SaveGesture({RhinoxHandToRecord})], " +
+                    PLog.Error<GRPLLogger>("[GRPLGestureRecognizer:SaveGesture({RhinoxHandToRecord})], " +
                                               $"Failed to get bend value for finger {finger} on {HandToRecord} rhinoxHand");
                     return;
                 }
