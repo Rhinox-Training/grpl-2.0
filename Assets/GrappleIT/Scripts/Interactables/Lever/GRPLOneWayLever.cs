@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Rhinox.Lightspeed;
+using Rhinox.Perceptor;
 using UnityEditor;
 
 #if UNITY_EDITOR
@@ -32,7 +33,7 @@ namespace Rhinox.XR.Grapple.It
 
         public event Action<GRPLOneWayLever> LeverActivated;
         public event Action<GRPLOneWayLever> LeverStopped;
-        
+
         private bool _isLeverActivated = false;
 
         //-----------------------
@@ -138,6 +139,13 @@ namespace Rhinox.XR.Grapple.It
 
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
+            if (_gestureRecognizer == null)
+            {
+                PLog.Warn<GRPLITLogger>("[GRPLOneWayLever, CheckForInteraction()], Gesture recognizer is null!");
+                return false;
+            }
+
+
             // Get the current gesture from the target hand
             RhinoxGesture gestureOnHand = _gestureRecognizer.GetGestureOnHand(hand);
 
@@ -227,15 +235,14 @@ namespace Rhinox.XR.Grapple.It
         {
             int totalAmountOfSegments = 36;
             float angleStep = 360f / totalAmountOfSegments;
-            
+
             using (new eUtility.GizmoColor(Color.red))
             {
-                GizmoExtensions.DrawSolidArc(arcCenter, direction, arcNormal, _interactMinAngle, arcRadius,(int)
+                GizmoExtensions.DrawSolidArc(arcCenter, direction, arcNormal, _interactMinAngle, arcRadius, (int)
                     (_interactMinAngle / angleStep));
-            }   
-            
-            {
+            }
 
+            {
                 var dir = direction;
                 dir = Quaternion.AngleAxis(_interactMinAngle, arcNormal) * dir; // rotate it
                 using (new eUtility.GizmoColor(Color.green))
@@ -243,7 +250,7 @@ namespace Rhinox.XR.Grapple.It
                     float arcAngle = _leverMaxAngle - _interactMinAngle;
                     GizmoExtensions.DrawSolidArc(arcCenter, dir, arcNormal, arcAngle, arcRadius,
                         (int)(arcAngle / angleStep));
-                }  
+                }
             }
         }
 

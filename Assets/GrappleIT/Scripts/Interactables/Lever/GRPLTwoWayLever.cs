@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Rhinox.Lightspeed;
+using Rhinox.Perceptor;
 using UnityEditor;
 using UnityEngine;
 
@@ -146,6 +147,11 @@ namespace Rhinox.XR.Grapple.It
 
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
+            if (_gestureRecognizer == null)
+            {
+                PLog.Warn<GRPLITLogger>("[GRPLOneWayLever, CheckForInteraction()], Gesture recognizer is null!");
+                return false;
+            }
             // Get the current gesture from the target hand
             RhinoxGesture gestureOnHand = _gestureRecognizer.GetGestureOnHand(hand);
 
