@@ -8,91 +8,148 @@ using UnityEngine.XR.Hands;
 namespace Rhinox.XR.Grapple
 {
     /// <summary>
-    /// This struct represents a gesture in grapple. <br />
-    /// It contains all data related to one gesture, like the name, joint distances and joint forward.
+    /// The RhinoxGesture class represents a gesture in the Rhinox XR Grapple module.
+    /// It contains data related to a gesture, such as the name, finger bend values, joint forward,
+    /// distance and rotation thresholds, and events that are invoked when the gesture is recognized or unrecognized.
     /// </summary>
     [Serializable]
     public class RhinoxGesture
     {
+        /// <summary>
+        ///  A string that represents the name of the gesture.
+        /// </summary>
         [JsonProperty(PropertyName = "Gesture name")]
         public string Name;
 
-        // The bend values are saved in the following order:
-        // Thumb - Index - Middle - Ring - Little
+        /// <summary>
+        /// A list of floats that represents the finger bend values of the gesture.<br />
+        /// The values are stored in the following order: Thumb, Index, Middle, Ring, Little.
+        /// </summary>
         [JsonProperty(PropertyName = "Finger bend values")]
         public List<float> FingerBendValues = new List<float>();
 
+        /// <summary>
+        /// A bool that indicates whether the gesture uses joint forward.
+        /// </summary>
         [JsonProperty(PropertyName = "Uses joint forward")]
         public bool UseJointForward;
 
+        /// <summary>
+        /// An XRHandJointID that represents the forward joint of the gesture.
+        /// </summary>
         [JsonProperty(PropertyName = "Forward joint")]
         public XRHandJointID CheckJoint;
 
+        /// <summary>
+        /// A Vector3 that represents the wrist rotation of the gesture.
+        /// </summary>
         [JsonProperty(PropertyName = "Wrist rotation")]
         public Vector3 JointForward;
 
+        /// <summary>
+        /// A float that represents the bend threshold of the gesture.
+        /// </summary>
         [JsonProperty(PropertyName = "Distance threshold")]
         public float BendThreshold;
 
+        /// <summary>
+        /// A float that represents the rotation threshold of the gesture.
+        /// </summary>
         [JsonProperty(PropertyName = "Rotation threshold")]
         public float RotationThreshold;
 
-        [JsonIgnore][SerializeField] private UnityEvent<RhinoxHand> OnRecognized;
+        /// <summary>
+        /// A UnityEvent that is invoked when the gesture is recognized. It has a parameter of type RhinoxHand.
+        /// </summary>
+        [JsonIgnore] [SerializeField] private UnityEvent<RhinoxHand> _onRecognized;
 
-        [JsonIgnore][SerializeField] private UnityEvent<RhinoxHand> OnUnrecognized;
+        /// <summary>
+        /// A UnityEvent that is invoked when the gesture is unrecognized. It has a parameter of type RhinoxHand.
+        /// </summary>
+        [JsonIgnore] [SerializeField] private UnityEvent<RhinoxHand> _onUnrecognized;
 
-        [JsonIgnore]
-        private static RhinoxGesture _noGesture;
+        [JsonIgnore] private static RhinoxGesture _noGesture;
 
         //================
-        //Recognize events
+        //Recognized events
         //================
+        /// <summary>
+        /// Adds a listener to the OnRecognized event.
+        /// </summary>
+        /// <param name="action"></param>
         public void AddListenerOnRecognized(UnityAction<RhinoxHand> action)
         {
-            if (OnRecognized == null)
-                OnRecognized = new UnityEvent<RhinoxHand>();
+            if (_onRecognized == null)
+                _onRecognized = new UnityEvent<RhinoxHand>();
 
-            OnRecognized.AddListener(action);
+            _onRecognized.AddListener(action);
         }
 
+        /// <summary>
+        /// Removes a listener from the OnRecognized event.
+        /// </summary>
+        /// <param name="action"></param>
         public void RemoveListenerOnRecognized(UnityAction<RhinoxHand> action)
         {
-            OnRecognized?.RemoveListener(action);
+            _onRecognized?.RemoveListener(action);
         }
 
+        /// <summary>
+        /// Removes all listeners from the OnRecognized event.
+        /// </summary>
         public void RemoveAllListenersOnRecognized()
         {
-            OnRecognized?.RemoveAllListeners();
+            _onRecognized?.RemoveAllListeners();
         }
 
+        /// <summary>
+        /// Invokes the OnRecognized event with the provided RhinoxHand parameter.
+        /// </summary>
+        /// <param name="hand"></param>
         public void InvokeOnRecognized(RhinoxHand hand)
         {
-            OnRecognized?.Invoke(hand);
+            _onRecognized?.Invoke(hand);
         }
+
         //==================
-        //Unrecognize events
+        //Unrecognized events
         //==================
+        /// <summary>
+        /// Adds a listener to the OnUnrecognized event.
+        /// </summary>
+        /// <param name="action"></param>
         public void AddListenerOnUnRecognized(UnityAction<RhinoxHand> action)
         {
-            if (OnUnrecognized == null)
-                OnUnrecognized = new UnityEvent<RhinoxHand>();
+            if (_onUnrecognized == null)
+                _onUnrecognized = new UnityEvent<RhinoxHand>();
 
-            OnUnrecognized.AddListener(action);
+            _onUnrecognized.AddListener(action);
         }
 
+        /// <summary>
+        /// Removes a listener from the OnUnrecognized event.
+        /// </summary>
+        /// <param name="action"></param>
         public void RemoveListenerOnUnRecognized(UnityAction<RhinoxHand> action)
         {
-            OnUnrecognized?.RemoveListener(action);
+            _onUnrecognized?.RemoveListener(action);
         }
 
+        /// <summary>
+        /// Removes all listeners from the OnUnrecognized event.
+        /// </summary>
         public void RemoveAllListenersOnUnRecognized()
         {
-            OnUnrecognized?.RemoveAllListeners();
+            _onUnrecognized?.RemoveAllListeners();
         }
 
+        /// <summary>
+        /// Invokes the OnUnrecognized event with the provided RhinoxHand parameter.
+        /// </summary>
+        /// <param name="hand"></param>
         public void InvokeOnUnRecognized(RhinoxHand hand)
         {
-            OnUnrecognized?.Invoke(hand);
+            _onUnrecognized?.Invoke(hand);
         }
 
         /// <remarks>Does not compare the name or events!</remarks>
@@ -131,8 +188,8 @@ namespace Rhinox.XR.Grapple
             hashCode.Add(JointForward);
             hashCode.Add(BendThreshold);
             hashCode.Add(RotationThreshold);
-            hashCode.Add(OnRecognized);
-            hashCode.Add(OnUnrecognized);
+            hashCode.Add(_onRecognized);
+            hashCode.Add(_onUnrecognized);
             return hashCode.ToHashCode();
         }
 
@@ -142,7 +199,7 @@ namespace Rhinox.XR.Grapple
                 return false;
 
             return Name == other.Name && Equals(FingerBendValues, other.FingerBendValues) &&
-                   Equals(OnRecognized, other.OnRecognized) && Equals(OnUnrecognized, other.OnUnrecognized);
+                   Equals(_onRecognized, other._onRecognized) && Equals(_onUnrecognized, other._onUnrecognized);
         }
 
         public static bool operator ==(RhinoxGesture gestureOne, RhinoxGesture gestureTwo)
@@ -158,6 +215,10 @@ namespace Rhinox.XR.Grapple
 
         public static bool operator !=(RhinoxGesture obj1, RhinoxGesture obj2) => !(obj1 == obj2);
 
+        /// <summary>
+        /// Returns an instance of RhinoxGesture with default values, representing the absence of a gesture.
+        /// </summary>
+        /// <returns>The empty instance.</returns>
         public static RhinoxGesture NoGesture()
         {
             if (_noGesture == null)
@@ -168,6 +229,7 @@ namespace Rhinox.XR.Grapple
                     FingerBendValues = new List<float>(5)
                 };
             }
+
             return _noGesture;
         }
     }

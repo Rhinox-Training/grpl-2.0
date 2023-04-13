@@ -18,46 +18,130 @@ namespace Rhinox.XR.Grapple
     /// <dependencies> <see cref="GRPLJointManager"/> </dependencies>
     public class GRPLGestureRecognizer : MonoBehaviour
     {
+        /// <summary>
+        /// A boolean flag to indicate if imported gestures should overwrite any existing gestures or not.
+        /// </summary>
         public bool OverwriteGesturesOnImport;
+
+        /// <summary>
+        /// A boolean flag to indicate if gestures should be imported when the play mode starts.
+        /// </summary>
         public bool ImportOnPlay = false;
+
+        /// <summary>
+        /// A string that represents the path to the file containing gestures.
+        /// </summary>
         public string ImportFilePath = "";
 
+        /// <summary>
+        /// A boolean flag to indicate if gestures should be exported when the component is destroyed.
+        /// </summary>
         public bool ExportOnDestroy = false;
+
+        /// <summary>
+        /// A string that represents the path where the exported gestures should be saved.
+        /// </summary>
         public string ExportFilePath = "";
+
+        /// <summary>
+        /// A string that represents the name of the exported gestures file.
+        /// </summary>
         public string ExportFileName = "RecordedGestures";
 
+        /// <summary>
+        /// An InputActionReference object that represents the input action that should be used to record new gestures.
+        /// </summary>
         public InputActionReference RecordActionReference;
+
+        /// <summary>
+        /// A string that represents the name of the next gesture that is recorded.
+        /// </summary>
         public string SavedGestureName = "New Gesture";
-        public RhinoxHand RhinoxHandToRecord = RhinoxHand.Left;
+
+        /// <summary>
+        /// An enum value that represents the hand that should be used to record new gestures.
+        /// </summary>
+        public RhinoxHand HandToRecord = RhinoxHand.Left;
+
+        /// <summary>
+        /// A boolean flag that indicates whether the forward vector of a joint should be used when trying to recognize the next recorded gesture.
+        /// </summary>
         public bool UseJointForward = false;
+
+        /// <summary>
+        /// An enum value that represents the joint that should be used as the forward vector.
+        /// </summary>
         public XRHandJointID ForwardJoint;
 
-        public float GestureDistanceThreshold = 0.02f;
+        /// <summary>
+        /// A float value that represents the bend threshold used to compare the bend values of gestures to the current hand.
+        /// </summary>
+        public float GestureBendThreshold = 0.02f;
+
+        /// <summary>
+        /// A float value that represents the angle threshold used to compare the direction of a gesture with the forward vector of a joint.
+        /// </summary>
         public float GestureForwardThreshold = 0.5f;
 
+        /// <summary>
+        /// A list of RhinoxGesture objects that represents the gestures that can be recognized by the component.
+        /// </summary>
         public List<RhinoxGesture> Gestures = new List<RhinoxGesture>();
 
         public static event Action<GRPLGestureRecognizer> GlobalInitialized;
 
+        /// <summary>
+        /// A Unity event that is invoked when any gesture is recognized.
+        /// </summary>
         public UnityEvent<RhinoxHand, string> OnGestureRecognized;
+
+        /// <summary>
+        /// A Unity event that is invoked when any gesture is unrecognized.
+        /// </summary>
         public UnityEvent<RhinoxHand, string> OnGestureUnrecognized;
 
+        /// <summary>
+        /// A RhinoxGesture object that represents the current gesture of the left hand.
+        /// </summary>
         public RhinoxGesture CurrentLeftGesture => _currentLeftGesture;
-        public RhinoxGesture CurrentRightGesture => _currentRightGesture;
+
         private RhinoxGesture _currentLeftGesture;
+
+        /// <summary>
+        /// A RhinoxGesture object that represents the current gesture of the right hand.
+        /// </summary>
+        public RhinoxGesture CurrentRightGesture => _currentRightGesture;
+
         private RhinoxGesture _currentRightGesture;
 
-        public bool LeftHandGestureRecognizedThisFrame => _leftHandGestureRecognizedThisFrame;
-        public bool RightHandGestureRecognizedThisFrame => _rightHandGestureRecognizedThisFrame;
+        /// <summary>
+        /// A boolean flag that indicates whether a gesture was recognized for the first time this frame on the left hand.
+        /// </summary>
+        public bool LeftHandGestureRecognizedThisFrame { get; private set; }
 
-        private bool _leftHandGestureRecognizedThisFrame;
-        private bool _rightHandGestureRecognizedThisFrame;
+        /// <summary>
+        /// A boolean flag that indicates whether a gesture was recognized for the first time this frame on the right hand.
+        /// </summary>
+        public bool RightHandGestureRecognizedThisFrame { get; private set; }
 
+        /// <summary>
+        /// A RhinoxGesture object that represents the gesture on the left hand in the previous frame.
+        /// </summary>
         private RhinoxGesture _lastLeftGesture;
+
+        /// <summary>
+        /// A RhinoxGesture object that represents the gesture on the right hand in the previous frame.
+        /// </summary>
         private RhinoxGesture _lastRightGesture;
 
+        /// <summary>
+        /// A GRPLJointManager object that is used to track the hand joints.
+        /// </summary>
         private GRPLJointManager _jointManager;
 
+        /// <summary>
+        /// A boolean flag that indicates whether the component has been initialized.
+        /// </summary>
         private bool _isInitialized;
 
         /// <summary>
@@ -180,9 +264,9 @@ namespace Rhinox.XR.Grapple
 
                 for (int i = 0; i < gesture.FingerBendValues.Count; i++)
                 {
-                    if(!_jointManager.TryGetFingerBend(handedness, (RhinoxFinger)i, out var currentBendVal))
+                    if (!_jointManager.TryGetFingerBend(handedness, (RhinoxFinger)i, out var currentBendVal))
                         break;
-                    
+
                     float distance = currentBendVal - gesture.FingerBendValues[i];
 
                     if (!distance.IsBetweenIncl(-gesture.BendThreshold, gesture.BendThreshold))
@@ -190,6 +274,7 @@ namespace Rhinox.XR.Grapple
                         isDiscarded = true;
                         break;
                     }
+
                     sumDistance += distance;
                 }
 
@@ -199,8 +284,8 @@ namespace Rhinox.XR.Grapple
                     currentGesture = gesture;
                 }
             }
-            
-            
+
+
             if (handedness == RhinoxHand.Left)
                 HandleRecognizedGesture(currentGesture, ref _currentLeftGesture, ref _lastLeftGesture, handedness);
             else
@@ -216,9 +301,9 @@ namespace Rhinox.XR.Grapple
             if (currentGesture != lastGesture)
             {
                 if (handedness == RhinoxHand.Left)
-                    _leftHandGestureRecognizedThisFrame = true;
+                    LeftHandGestureRecognizedThisFrame = true;
                 else
-                    _rightHandGestureRecognizedThisFrame = true;
+                    RightHandGestureRecognizedThisFrame = true;
                 lastGesture?.InvokeOnUnRecognized(handedness);
                 OnGestureUnrecognized?.Invoke(handedness, lastGesture?.Name);
                 currentGesture?.InvokeOnRecognized(handedness);
@@ -227,12 +312,18 @@ namespace Rhinox.XR.Grapple
             else
             {
                 if (handedness == RhinoxHand.Left)
-                    _leftHandGestureRecognizedThisFrame = false;
+                    LeftHandGestureRecognizedThisFrame = false;
                 else
-                    _rightHandGestureRecognizedThisFrame = false;
+                    RightHandGestureRecognizedThisFrame = false;
             }
         }
 
+        /// <summary>
+        /// Returns the current gesture on the given hand if the hand is either left or right. 
+        /// Returns null if the given hand is invalid.
+        /// </summary>
+        /// <param name="hand"></param>
+        /// <returns>The gesture on hand.</returns>
         public RhinoxGesture GetCurrentGestureOfHand(RhinoxHand hand)
         {
             switch (hand)
@@ -250,6 +341,12 @@ namespace Rhinox.XR.Grapple
             }
         }
 
+        /// <summary>
+        /// Returns whether the current gesture on the given hand was recognized for the first time this frame. 
+        /// Returns false if the given hand is invalid.
+        /// </summary>
+        /// <param name="hand"></param>
+        /// <returns>Whether the current gesture on the given hand was recognized for the first time this frame.</returns>
         public bool WasRecognizedGestureStartedThisFrame(RhinoxHand hand)
         {
             switch (hand)
@@ -281,7 +378,7 @@ namespace Rhinox.XR.Grapple
             {
                 Name = SavedGestureName,
                 UseJointForward = UseJointForward,
-                BendThreshold = GestureDistanceThreshold,
+                BendThreshold = GestureBendThreshold,
                 RotationThreshold = GestureForwardThreshold
             };
 
@@ -291,11 +388,11 @@ namespace Rhinox.XR.Grapple
             if (UseJointForward)
             {
                 newGesture.CheckJoint = ForwardJoint;
-                _jointManager.TryGetJointFromHandById(ForwardJoint, RhinoxHandToRecord, out var joint);
+                _jointManager.TryGetJointFromHandById(ForwardJoint, HandToRecord, out var joint);
 
                 if (joint == null)
                 {
-                    Debug.LogError($"Can't find joint {ForwardJoint} on {RhinoxHandToRecord} rhinoxHand");
+                    Debug.LogError($"Can't find joint {ForwardJoint} on {HandToRecord} rhinoxHand");
                     return;
                 }
 
@@ -305,12 +402,13 @@ namespace Rhinox.XR.Grapple
             // Save the individual finger bends
             foreach (RhinoxFinger finger in Enum.GetValues(typeof(RhinoxFinger)))
             {
-                if (!_jointManager.TryGetFingerBend(RhinoxHandToRecord, finger, out float bendValue))
+                if (!_jointManager.TryGetFingerBend(HandToRecord, finger, out float bendValue))
                 {
                     PLog.Error<GrappleLogger>("[GRPLGestureRecognizer:SaveGesture({RhinoxHandToRecord})], " +
-                                              $"Failed to get bend value for finger {finger} on {RhinoxHandToRecord} rhinoxHand");
+                                              $"Failed to get bend value for finger {finger} on {HandToRecord} rhinoxHand");
                     return;
                 }
+
                 newGesture.FingerBendValues.Add(bendValue);
             }
 
@@ -319,7 +417,7 @@ namespace Rhinox.XR.Grapple
             if (duplicateGestures.Count > 0)
             {
                 Debug.LogWarning(
-                    $"GRPLGestureRecognizer.cs - SaveGesture({RhinoxHandToRecord}), list with {RhinoxHandToRecord} gestures already contains {duplicateGestures.Count} gestures with the same name, adding duplicate.");
+                    $"GRPLGestureRecognizer.cs - SaveGesture({HandToRecord}), list with {HandToRecord} gestures already contains {duplicateGestures.Count} gestures with the same name, adding duplicate.");
                 newGesture.Name = SavedGestureName + "_Dupe";
             }
 
