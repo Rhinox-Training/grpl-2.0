@@ -22,13 +22,13 @@ namespace Rhinox.XR.Grapple.It
         [Header("Debug Parameters")]
         [SerializeField] private bool _drawDebug = false;
 
-        [SerializeField] [HideIfFieldFalse("_drawDebug", 0f)]
+        [SerializeField] [HideIfField(false,"_drawDebug", 0f)]
         private bool _drawArc = false;
 
-        [SerializeField] [HideIfFieldFalse("_drawDebug", 0f)]
+        [SerializeField] [HideIfField(false, "_drawDebug", 0f)]
         private bool _drawGrabRange = false;
 
-        [SerializeField] [HideIfFieldFalse("_drawDebug", 0f)]
+        [SerializeField] [HideIfField(false, "_drawDebug", 0f)]
         private bool _drawArcExtends = false;
 
         public event Action<GRPLOneWayLever> LeverActivated;
