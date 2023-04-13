@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Rhinox.Lightspeed;
+using Rhinox.Perceptor;
 using UnityEditor;
 
 #if UNITY_EDITOR
@@ -21,16 +22,13 @@ namespace Rhinox.XR.Grapple.It
         [Header("Debug Parameters")]
         [SerializeField] private bool _drawDebug = false;
 
-        [SerializeField]
-        [HideIfFieldFalse("_drawDebug", 0f)]
+        [SerializeField] [HideIfFieldFalse("_drawDebug", 0f)]
         private bool _drawArc = false;
 
-        [SerializeField]
-        [HideIfFieldFalse("_drawDebug", 0f)]
+        [SerializeField] [HideIfFieldFalse("_drawDebug", 0f)]
         private bool _drawGrabRange = false;
 
-        [SerializeField]
-        [HideIfFieldFalse("_drawDebug", 0f)]
+        [SerializeField] [HideIfFieldFalse("_drawDebug", 0f)]
         private bool _drawArcExtends = false;
 
         public event Action<GRPLOneWayLever> LeverActivated;
@@ -141,6 +139,13 @@ namespace Rhinox.XR.Grapple.It
 
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
+            if (_gestureRecognizer == null)
+            {
+                PLog.Warn<GRPLITLogger>("[GRPLOneWayLever, CheckForInteraction()], Gesture recognizer is null!");
+                return false;
+            }
+
+
             // Get the current gesture from the target hand
             RhinoxGesture gestureOnHand = _gestureRecognizer.GetCurrentGestureOfHand(hand);
 
@@ -240,7 +245,6 @@ namespace Rhinox.XR.Grapple.It
             }
 
             {
-
                 var dir = direction;
                 dir = Quaternion.AngleAxis(_interactMinAngle, arcNormal) * dir; // rotate it
                 using (new eUtility.GizmoColor(Color.green))

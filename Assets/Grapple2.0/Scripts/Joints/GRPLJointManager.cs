@@ -116,7 +116,7 @@ namespace Rhinox.XR.Grapple
 
             _leftHandSocket = new GameObject("Socket");
             _leftHandSocket.transform.SetParent(_leftHandParent.transform);
-            //needs to be rotate 90°, otherwise object would go through handpalm and this one is rotate antoher 180°, because it's the opposite of right hand
+            //needs to be rotate 90Â°, otherwise object would go through handpalm and this one is rotate antoher 180Â°, because it's the opposite of right hand
             _leftHandSocket.transform.SetLocalPositionAndRotation(_handSocketOffset, Quaternion.Euler(0f, 0f, 270f));
 
 
@@ -127,7 +127,7 @@ namespace Rhinox.XR.Grapple
             _rightHandSocket = new GameObject("Socket");
             _rightHandSocket.transform.SetParent(_rightHandParent.transform);
 
-            //needs to be rotate 90°, otherwise object would go through handpalm.
+            //needs to be rotate 90Â°, otherwise object would go through handpalm.
             _rightHandSocket.transform.SetLocalPositionAndRotation(_handSocketOffset, Quaternion.Euler(0f, 0f, 90f));
 
 

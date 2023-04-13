@@ -5,6 +5,7 @@ using UnityEngine.XR.Hands;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
+using Rhinox.Lightspeed;
 using Rhinox.Perceptor;
 using UnityEngine.InputSystem;
 
@@ -41,8 +42,6 @@ namespace Rhinox.XR.Grapple
         public UnityEvent<RhinoxHand, string> OnGestureRecognized;
         public UnityEvent<RhinoxHand, string> OnGestureUnrecognized;
 
-        //public static event Action<GRPLGestureRecognizer> GlobalInitialized;
-
         public RhinoxGesture CurrentLeftGesture => _currentLeftGesture;
         public RhinoxGesture CurrentRightGesture => _currentRightGesture;
         private RhinoxGesture _currentLeftGesture;
@@ -50,7 +49,6 @@ namespace Rhinox.XR.Grapple
 
         public bool LeftHandGestureRecognizedThisFrame => _leftHandGestureRecognizedThisFrame;
         public bool RightHandGestureRecognizedThisFrame => _rightHandGestureRecognizedThisFrame;
-
 
         private bool _leftHandGestureRecognizedThisFrame;
         private bool _rightHandGestureRecognizedThisFrame;
@@ -162,16 +160,8 @@ namespace Rhinox.XR.Grapple
             }
 
             RhinoxGesture currentGesture = null;
-            float currentMin = float.MaxValue;
-            if (!_jointManager.TryGetJointsFromHand(handedness, out var joints))
-                return;
 
-            _jointManager.TryGetJointFromHandById(XRHandJointID.Wrist, handedness, out var wristJoint);
-            if (wristJoint == null)
-            {
-                Debug.LogError($"GRPLGestureRecognizer.cs - SaveGesture({handedness}), no wrist joint found.");
-                return;
-            }
+            float currentMin = float.MaxValue;
 
             foreach (var gesture in Gestures)
             {
@@ -188,17 +178,18 @@ namespace Rhinox.XR.Grapple
                         continue;
                 }
 
-                for (var i = 0; i < joints.Count; i++)
+                for (int i = 0; i < gesture.FingerBendValues.Count; i++)
                 {
-                    float currentDist = Vector3.Distance(wristJoint.JointPosition, joints[i].JointPosition);
-                    float distance = currentDist - gesture.JointData[i];
+                    if(!_jointManager.TryGetFingerBend(handedness, (RhinoxFinger)i, out var currentBendVal))
+                        break;
+                    
+                    float distance = currentBendVal - gesture.FingerBendValues[i];
 
-                    if (-GestureDistanceThreshold > distance || distance > gesture.DistanceThreshold)
+                    if (!distance.IsBetweenIncl(-gesture.BendThreshold, gesture.BendThreshold))
                     {
                         isDiscarded = true;
                         break;
                     }
-
                     sumDistance += distance;
                 }
 
@@ -208,7 +199,8 @@ namespace Rhinox.XR.Grapple
                     currentGesture = gesture;
                 }
             }
-
+            
+            
             if (handedness == RhinoxHand.Left)
                 HandleRecognizedGesture(currentGesture, ref _currentLeftGesture, ref _lastLeftGesture, handedness);
             else
@@ -289,20 +281,9 @@ namespace Rhinox.XR.Grapple
             {
                 Name = SavedGestureName,
                 UseJointForward = UseJointForward,
-                DistanceThreshold = GestureDistanceThreshold,
+                BendThreshold = GestureDistanceThreshold,
                 RotationThreshold = GestureForwardThreshold
             };
-            var gestureDistances = new List<float>();
-            if (!_jointManager.TryGetJointsFromHand(RhinoxHandToRecord, out var joints))
-                return;
-
-            //Get the root (wrist joint)
-            _jointManager.TryGetJointFromHandById(XRHandJointID.Wrist, RhinoxHandToRecord, out var wristJoint);
-            if (wristJoint == null)
-            {
-                Debug.LogError($"GRPLGestureRecognizer.cs - SaveGesture({RhinoxHandToRecord}), no wrist joint found.");
-                return;
-            }
 
             // Saving the joint forward allows for more detailed recognition
             // Possible applications could be making a distinction between a thumbs up and a thumbs down
@@ -321,14 +302,17 @@ namespace Rhinox.XR.Grapple
                 newGesture.JointForward = joint.Forward;
             }
 
-            //Save the distances from each joint to the root
-            foreach (var joint in joints)
+            // Save the individual finger bends
+            foreach (RhinoxFinger finger in Enum.GetValues(typeof(RhinoxFinger)))
             {
-                var currentDist = Vector3.Distance(joint.JointPosition, wristJoint.JointPosition);
-                gestureDistances.Add(currentDist);
+                if (!_jointManager.TryGetFingerBend(RhinoxHandToRecord, finger, out float bendValue))
+                {
+                    PLog.Error<GrappleLogger>("[GRPLGestureRecognizer:SaveGesture({RhinoxHandToRecord})], " +
+                                              $"Failed to get bend value for finger {finger} on {RhinoxHandToRecord} rhinoxHand");
+                    return;
+                }
+                newGesture.FingerBendValues.Add(bendValue);
             }
-
-            newGesture.JointData = gestureDistances;
 
             //Handle duplicate gesture names (at least a bit)
             var duplicateGestures = Gestures.FindAll(x => x.Name == SavedGestureName);

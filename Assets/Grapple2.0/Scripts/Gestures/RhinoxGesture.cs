@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.XR;
 using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple
@@ -18,8 +17,10 @@ namespace Rhinox.XR.Grapple
         [JsonProperty(PropertyName = "Gesture name")]
         public string Name;
 
-        [JsonProperty(PropertyName = "Joint distances")]
-        public List<float> JointData;
+        // The bend values are saved in the following order:
+        // Thumb - Index - Middle - Ring - Little
+        [JsonProperty(PropertyName = "Finger bend values")]
+        public List<float> FingerBendValues = new List<float>();
 
         [JsonProperty(PropertyName = "Uses joint forward")]
         public bool UseJointForward;
@@ -31,7 +32,7 @@ namespace Rhinox.XR.Grapple
         public Vector3 JointForward;
 
         [JsonProperty(PropertyName = "Distance threshold")]
-        public float DistanceThreshold;
+        public float BendThreshold;
 
         [JsonProperty(PropertyName = "Rotation threshold")]
         public float RotationThreshold;
@@ -42,9 +43,6 @@ namespace Rhinox.XR.Grapple
 
         [JsonIgnore]
         private static RhinoxGesture _noGesture;
-
-        [JsonIgnore]
-        private const int AMOUNTOFJOINTS = 26;
 
         //================
         //Recognize events
@@ -107,16 +105,16 @@ namespace Rhinox.XR.Grapple
                 return false;
 
             var otherGesture = (RhinoxGesture)obj;
-            if (JointData is null && otherGesture.JointData is null)
+            if (FingerBendValues is null && otherGesture.FingerBendValues is null)
                 return true;
 
-            if (JointData is null || otherGesture.JointData is null)
+            if (FingerBendValues is null || otherGesture.FingerBendValues is null)
                 return false;
 
-            if (JointData.Count == otherGesture.JointData.Count)
+            if (FingerBendValues.Count == otherGesture.FingerBendValues.Count)
             {
-                for (var i = 0; i < JointData.Count; i++)
-                    if (!Mathf.Approximately(JointData[i], otherGesture.JointData[i]))
+                for (var i = 0; i < FingerBendValues.Count; i++)
+                    if (!Mathf.Approximately(FingerBendValues[i], otherGesture.FingerBendValues[i]))
                         return false;
             }
 
@@ -127,11 +125,11 @@ namespace Rhinox.XR.Grapple
         {
             var hashCode = new HashCode();
             hashCode.Add(Name);
-            hashCode.Add(JointData);
+            hashCode.Add(FingerBendValues);
             hashCode.Add(UseJointForward);
             hashCode.Add((int)CheckJoint);
             hashCode.Add(JointForward);
-            hashCode.Add(DistanceThreshold);
+            hashCode.Add(BendThreshold);
             hashCode.Add(RotationThreshold);
             hashCode.Add(OnRecognized);
             hashCode.Add(OnUnrecognized);
@@ -143,7 +141,7 @@ namespace Rhinox.XR.Grapple
             if (Equals(other, null))
                 return false;
 
-            return Name == other.Name && Equals(JointData, other.JointData) &&
+            return Name == other.Name && Equals(FingerBendValues, other.FingerBendValues) &&
                    Equals(OnRecognized, other.OnRecognized) && Equals(OnUnrecognized, other.OnUnrecognized);
         }
 
@@ -167,7 +165,7 @@ namespace Rhinox.XR.Grapple
                 _noGesture = new RhinoxGesture
                 {
                     Name = "No Gesture",
-                    JointData = new List<float>(AMOUNTOFJOINTS)
+                    FingerBendValues = new List<float>(5)
                 };
             }
             return _noGesture;
