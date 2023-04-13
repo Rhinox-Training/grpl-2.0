@@ -1538,7 +1538,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5542bb0dda26e994ca289baab453f344, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SelectedPhysicsService: 1
+  _enableSocketing: 1
   _handLayer: 3
 --- !u!114 &1830188011
 MonoBehaviour:
@@ -1552,98 +1552,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2839de4b6f174444935da38fe4db858, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OverwriteGesturesOnImport: 0
   ImportOnPlay: 0
-  ImportFilePath: C:/Users/TEST SSD/Desktop/Fork/grpl-2.0/Gestures/RecordedGestures.json
-  OverwriteGesturesOnImport: 1
-  ExportOnDestroy: 1
+  ImportFilePath: C:/Users/TEST SSD/Desktop/Fork/grpl-2.0/Gestures/ExportTest.json
+  ExportOnDestroy: 0
   ExportFilePath: C:/Users/TEST SSD/Desktop/Fork/grpl-2.0/Gestures
-  ExportFileName: ExportTest
+  ExportFileName: BetterGestures
   RecordActionReference: {fileID: -256493050157588337, guid: 3728c71f5f80ba44bbf940c3599fecc9, type: 3}
-  SavedGestureName: New Gesture
-  HandToRecord: 0
+  SavedGestureName: Rocker
+  RhinoxHandToRecord: 0
   UseJointForward: 0
   ForwardJoint: 6
-  GestureDistanceThreshold: 0.02
+  GestureDistanceThreshold: 0.2
   GestureForwardThreshold: 0.5
-  Gestures:
-  - Name: Thumbs up
-    JointData:
-    - 0
-    - 0.051080976
-    - 0.050558057
-    - 0.08498423
-    - 0.119712524
-    - 0.14338793
-    - 0.044662457
-    - 0.10581017
-    - 0.12536983
-    - 0.102548465
-    - 0.08691
-    - 0.03668164
-    - 0.10216195
-    - 0.12067181
-    - 0.09589611
-    - 0.076137155
-    - 0.040935297
-    - 0.09675634
-    - 0.113522775
-    - 0.088690676
-    - 0.070336744
-    - 0.045023967
-    - 0.09235543
-    - 0.10544262
-    - 0.08692504
-    - 0.06775864
-    UseJointForward: 1
-    CheckJoint: 6
-    JointForward: {x: 0.008256406, y: 0.98353714, z: 0.18051848}
-    DistanceThreshold: 0.02
-    RotationThreshold: 0.5
-    OnRecognized:
-      m_PersistentCalls:
-        m_Calls: []
-    OnUnrecognized:
-      m_PersistentCalls:
-        m_Calls: []
-  - Name: Thumbs up BIG
-    JointData:
-    - 0
-    - 0.051080976
-    - 0.05060758
-    - 0.08482267
-    - 0.11952175
-    - 0.1436347
-    - 0.044691388
-    - 0.10581021
-    - 0.12401562
-    - 0.100794375
-    - 0.08492703
-    - 0.036717243
-    - 0.102161944
-    - 0.12003833
-    - 0.094762444
-    - 0.07539737
-    - 0.040935315
-    - 0.096756406
-    - 0.11313579
-    - 0.08784353
-    - 0.070254944
-    - 0.045023985
-    - 0.092355415
-    - 0.10528455
-    - 0.086651005
-    - 0.06756304
-    UseJointForward: 1
-    CheckJoint: 6
-    JointForward: {x: 0.09560618, y: 0.9534416, z: 0.28602242}
-    DistanceThreshold: 0.02
-    RotationThreshold: 4
-    OnRecognized:
-      m_PersistentCalls:
-        m_Calls: []
-    OnUnrecognized:
-      m_PersistentCalls:
-        m_Calls: []
+  Gestures: []
   OnGestureRecognized:
     m_PersistentCalls:
       m_Calls: []
