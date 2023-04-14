@@ -76,7 +76,7 @@ namespace Rhinox.XR.Grapple
         /// <summary>
         /// A float value that represents the bend threshold used to compare the bend values of gestures to the current hand.
         /// </summary>
-        public float GestureBendThreshold = 0.02f;
+        public float GestureBendThreshold = 0.2f;
 
         /// <summary>
         /// A float value that represents the angle threshold used to compare the direction of a gesture with the forward vector of a joint.

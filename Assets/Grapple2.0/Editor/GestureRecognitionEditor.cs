@@ -45,9 +45,9 @@ namespace Rhinox.XR.Grapple
             
             _recordActionReference = serializedObject.FindProperty("RecordActionReference");
             _newGestureName = serializedObject.FindProperty("SavedGestureName");
-            _handToRecord = serializedObject.FindProperty("RhinoxHandToRecord");
+            _handToRecord = serializedObject.FindProperty("HandToRecord");
             
-            _recognitionDistanceThreshold = serializedObject.FindProperty("GestureDistanceThreshold");
+            _recognitionDistanceThreshold = serializedObject.FindProperty("GestureBendThreshold");
             _recognitionForwardThreshold = serializedObject.FindProperty("GestureForwardThreshold");
             _gestures = serializedObject.FindProperty("Gestures");
             _useJointForward = serializedObject.FindProperty("UseJointForward");
@@ -233,7 +233,7 @@ namespace Rhinox.XR.Grapple
             if(_useJointForward.boolValue)
                 EditorGUILayout.PropertyField(_forwardJoint);
 
-            _recognitionDistanceThreshold.floatValue = EditorGUILayout.FloatField("Recognition distance threshold",
+            _recognitionDistanceThreshold.floatValue = EditorGUILayout.FloatField("Recognition finger bend threshold",
                 _recognitionDistanceThreshold.floatValue);
             _recognitionForwardThreshold.floatValue = EditorGUILayout.FloatField("Recognition forward threshold",
                 _recognitionForwardThreshold.floatValue);
