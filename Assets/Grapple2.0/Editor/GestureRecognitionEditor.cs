@@ -106,7 +106,7 @@ namespace Rhinox.XR.Grapple
                     textColor = Color.yellow
                 }
             };
-            GUILayout.Label("!!!  Warning: each gesture should contain 26 joints  !!!", warningStyle);
+            GUILayout.Label("!!!  Warning: each gesture should contain 5 bend values  !!!", warningStyle);
             
             serializedObject.ApplyModifiedProperties();
         }
