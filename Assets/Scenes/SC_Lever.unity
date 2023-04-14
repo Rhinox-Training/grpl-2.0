@@ -662,6 +662,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _proximateRadius: 0.5
+  _showProximateRadius: 0
   _proximateJointID: 12
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
@@ -1971,6 +1972,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _proximateRadius: 0.5
+  _showProximateRadius: 0
   _proximateJointID: 12
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11

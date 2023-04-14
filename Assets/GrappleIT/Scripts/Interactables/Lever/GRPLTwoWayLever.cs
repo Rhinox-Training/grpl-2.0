@@ -32,16 +32,20 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField]
         private bool _drawDebug = false;
 
-        [SerializeField] [HideIfField(false, "_drawDebug", 0f)]
+        [SerializeField]
+        [HideIfField(false, "_drawDebug", 0f)]
         private bool _drawLeverParts = false;
 
-        [SerializeField] [HideIfField(false, "_drawDebug", 0f)]
+        [SerializeField]
+        [HideIfField(false, "_drawDebug", 0f)]
         private bool _drawArc = false;
 
-        [SerializeField] [HideIfField(false, "_drawDebug", 0f)]
+        [SerializeField]
+        [HideIfField(false, "_drawDebug", 0f)]
         private bool _drawLeverExtends = false;
 
-        [SerializeField] [HideIfField(false, "_drawDebug", 0f)]
+        [SerializeField]
+        [HideIfField(false, "_drawDebug", 0f)]
         private bool _drawGrabRange = false;
 
         //-----------------------
@@ -292,7 +296,7 @@ namespace Rhinox.XR.Grapple.It
                 {
                     backDir = Quaternion.AngleAxis(_interactMinAngle, arcNormal) * backDir; // rotate it
                     GizmoExtensions.DrawSolidArc(arcCenter, backDir, arcNormal, arcRadius,
-                        (maxAngleOneSide - _interactMinAngle));
+                        (maxAngleOneSide - _interactMinAngle), true);
                 }
             }
             {
@@ -301,7 +305,7 @@ namespace Rhinox.XR.Grapple.It
                 {
                     forwardDir = Quaternion.AngleAxis(-maxAngleOneSide, arcNormal) * forwardDir; // rotate it
                     GizmoExtensions.DrawSolidArc(arcCenter, forwardDir, arcNormal, arcRadius,
-                        (maxAngleOneSide - _interactMinAngle));
+                        (maxAngleOneSide - _interactMinAngle), true);
                 }
             }
             {
@@ -310,7 +314,7 @@ namespace Rhinox.XR.Grapple.It
                 using (new eUtility.GizmoColor(Color.red))
                 {
                     GizmoExtensions.DrawSolidArc(arcCenter, forwardDir, arcNormal, arcRadius,
-                        2 * _interactMinAngle);
+                        2 * _interactMinAngle, true);
                 }
             }
         }

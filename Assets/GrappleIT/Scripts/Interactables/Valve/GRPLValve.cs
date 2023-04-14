@@ -287,9 +287,9 @@ namespace Rhinox.XR.Grapple.It
 
                 using (new eUtility.GizmoColor(0f, 1f, 0f, .5f))
                 {
-                    //GizmoExtensions.DrawSolidAnnulusWidth(trans.position, trans.right, -trans.forward,
-                    //_grabRadius, _grabTolaranceRadius, true, 4);
-                    GizmoExtensions.DrawSolidArc(transform.position, -transform.up, transform.right, .5f, 180f, true);
+                    GizmoExtensions.DrawSolidAnnulus(trans.position, trans.right, -trans.forward,
+                    _grabRadius - _grabTolaranceRadius, _grabRadius + _grabTolaranceRadius, true, 12);
+                    //GizmoExtensions.DrawSolidArc(transform.position, -transform.up, transform.right, .5f, 480f, true, 40);
                     //GizmoExtensions.DrawSolidTorus(trans.position, trans.right, -trans.forward, _grabRadius, _grabTolaranceRadius);
                     //GizmoExtensions.DrawWireTorus(trans.position, trans.right, -trans.forward, _grabRadius, _grabTolaranceRadius);
                 }
