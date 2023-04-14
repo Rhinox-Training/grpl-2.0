@@ -1,0 +1,1 @@
+[{"Gesture name":"Teleport","Finger bend values":[0.02,0.85,0.85,0.0,0.0],"Uses joint forward":false,"Forward joint":"Invalid","Wrist rotation":{"x":0.0,"y":0.0,"z":0.0},"Distance threshold":0.25,"Rotation threshold":0.5,"_onRecognized":{},"_onUnrecognized":{}}]

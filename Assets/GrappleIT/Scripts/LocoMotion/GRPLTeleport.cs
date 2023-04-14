@@ -90,7 +90,7 @@ namespace Rhinox.XR.Grapple.It
         private Vector3 _avgTeleportPoint = Vector3.zero;
         private const float _gravity = -9.81f;
 
-        private Vector3 _sensorOffset = new Vector3(0f, 0f, -0.05f);
+        private Vector3 _sensorOffset = new Vector3(0f, 0f, -0.06f);
 
         private bool _isOnCooldown = false;
         private bool _isValidTeleportPoint = false;
@@ -126,8 +126,7 @@ namespace Rhinox.XR.Grapple.It
 
         private void JointManagerInitialized(GRPLJointManager jointManager)
         {
-            if (_jointManager != null)
-                _jointManager = jointManager;
+            _jointManager = jointManager;
 
             if (_jointManager != null && _teleportGesture != null)
                 Initialize();
@@ -187,11 +186,13 @@ namespace Rhinox.XR.Grapple.It
             _jointManager.TrackingLost += TrackingLost;
             _jointManager.OnJointCapsulesInitialized += InitializeIgnoreList;
 
-            SensorSetup(out _sensorObjL, RhinoxHand.Left, _jointManager.LeftHandParentObj.transform, out _proxySensorL);
-            SensorSetup(out _sensorObjR, RhinoxHand.Right, _jointManager.RightHandParentObj.transform, out _proxySensorR);
+            if (!SensorSetup(out _sensorObjL, RhinoxHand.Left, _jointManager.LeftHandParentObj.transform, out _proxySensorL))
+                return;
+
+            if (!SensorSetup(out _sensorObjR, RhinoxHand.Right, _jointManager.RightHandParentObj.transform, out _proxySensorR))
+                return;
 
             _lineRenderer.enabled = false;
-
             _teleportPositions.Limit = _destinationSmoothingAmount;
 
             _isInitialized = true;
@@ -225,18 +226,27 @@ namespace Rhinox.XR.Grapple.It
         /// <param name="sensorObj">The main object where the sensor script will be placed onto and the sensor model will be childed under</param>
         /// <param name="hand">Mainly to give the sensor <see cref="GameObject"/> the correct name</param>
         /// <param name="proxySensor">The sensor logic to hook into the events</param>
-        private void SensorSetup(out GameObject sensorObj, RhinoxHand hand, Transform handParentObj, out GRPLTriggerSensor proxySensor)
+        /// <returns>If the sensor setup for the hand succeeded.</returns>
+        private bool SensorSetup(out GameObject sensorObj, RhinoxHand hand, Transform handParentObj, out GRPLTriggerSensor proxySensor)
         {
-            sensorObj = new GameObject($"{hand}Hand Sensor");
-            sensorObj.transform.parent = handParentObj;
+            //sensorObj = new GameObject($"{hand}Hand Sensor");
+            sensorObj = Instantiate(_sensorModel, _sensorOffset, Quaternion.identity, handParentObj);
+            sensorObj.name = $"{hand}Hand Sensor";
+            sensorObj.transform.SetLocalPosition(_sensorOffset);
             sensorObj.SetActive(false);
-            Instantiate(_sensorModel, _sensorOffset, Quaternion.identity, sensorObj.transform);//.transform.localScale = _sensorSize;
 
-            var sensCollider = sensorObj.GetComponent<Collider>();
+            if (!sensorObj.TryGetComponent<Collider>(out var sensCollider))
+            {
+                PLog.Error<GRPLITLogger>($"[GRPLTeleport:SensorSetup], Sensor model prefab {nameof(_sensorModel)} Did not contain a form of collider", this);
+                proxySensor = null;
+                return false;
+            }
+
             sensCollider.isTrigger = true;
             proxySensor = sensorObj.GetOrAddComponent<GRPLTriggerSensor>();
             proxySensor.HandLayer = LayerMask.NameToLayer("Hands");
             proxySensor.AddListenerOnSensorEnter(ConfirmTeleport);
+            return true;
         }
 
         private void OnEnable()
@@ -334,9 +344,7 @@ namespace Rhinox.XR.Grapple.It
 
 
             //calc ground intersection point
-            Vector3 intersectPoint;
-            int indexNextPoint;
-            CalculateIntersectionPoint(points, out intersectPoint, out indexNextPoint);
+            CalculateIntersectionPoint(points, out Vector3 intersectPoint, out int indexNextPoint);
 
             //if it valid calculate the avg, if not reset and hide
             if (_isValidTeleportPoint)

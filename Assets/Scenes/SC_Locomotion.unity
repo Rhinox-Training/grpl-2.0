@@ -979,6 +979,58 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: HandToRecord
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: ExportFileName
+      value: TeleportTest
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: ExportFilePath
+      value: C:/Users/Rhinox/UnityProjects/grpl-2.0/Assets/GrappleIT/Resources/Gestures
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: ExportOnDestroy
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: SavedGestureName
+      value: Teleport
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].Name
+      value: Teleport
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].BendThreshold
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].RotationThreshold
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].FingerBendValues.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].FingerBendValues.Array.data[0]
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].FingerBendValues.Array.data[1]
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[0].FingerBendValues.Array.data[2]
+      value: 0.9
+      objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437769, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: m_Name
       value: Grapple_Player
