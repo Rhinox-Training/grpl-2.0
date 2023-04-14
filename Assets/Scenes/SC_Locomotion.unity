@@ -123,6 +123,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 23800000, guid: 7181fc65d828adb4f8276c8ad4749a0d, type: 2}
+--- !u!120 &32264024 stripped
+LineRenderer:
+  m_CorrespondingSourceObject: {fileID: 6300181209703552310, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+  m_PrefabInstance: {fileID: 1580906710}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &145514242
 GameObject:
   m_ObjectHideFlags: 0
@@ -988,6 +993,38 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+--- !u!1 &1580906711 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1580037713721437769, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+  m_PrefabInstance: {fileID: 1580906710}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1580906712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1580906711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: befb734ffa0ccf840a92a403d1e70f92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _teleportGestureName: Teleport
+  _sensorModel: {fileID: 6311602514245672929, guid: e807ec05dc1453141b70aaec3b955f78, type: 3}
+  _teleportZoneVisual: {fileID: 0}
+  _lineRenderer: {fileID: 32264024}
+  _visualStartDelay: 0.2
+  _visualStopDelay: 0.5
+  _teleportCooldown: 1
+  _destinationSmoothingAmount: 5
+  _maxDistance: 50
+  _lowestHeight: -50
+  _initialVelocity: 1
+  _lineSubIterations: 0.5
+  _enableSnapping: 1
+  _maxSnapDistance: 2.5
+  _teleportableNavMeshAreas: 0
 --- !u!1001 &1627703770
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -1,10 +1,11 @@
 using Rhinox.GUIUtils.Attributes;
 using Rhinox.Lightspeed;
-using Rhinox.Perceptor;
+using System;
 using UnityEngine;
 
 namespace Rhinox.XR.Grapple.It
 {
+    [Obsolete]
     [RequireComponent(typeof(GRPLGestureRecognizer))]
     public class GRPLManager : MonoBehaviour
     {
@@ -18,7 +19,7 @@ namespace Rhinox.XR.Grapple.It
         private GRPLGestureRecognizer _gestureRecognizer = null;
 
         private IPhysicsService _physicsService = new NullPhysicsService();
-        private GRPLTeleport _teleporter = null;
+        //private GRPLTeleport _teleporter = null;
 
         private void Start()
         {
@@ -33,13 +34,13 @@ namespace Rhinox.XR.Grapple.It
             //    PLog.Error<GRPLITLogger>($"{nameof(GRPLManager)} Failed to add Socketing service", this);
 
 
-            if (gameObject.TryGetComponent(out _teleporter))
-                _teleporter.Initialize(_jointManager, _gestureRecognizer);
-            else
-            {
-                PLog.Warn<GRPLITLogger>($"[{nameof(GRPLManager)}:{nameof(Start)}], Failed to find {nameof(GRPLTeleport)}", this);
-                return;
-            }
+            //if (gameObject.TryGetComponent(out _teleporter))
+            //    _teleporter.Initialize(_jointManager, _gestureRecognizer);
+            //else
+            //{
+            //    PLog.Warn<GRPLITLogger>($"[{nameof(GRPLManager)}:{nameof(Start)}], Failed to find {nameof(GRPLTeleport)}", this);
+            //    return;
+            //}
         }
 
         // Update is called once per frame

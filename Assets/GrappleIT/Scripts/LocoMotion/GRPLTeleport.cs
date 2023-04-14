@@ -24,8 +24,12 @@ namespace Rhinox.XR.Grapple.It
     /// </dependencies>
     public class GRPLTeleport : MonoBehaviour
     {
-        [Header("Sensor Visual")]
+        [Header("Teleport Gesture")]
+        [SerializeField] private string _teleportGestureName = "Teleport";
+
+        [Header("Visuals")]
         [SerializeField] private GameObject _sensorModel = null;
+        [SerializeField] private GameObject _teleportZoneVisual = null;
 
         [Header("Arc Visual Settings")]
         [SerializeField] private LineRenderer _lineRenderer = null;
@@ -49,9 +53,6 @@ namespace Rhinox.XR.Grapple.It
         [Header("Miscellaneous Settings")]
         [NavMeshArea(true)][SerializeField] private int _teleportableNavMeshAreas;
 
-        //[Header("Fade Settings")]//future feature, blink effect to reduce motion sickness/fatigue when teleporting
-        //[SerializeField] public float FadeDuration = .15f;
-
         /// <summary>
         /// Enable or disable the line rendering
         /// </summary>
@@ -70,15 +71,12 @@ namespace Rhinox.XR.Grapple.It
         public Vector3 TeleportPoint => _avgTeleportPoint;
 
 
-
         private GRPLJointManager _jointManager = null;
-        private GRPLGestureRecognizer _gestureRecognizer = null;
 
         private RhinoxGesture _teleportGesture = null;
         private bool _isInitialized = false;
 
         private RhinoxHand _hand = RhinoxHand.Invalid;
-        private GameObject _teleportZoneVisual = null;
 
         private Coroutine _startVisualCoroutine = null;
         private Coroutine _stopVisualCoroutine = null;
@@ -93,7 +91,6 @@ namespace Rhinox.XR.Grapple.It
         private const float _gravity = -9.81f;
 
         private Vector3 _sensorOffset = new Vector3(0f, 0f, -0.05f);
-        //private Vector3 _sensorSize = new Vector3(0.08f, 0.08f, 0.08f);
 
         private bool _isOnCooldown = false;
         private bool _isValidTeleportPoint = false;
@@ -115,6 +112,41 @@ namespace Rhinox.XR.Grapple.It
         /// When the the other hand enters the trigger on the wrist of the hand emmiting the teleport arc, the teleport location will be confirmed and the player gets teleported.
         /// This will put the teleport on cooldown, to prevent spamming/accidental teleporting.
 
+        private void Start()
+        {
+            GRPLJointManager.GlobalInitialized += JointManagerInitialized;
+            GRPLGestureRecognizer.GlobalInitialized += GestureRecognizerInitialized;
+
+            if (_lineRenderer == null)
+            {
+                PLog.Error<GRPLITLogger>($"Given {nameof(LineRenderer)} was NULL", this);
+                return;
+            }
+        }
+
+        private void JointManagerInitialized(GRPLJointManager jointManager)
+        {
+            if (_jointManager != null)
+                _jointManager = jointManager;
+
+            if (_jointManager != null && _teleportGesture != null)
+                Initialize();
+        }
+
+        private void GestureRecognizerInitialized(GRPLGestureRecognizer gestureRecognizer)
+        {
+            //getting the grab gesture and linking events
+            _teleportGesture = gestureRecognizer.Gestures.Find(x => x.Name == _teleportGestureName);
+            if (_teleportGesture != null)
+            {
+                _teleportGesture.AddListenerOnRecognized(StartedPointing);
+                _teleportGesture.AddListenerOnUnRecognized(StoppedPointing);
+            }
+
+            if (_jointManager != null && _teleportGesture != null)
+                Initialize();
+        }
+
         /// <summary>
         /// Initializes the Teleport system by hooking up to the <see cref="GRPLJointManager"/> events and to the <see cref="GRPLGestureRecognizer"/> teleport gesture.<br></br>
         /// This also sets up the proximity sensor to the correct location and to only trigger on the the other hand. 
@@ -122,36 +154,33 @@ namespace Rhinox.XR.Grapple.It
         /// <remarks>
         /// Both <see cref="GRPLJointManager"/> AND <see cref="GRPLGestureRecognizer"/>should be initialized before calling this.
         /// </remarks>
-        /// <param name="jointManager"> reference to the Jointmanager</param>
-        /// <param name="gestureRecognizer">reference to the GRPLGestureRecognizer</param>
-        public void Initialize(GRPLJointManager jointManager, GRPLGestureRecognizer gestureRecognizer)
+        public void Initialize()
         {
-            if (_isInitialized || !isActiveAndEnabled)
+            if (_isInitialized)
                 return;
 
-            _jointManager = jointManager;
             if (_jointManager == null)
             {
-                PLog.Error<GRPLITLogger>($"{nameof(GRPLJointManager)} was NULL", this);
+                PLog.Error<GRPLITLogger>($"[GRPLTeleport:Initialize], {nameof(GRPLJointManager)} was NULL", this);
                 return;
             }
-            _gestureRecognizer = gestureRecognizer;
-            if (_gestureRecognizer == null)
+            if (_teleportGesture == null)
             {
-                PLog.Error<GRPLITLogger>($"{nameof(GRPLGestureRecognizer)} was NULL", this);
+                PLog.Error<GRPLITLogger>($"[GRPLTeleport:Initialize], no teleport gesture with name {_teleportGestureName} was found in GestureRecognizer", this);
                 return;
             }
+            if (_sensorModel == null)
+            {
+                PLog.Error<GRPLITLogger>($"[GRPLTeleport:Initialize], no teleportZoneVisual was NULL", this);
+                return;
+            }
+            if (_teleportZoneVisual == null)
+            {
+                _teleportZoneVisual = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                _teleportZoneVisual.transform.localScale = new Vector3(.5f, .1f, .5f);
+                Destroy(_teleportZoneVisual.GetComponent<BoxCollider>());
 
-            if (!TrySetupTeleportGesture())
-            {
-                PLog.Error<GRPLITLogger>($"no \"Teleport\" gesture was found inside {nameof(GRPLGestureRecognizer)}", this);
-                return;
-            }
-
-            if (_lineRenderer == null)
-            {
-                PLog.Error<GRPLITLogger>($"Given {nameof(LineRenderer)} was NULL", this);
-                return;
+                PLog.Warn<GRPLITLogger>($"[GRPLTeleport:Initialize], no teleportZoneVisual was given, fallback to Cube Primitive", this);
             }
 
             _jointManager.TrackingAcquired += TrackingAcquired;
@@ -160,11 +189,6 @@ namespace Rhinox.XR.Grapple.It
 
             SensorSetup(out _sensorObjL, RhinoxHand.Left, _jointManager.LeftHandParentObj.transform, out _proxySensorL);
             SensorSetup(out _sensorObjR, RhinoxHand.Right, _jointManager.RightHandParentObj.transform, out _proxySensorR);
-
-            //TODO: instead of using a primitive use a nice recticle visual
-            _teleportZoneVisual = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            _teleportZoneVisual.transform.localScale = new Vector3(.5f, .1f, .5f);
-            Destroy(_teleportZoneVisual.GetComponent<BoxCollider>());
 
             _lineRenderer.enabled = false;
 
@@ -196,23 +220,6 @@ namespace Rhinox.XR.Grapple.It
         }
 
         /// <summary>
-        /// Getting the teleport gesture and linking the <see cref="StartedPointing"/> and <see cref="StoppedPointing"/> events
-        /// </summary>
-        /// <returns>Boolean return if it succeeded in finding the gesture and linking the events</returns>
-        private bool TrySetupTeleportGesture()
-        {
-            _teleportGesture = _gestureRecognizer.Gestures.Find(x => x.Name == "Teleport");
-            if (_teleportGesture != null)
-            {
-                _teleportGesture.AddListenerOnRecognized(StartedPointing);
-                _teleportGesture.AddListenerOnUnRecognized(StoppedPointing);
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
         /// Intial setup function to create and place the sensor object and visual part correctly onto the given hand and setting up the events.
         /// </summary>
         /// <param name="sensorObj">The main object where the sensor script will be placed onto and the sensor model will be childed under</param>
@@ -227,8 +234,6 @@ namespace Rhinox.XR.Grapple.It
 
             var sensCollider = sensorObj.GetComponent<Collider>();
             sensCollider.isTrigger = true;
-            //sensCollider.center = _sensorOffset;
-            //sensCollider.size = _sensorSize;
             proxySensor = sensorObj.GetOrAddComponent<GRPLTriggerSensor>();
             proxySensor.HandLayer = LayerMask.NameToLayer("Hands");
             proxySensor.AddListenerOnSensorEnter(ConfirmTeleport);
@@ -238,6 +243,9 @@ namespace Rhinox.XR.Grapple.It
         {
             if (!_isInitialized)
                 return;
+
+            GRPLJointManager.GlobalInitialized += JointManagerInitialized;
+            GRPLGestureRecognizer.GlobalInitialized += GestureRecognizerInitialized;
 
             _jointManager.TrackingAcquired += TrackingAcquired;
             _jointManager.TrackingLost += TrackingLost;
@@ -254,6 +262,9 @@ namespace Rhinox.XR.Grapple.It
         {
             if (!_isInitialized)
                 return;
+
+            GRPLJointManager.GlobalInitialized -= JointManagerInitialized;
+            GRPLGestureRecognizer.GlobalInitialized -= GestureRecognizerInitialized;
 
             _jointManager.TrackingAcquired -= TrackingAcquired;
             _jointManager.TrackingLost -= TrackingLost;

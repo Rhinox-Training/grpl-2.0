@@ -203,10 +203,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1580037713721437765}
   - component: {fileID: 1580037713721437766}
+  - component: {fileID: 3595426600984613514}
   - component: {fileID: 1580037713721437767}
-  - component: {fileID: 1580037713721437768}
   - component: {fileID: 1580037713721437764}
-  - component: {fileID: 5545826842087243644}
   - component: {fileID: 7339501078999429482}
   m_Layer: 0
   m_Name: Grapple_Player
@@ -248,6 +247,26 @@ MonoBehaviour:
   m_CameraFloorOffsetObject: {fileID: 1580037713946564251}
   m_RequestedTrackingOriginMode: 0
   m_CameraYOffset: 1.1176
+--- !u!114 &3595426600984613514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1580037713721437769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 982a808979ba1d044958f85c97f09388, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _handSocketOffset: {x: 0, y: -0.035, z: 0.0725}
+  _thumbBendThreshold: 0.75
+  _indexBendThreshold: 0.3
+  _middleBendThreshold: 0.25
+  _ringBendThreshold: 0.3
+  _littleBendThreshold: 0.3
+  HandLayer: 3
+  ColliderActivationDelay: 1.5
 --- !u!114 &1580037713721437767
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -260,18 +279,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2839de4b6f174444935da38fe4db858, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OverwriteGesturesOnImport: 0
   ImportOnPlay: 0
   ImportFilePath: C:/Users/TEST SSD/Desktop/Fork/grpl-2.0/Gestures/RecordedGestures.json
-  OverwriteGesturesOnImport: 0
   ExportOnDestroy: 0
   ExportFilePath: C:/Users/TEST SSD/Desktop/Fork/grpl-2.0/Gestures
   ExportFileName: ExportTest
   RecordActionReference: {fileID: -256493050157588337, guid: 3728c71f5f80ba44bbf940c3599fecc9, type: 3}
   SavedGestureName: New Gesture
-  RhinoxHandToRecord: 0
+  HandToRecord: 0
   UseJointForward: 0
   ForwardJoint: 6
-  GestureDistanceThreshold: 0.02
+  GestureBendThreshold: 0.2
   GestureForwardThreshold: 0.5
   Gestures: []
   OnGestureRecognized:
@@ -280,20 +299,6 @@ MonoBehaviour:
   OnGestureUnrecognized:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &1580037713721437768
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1580037713721437769}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5542bb0dda26e994ca289baab453f344, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _enableSocketing: 1
-  _handLayer: 3
 --- !u!114 &1580037713721437764
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -306,35 +311,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f0c6b690126c15488febe00999b67fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _xrOrigin: {fileID: 1580037713721437765}
   _leftHandPrefab: {fileID: 919132149155446097, guid: bf7151579c38e2a44be94ba8773876c1, type: 3}
   _rightHandPrefab: {fileID: 919132149155446097, guid: 56186ccf27ad7864681108ed88349071, type: 3}
   _handMaterial: {fileID: 2100000, guid: fdc82094abb23954ab3987598c0ef5ec, type: 2}
---- !u!114 &5545826842087243644
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1580037713721437769}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: befb734ffa0ccf840a92a403d1e70f92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _sensorModel: {fileID: 6311602514245672929, guid: e807ec05dc1453141b70aaec3b955f78, type: 3}
-  _lineRenderer: {fileID: 6300181209703552310}
-  _visualStartDelay: 0.3
-  _visualStopDelay: 0.5
-  _teleportCooldown: 0.75
-  _destinationSmoothingAmount: 5
-  _maxDistance: 50
-  _lowestHeight: -25
-  _initialVelocity: 1
-  _lineSubIterations: 0.5
-  _enableSnapping: 1
-  _maxSnapDistance: 2.5
-  _teleportableNavMeshAreas: 9
 --- !u!114 &7339501078999429482
 MonoBehaviour:
   m_ObjectHideFlags: 0

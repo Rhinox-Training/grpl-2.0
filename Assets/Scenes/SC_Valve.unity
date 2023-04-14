@@ -893,10 +893,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Grapple_Player
       objectReference: {fileID: 0}
-    - target: {fileID: 5545826842087243644, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
 --- !u!1001 &763433120
