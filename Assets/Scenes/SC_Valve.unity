@@ -386,7 +386,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &213660494
 Transform:
   m_ObjectHideFlags: 0
@@ -1960,12 +1960,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 901800464}
     - target: {fileID: 2602005729610315787, guid: 87786065f9fafa9459ad0bcc3d0600d5, type: 3}
+      propertyPath: _drawGizmos
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2602005729610315787, guid: 87786065f9fafa9459ad0bcc3d0600d5, type: 3}
       propertyPath: _grabTolaranceRadius
       value: 0.06
       objectReference: {fileID: 0}
     - target: {fileID: 2602005729610315789, guid: 87786065f9fafa9459ad0bcc3d0600d5, type: 3}
       propertyPath: m_Name
       value: Valve
+      objectReference: {fileID: 0}
+    - target: {fileID: 2602005729610315789, guid: 87786065f9fafa9459ad0bcc3d0600d5, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2944588610488808595, guid: 87786065f9fafa9459ad0bcc3d0600d5, type: 3}
       propertyPath: m_IsActive

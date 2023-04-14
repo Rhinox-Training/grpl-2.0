@@ -978,9 +978,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 278647feca54de64399c71acc931f0b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _proximateRadius: 0.5
-  _forceInteractibleJoint: 0
-  _forcedInteractJointID: 11
 --- !u!1 &774395021
 GameObject:
   m_ObjectHideFlags: 0
@@ -1432,7 +1429,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: ImportFilePath
-      value: C:/Users/Rhinox/UnityProjects/grpl-2.0/Assets/GrappleIT/Resources/StandardGestures.json
+      value: C:/Users/Rhinox/UnityProjects/grpl-2.0/Assets/GrappleIT/Resources/Gestures/GrabTest.json
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: OverwriteGesturesOnImport
@@ -1915,8 +1912,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _proximateRadius: 0.5
+  _showProximateRadius: 0
+  _proximateJointID: 12
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
+  _allowMultiHandInteraction: 0
   _grabGestureName: Grab
   _useCollidersInsteadOfBoundingBox: 0
   _showBoundingBox: 0
@@ -2310,8 +2310,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _proximateRadius: 0.5
+  _showProximateRadius: 0
+  _proximateJointID: 12
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
+  _allowMultiHandInteraction: 0
   _grabGestureName: Grab
   _useCollidersInsteadOfBoundingBox: 0
   _showBoundingBox: 0
@@ -2366,8 +2369,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Instance: {fileID: 0}
   _maxAmountOfProximatesPerHand: 5
-  _proximateRadius: 1
-  _proximateJointID: 12
   _interactibleGroups: []
 --- !u!4 &1944830147
 Transform:
@@ -2460,9 +2461,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 278647feca54de64399c71acc931f0b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _proximateRadius: 0.5
-  _forceInteractibleJoint: 0
-  _forcedInteractJointID: 11
 --- !u!1 &2009825737
 GameObject:
   m_ObjectHideFlags: 0
@@ -2991,8 +2989,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _proximateRadius: 0.5
+  _showProximateRadius: 0
+  _proximateJointID: 12
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
+  _allowMultiHandInteraction: 0
   _grabGestureName: Grab
   _useCollidersInsteadOfBoundingBox: 0
   _showBoundingBox: 0

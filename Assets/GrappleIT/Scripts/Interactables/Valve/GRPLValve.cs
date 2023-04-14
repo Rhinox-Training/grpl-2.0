@@ -287,49 +287,53 @@ namespace Rhinox.XR.Grapple.It
 
                 using (new eUtility.GizmoColor(0f, 1f, 0f, .5f))
                 {
-                    GizmoExtensions.DrawSolidAnnulusWidth(trans.position, trans.right, -trans.forward, _grabRadius, _grabTolaranceRadius, 16);
+                    //GizmoExtensions.DrawSolidAnnulusWidth(trans.position, trans.right, -trans.forward,
+                    //_grabRadius, _grabTolaranceRadius, true, 4);
+                    GizmoExtensions.DrawSolidArc(transform.position, -transform.up, transform.right, .5f, 180f, true);
+                    //GizmoExtensions.DrawSolidTorus(trans.position, trans.right, -trans.forward, _grabRadius, _grabTolaranceRadius);
+                    //GizmoExtensions.DrawWireTorus(trans.position, trans.right, -trans.forward, _grabRadius, _grabTolaranceRadius);
                 }
             }
             if (_TEST == null)
                 return;
 
-            Vector3 joint = _TEST.transform.position;
-            Gizmos.DrawSphere(joint, 0.01f);
+            //Vector3 joint = _TEST.transform.position;
+            //Gizmos.DrawSphere(joint, 0.01f);
 
-            var projectedJoint = joint.ProjectOnPlaneAndTranslate(transform.position, -transform.forward);
-            float dstValveToPrjJointSqr = transform.position.SqrDistanceTo(projectedJoint);
+            //var projectedJoint = joint.ProjectOnPlaneAndTranslate(transform.position, -transform.forward);
+            //float dstValveToPrjJointSqr = transform.position.SqrDistanceTo(projectedJoint);
 
-            float minRadius = _grabRadius - _grabTolaranceRadius;
-            float maxRadius = _grabRadius + _grabTolaranceRadius;
-            bool isInRange = dstValveToPrjJointSqr >= minRadius * minRadius && dstValveToPrjJointSqr <= maxRadius * maxRadius;
-
-
-            var s = ((projectedJoint - transform.position).normalized * _grabRadius) + transform.position;
-            float dst2 = MathF.Abs(s.SqrDistanceTo(joint));
-            bool isInRange2 = dst2 <= _grabTolaranceRadius * _grabTolaranceRadius;
+            //float minRadius = _grabRadius - _grabTolaranceRadius;
+            //float maxRadius = _grabRadius + _grabTolaranceRadius;
+            //bool isInRange = dstValveToPrjJointSqr >= minRadius * minRadius && dstValveToPrjJointSqr <= maxRadius * maxRadius;
 
 
-            if (isInRange && isInRange2)
-            {
-                using (new eUtility.GizmoColor(0f, 1f, 0f, .5f))
-                {
-                    Gizmos.DrawSphere(s, 0.005f);
-                }
-            }
-            else if (isInRange || isInRange2)
-            {
-                using (new eUtility.GizmoColor(1f, 1f, 0f, .5f))
-                {
-                    Gizmos.DrawSphere(s, 0.005f);
-                }
-            }
-            else
-            {
-                using (new eUtility.GizmoColor(1f, 0f, 0f, .5f))
-                {
-                    Gizmos.DrawSphere(s, 0.005f);
-                }
-            }
+            //var s = ((projectedJoint - transform.position).normalized * _grabRadius) + transform.position;
+            //float dst2 = MathF.Abs(s.SqrDistanceTo(joint));
+            //bool isInRange2 = dst2 <= _grabTolaranceRadius * _grabTolaranceRadius;
+
+
+            //if (isInRange && isInRange2)
+            //{
+            //    using (new eUtility.GizmoColor(0f, 1f, 0f, .5f))
+            //    {
+            //        Gizmos.DrawSphere(s, 0.005f);
+            //    }
+            //}
+            //else if (isInRange || isInRange2)
+            //{
+            //    using (new eUtility.GizmoColor(1f, 1f, 0f, .5f))
+            //    {
+            //        Gizmos.DrawSphere(s, 0.005f);
+            //    }
+            //}
+            //else
+            //{
+            //    using (new eUtility.GizmoColor(1f, 0f, 0f, .5f))
+            //    {
+            //        Gizmos.DrawSphere(s, 0.005f);
+            //    }
+            //}
         }
 
         private void Reset()

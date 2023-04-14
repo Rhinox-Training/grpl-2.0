@@ -22,7 +22,7 @@ namespace Rhinox.XR.Grapple.It
         [Header("Debug Parameters")]
         [SerializeField] private bool _drawDebug = false;
 
-        [SerializeField] [HideIfField(false,"_drawDebug", 0f)]
+        [SerializeField] [HideIfField(false, "_drawDebug", 0f)]
         private bool _drawArc = false;
 
         [SerializeField] [HideIfField(false, "_drawDebug", 0f)]
@@ -240,7 +240,7 @@ namespace Rhinox.XR.Grapple.It
 
             using (new eUtility.GizmoColor(Color.red))
             {
-                GizmoExtensions.DrawSolidArc(arcCenter, direction, arcNormal, arcRadius, _interactMinAngle, (int)
+                GizmoExtensions.DrawSolidArc(arcCenter, direction, arcNormal, arcRadius, _interactMinAngle, true, (int)
                     (_interactMinAngle / angleStep));
             }
 
@@ -251,7 +251,7 @@ namespace Rhinox.XR.Grapple.It
                 {
                     float arcAngle = _leverMaxAngle - _interactMinAngle;
                     GizmoExtensions.DrawSolidArc(arcCenter, dir, arcNormal, arcRadius, arcAngle,
-                        (int)(arcAngle / angleStep));
+                        true, (int)(arcAngle / angleStep));
                 }
             }
         }
