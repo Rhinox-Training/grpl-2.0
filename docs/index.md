@@ -10,3 +10,4 @@ The main features of the Grapple core package are
 - Hand visualization
 - Gesture recognition
 
+Link to [GRPLGestureRecognizer](rhinoxxrgrapple-GRPLGestureRecognizer.md)
