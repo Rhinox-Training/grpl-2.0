@@ -92,6 +92,8 @@ namespace Rhinox.XR.Grapple.It
                 _bounds.extents += _boundingBoxExtensionValues;
             }
 
+            //_rigidBody = MonoBehaviourExtensions.GetOrAddComponent<Rigidbody>(this);
+
             if (TryGetComponent(out _rigidBody))
             {
                 _wasKinematic = _rigidBody.isKinematic;
@@ -99,7 +101,15 @@ namespace Rhinox.XR.Grapple.It
                 _previousParentTransform = transform.parent;
             }
             else
-                _isValid = false;
+            {
+                PLog.Warn<GRPLITLogger>($"[GRPLGrabbableBase:Initialize], No RigidBody was found, one has been added automatically.", this);
+
+                _rigidBody = gameObject.AddComponent<Rigidbody>();
+
+                _wasKinematic = _rigidBody.isKinematic;
+                _hadGravity = _rigidBody.useGravity;
+                _previousParentTransform = transform.parent;
+            }
         }
 
         private void JointManagerInitialized(GRPLJointManager jointManager)

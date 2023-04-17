@@ -1,4 +1,5 @@
 using Rhinox.Perceptor;
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.XR.Hands;
@@ -13,6 +14,7 @@ namespace Rhinox.XR.Grapple.It
     /// - <see cref="GRPLJointManager"/>
     /// - <see cref="GRPLGestureRecognizer"/>
     /// </dependencies>
+    [Obsolete]
     public class GRPLPhysicsSocketService : IPhysicsService
     {
         public float ColliderActivationDelay = 1.0f;
