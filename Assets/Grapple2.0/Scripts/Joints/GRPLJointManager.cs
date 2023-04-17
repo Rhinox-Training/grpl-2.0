@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using Rhinox.GUIUtils.Attributes;
 using Rhinox.Lightspeed;
 using Rhinox.Perceptor;
+using Unity.XR.CoreUtils;
 
 namespace Rhinox.XR.Grapple
 {
@@ -26,7 +27,7 @@ namespace Rhinox.XR.Grapple
         /// attach an object to a hand in a 3D space.
         /// The value of this variable is set using magic numbers that were obtained through testing.
         /// </summary>
-        [Header("Socket")] [SerializeField] private Vector3 _handSocketOffset = new Vector3(0f, -0.035f, 0.0725f);
+        [Header("Socket")][SerializeField] private Vector3 _handSocketOffset = new Vector3(0f, -0.035f, 0.0725f);
 
         //-----------------------------
         // Finger bend fields
@@ -34,8 +35,8 @@ namespace Rhinox.XR.Grapple
         /// <summary>
         /// Float value that is used to remap the thumb bend value, if desired.
         /// </summary>
-        [Header("Bend Thresholds")] [SerializeField]
-        private float _thumbBendThreshold = 0.75f;
+        [Header("Bend Thresholds")]
+        [SerializeField] private float _thumbBendThreshold = 0.75f;
 
         /// <summary>
         /// Float value that is used to remap the index bend value, if desired.
@@ -202,12 +203,15 @@ namespace Rhinox.XR.Grapple
             _rightHandParent = new GameObject("Right Hand");
             _rightHandParent.transform.SetParent(transform);
 
+
             _rightHandSocket = new GameObject("Socket");
             _rightHandSocket.transform.SetParent(_rightHandParent.transform);
 
             //needs to be rotate 90°, otherwise object would go through handpalm.
             _rightHandSocket.transform.SetLocalPositionAndRotation(_handSocketOffset, Quaternion.Euler(0f, 0f, 90f));
 
+            Utility.SetLayerRecursively(_leftHandParent, HandLayer);
+            Utility.SetLayerRecursively(_rightHandParent, HandLayer);
 
             InitializeHandJoints();
         }
@@ -317,27 +321,27 @@ namespace Rhinox.XR.Grapple
             switch (handedness)
             {
                 case RhinoxHand.Left:
-                {
-                    if (_leftHandCollidersParent)
+                    {
+                        if (_leftHandCollidersParent)
+                            break;
+                        _leftHandCollidersParent = new GameObject($"{handedness}_Capsules");
+                        Transform parentTransform = _leftHandCollidersParent.transform;
+                        parentTransform.SetParent(_leftHandParent.transform, false);
+                        parentTransform.localPosition = Vector3.zero;
+                        parentTransform.localRotation = Quaternion.identity;
                         break;
-                    _leftHandCollidersParent = new GameObject($"{handedness}_Capsules");
-                    Transform parentTransform = _leftHandCollidersParent.transform;
-                    parentTransform.SetParent(_leftHandParent.transform, false);
-                    parentTransform.localPosition = Vector3.zero;
-                    parentTransform.localRotation = Quaternion.identity;
-                    break;
-                }
+                    }
                 case RhinoxHand.Right:
-                {
-                    if (_rightHandCollidersParent)
+                    {
+                        if (_rightHandCollidersParent)
+                            break;
+                        _rightHandCollidersParent = new GameObject($"{handedness}_Capsules");
+                        Transform parentTransform = _rightHandCollidersParent.transform;
+                        parentTransform.SetParent(_rightHandParent.transform, false);
+                        parentTransform.localPosition = Vector3.zero;
+                        parentTransform.localRotation = Quaternion.identity;
                         break;
-                    _rightHandCollidersParent = new GameObject($"{handedness}_Capsules");
-                    Transform parentTransform = _rightHandCollidersParent.transform;
-                    parentTransform.SetParent(_rightHandParent.transform, false);
-                    parentTransform.localPosition = Vector3.zero;
-                    parentTransform.localRotation = Quaternion.identity;
-                    break;
-                }
+                    }
                 default:
                     PLog.Error<GRPLLogger>(
                         $"[GRPLJointManager:InitializeJointCapsules], " +
@@ -367,6 +371,8 @@ namespace Rhinox.XR.Grapple
             }
 
             InitializeCapsulesForHand(handedness, parent, capsules, joints);
+
+            Utility.SetLayerRecursively(parent, HandLayer);
 
             OnJointCapsulesInitialized?.Invoke(handedness);
         }
@@ -602,7 +608,9 @@ namespace Rhinox.XR.Grapple
             if (updateSuccessFlags.HasFlag(XRHandSubsystem.UpdateSuccessFlags.LeftHandRootPose))
             {
                 UpdateRootPose(RhinoxHand.Left);
-                _leftHandParent.transform.SetLocalPositionAndRotation(_leftHandJoints[0].JointPosition,
+                //_leftHandParent.transform.SetLocalPositionAndRotation(_leftHandJoints[0].JointPosition,
+                //_leftHandJoints[0].JointRotation);
+                _leftHandParent.transform.SetPositionAndRotation(_leftHandJoints[0].JointPosition,
                     _leftHandJoints[0].JointRotation);
             }
 
@@ -619,7 +627,9 @@ namespace Rhinox.XR.Grapple
             if (updateSuccessFlags.HasFlag(XRHandSubsystem.UpdateSuccessFlags.RightHandRootPose))
             {
                 UpdateRootPose(RhinoxHand.Right);
-                _rightHandParent.transform.SetLocalPositionAndRotation(_rightHandJoints[0].JointPosition,
+                //_rightHandParent.transform.SetLocalPositionAndRotation(_rightHandJoints[0].JointPosition,
+                //_rightHandJoints[0].JointRotation);
+                _rightHandParent.transform.SetPositionAndRotation(_rightHandJoints[0].JointPosition,
                     _rightHandJoints[0].JointRotation);
             }
 
@@ -642,31 +652,31 @@ namespace Rhinox.XR.Grapple
             switch (hand)
             {
                 case RhinoxHand.Left:
-                {
-                    var rootPose = _subsystem.leftHand.rootPose;
-                    var worldPose = rootPose.GetTransformedBy(new Pose(transform.position, transform.rotation));
+                    {
+                        var rootPose = _subsystem.leftHand.rootPose;
+                        var worldPose = rootPose.GetTransformedBy(new Pose(transform.position, transform.rotation));
 
-                    _leftHandJoints[0].JointPosition = worldPose.position;
-                    _leftHandJoints[0].JointRotation = worldPose.rotation;
-                    _leftHandJoints[0].Forward = rootPose.forward;
+                        _leftHandJoints[0].JointPosition = worldPose.position;
+                        _leftHandJoints[0].JointRotation = worldPose.rotation;
+                        _leftHandJoints[0].Forward = rootPose.forward;
 
-                    if (_subsystem.leftHand.GetJoint(XRHandJointID.Wrist).TryGetRadius(out var radius))
-                        _leftHandJoints[0].JointRadius = radius;
-                    break;
-                }
+                        if (_subsystem.leftHand.GetJoint(XRHandJointID.Wrist).TryGetRadius(out var radius))
+                            _leftHandJoints[0].JointRadius = radius;
+                        break;
+                    }
                 case RhinoxHand.Right:
-                {
-                    var rootPose = _subsystem.rightHand.rootPose;
-                    var worldPose = rootPose.GetTransformedBy(new Pose(transform.position, transform.rotation));
+                    {
+                        var rootPose = _subsystem.rightHand.rootPose;
+                        var worldPose = rootPose.GetTransformedBy(new Pose(transform.position, transform.rotation));
 
-                    _rightHandJoints[0].JointPosition = worldPose.position;
-                    _rightHandJoints[0].JointRotation = worldPose.rotation;
-                    _rightHandJoints[0].Forward = rootPose.forward;
+                        _rightHandJoints[0].JointPosition = worldPose.position;
+                        _rightHandJoints[0].JointRotation = worldPose.rotation;
+                        _rightHandJoints[0].Forward = rootPose.forward;
 
-                    if (_subsystem.rightHand.GetJoint(XRHandJointID.Wrist).TryGetRadius(out var radius))
-                        _leftHandJoints[0].JointRadius = radius;
-                    break;
-                }
+                        if (_subsystem.rightHand.GetJoint(XRHandJointID.Wrist).TryGetRadius(out var radius))
+                            _leftHandJoints[0].JointRadius = radius;
+                        break;
+                    }
                 default:
                     PLog.Error<GRPLLogger>($"[GRPLJointManager:UpdateRootPose], " +
                                               $"function called with incorrect rhinoxHand {hand}. Only left or right supported!",

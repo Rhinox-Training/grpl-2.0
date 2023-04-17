@@ -257,8 +257,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Instance: {fileID: 0}
   _maxAmountOfProximatesPerHand: 9
-  _proximateRadius: 0.5
-  _proximateJointID: 12
   _interactibleGroups:
   - {fileID: 1110593844}
   - {fileID: 1703892071}
@@ -2554,8 +2552,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _proximateRadius: 0.5
+  _showProximateRadius: 0
+  _proximateJointID: 12
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
+  _allowMultiHandInteraction: 0
+  _fadeInDuration: 0.15
+  _fadeOutDuration: 0.5
+  _handleTransform: {fileID: 0}
 --- !u!224 &631241999
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4309,6 +4313,18 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4674662000978036376, guid: 06631454105e27943b52048bbf77a9b0, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4674662002212522668, guid: 06631454105e27943b52048bbf77a9b0, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4674662002212522668, guid: 06631454105e27943b52048bbf77a9b0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4674662002212522668, guid: 06631454105e27943b52048bbf77a9b0, type: 3}
       propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
@@ -6344,88 +6360,100 @@ MonoBehaviour:
   ExportFileName: ExportTest
   RecordActionReference: {fileID: -256493050157588337, guid: 3728c71f5f80ba44bbf940c3599fecc9, type: 3}
   SavedGestureName: New Gesture
-  RhinoxHandToRecord: 0
+  HandToRecord: 0
   UseJointForward: 0
   ForwardJoint: 6
-  GestureDistanceThreshold: 0.02
+  GestureBendThreshold: 0.2
   GestureForwardThreshold: 0.5
   Gestures:
-  - Name: Thumbs up
-    JointData:
-    - 0
-    - 0.051080976
-    - 0.050558057
-    - 0.08498423
-    - 0.119712524
-    - 0.14338793
-    - 0.044662457
-    - 0.10581017
-    - 0.12536983
-    - 0.102548465
-    - 0.08691
-    - 0.03668164
-    - 0.10216195
-    - 0.12067181
-    - 0.09589611
-    - 0.076137155
-    - 0.040935297
-    - 0.09675634
-    - 0.113522775
-    - 0.088690676
-    - 0.070336744
-    - 0.045023967
-    - 0.09235543
-    - 0.10544262
-    - 0.08692504
-    - 0.06775864
-    UseJointForward: 1
-    CheckJoint: 6
-    JointForward: {x: 0.008256406, y: 0.98353714, z: 0.18051848}
-    DistanceThreshold: 0.02
+  - Name: Grab
+    FingerBendValues:
+    - 0.25
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    UseJointForward: 0
+    CheckJoint: 0
+    JointForward: {x: 0, y: 0, z: 0}
+    BendThreshold: 0.7
     RotationThreshold: 0.5
-    OnRecognized:
+    _onRecognized:
       m_PersistentCalls:
         m_Calls: []
-    OnUnrecognized:
+    _onUnrecognized:
       m_PersistentCalls:
         m_Calls: []
-  - Name: Thumbs up BIG
-    JointData:
+  - Name: Teleport
+    FingerBendValues:
+    - 0.25
+    - 0.9
+    - 0.9
     - 0
-    - 0.051080976
-    - 0.05060758
-    - 0.08482267
-    - 0.11952175
-    - 0.1436347
-    - 0.044691388
-    - 0.10581021
-    - 0.12401562
-    - 0.100794375
-    - 0.08492703
-    - 0.036717243
-    - 0.102161944
-    - 0.12003833
-    - 0.094762444
-    - 0.07539737
-    - 0.040935315
-    - 0.096756406
-    - 0.11313579
-    - 0.08784353
-    - 0.070254944
-    - 0.045023985
-    - 0.092355415
-    - 0.10528455
-    - 0.086651005
-    - 0.06756304
+    - 0
+    UseJointForward: 0
+    CheckJoint: 0
+    JointForward: {x: 0, y: 0, z: 0}
+    BendThreshold: 0.25
+    RotationThreshold: 0.5
+    _onRecognized:
+      m_PersistentCalls:
+        m_Calls: []
+    _onUnrecognized:
+      m_PersistentCalls:
+        m_Calls: []
+  - Name: Rocker
+    FingerBendValues:
+    - 0.98282266
+    - 0.9219447
+    - 0.08654165
+    - 0.106257245
+    - 0.97877836
+    UseJointForward: 0
+    CheckJoint: 0
+    JointForward: {x: 0, y: 0, z: 0}
+    BendThreshold: 0.25
+    RotationThreshold: 0.5
+    _onRecognized:
+      m_PersistentCalls:
+        m_Calls: []
+    _onUnrecognized:
+      m_PersistentCalls:
+        m_Calls: []
+  - Name: Nice
+    FingerBendValues:
+    - 0.7013786
+    - 0.48174536
+    - 0.96459705
+    - 0.9926205
+    - 0.9756108
+    UseJointForward: 0
+    CheckJoint: 0
+    JointForward: {x: 0, y: 0, z: 0}
+    BendThreshold: 0.2
+    RotationThreshold: 0.5
+    _onRecognized:
+      m_PersistentCalls:
+        m_Calls: []
+    _onUnrecognized:
+      m_PersistentCalls:
+        m_Calls: []
+  - Name: Thumbs up
+    FingerBendValues:
+    - 0.9217584
+    - 0
+    - 0
+    - 0
+    - 0
     UseJointForward: 1
     CheckJoint: 6
-    JointForward: {x: 0.09560618, y: 0.9534416, z: 0.28602242}
-    DistanceThreshold: 0.02
-    RotationThreshold: 4
-    OnRecognized:
+    JointForward: {x: 0.0005738139, y: 0.9606992, z: 0.2775916}
+    BendThreshold: 0.2
+    RotationThreshold: 0.5
+    _onRecognized:
       m_PersistentCalls:
         m_Calls: []
-    OnUnrecognized:
+    _onUnrecognized:
       m_PersistentCalls:
         m_Calls: []
   OnGestureRecognized:
@@ -6937,8 +6965,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _proximateRadius: 0.5
+  _showProximateRadius: 0
+  _proximateJointID: 12
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
+  _allowMultiHandInteraction: 0
   _drawDebug: 0
   _interactableBaseTransform: {fileID: 2080736830}
   _interactObject: {fileID: 1650147529}

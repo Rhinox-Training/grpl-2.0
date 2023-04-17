@@ -1,5 +1,47 @@
 [
     {
+        "Gesture name": "Grab",
+        "Finger bend values": [
+            0.25,
+            0.1,
+            0.1,
+            0.1,
+            0.1
+        ],
+        "Uses joint forward": false,
+        "Forward joint": "Invalid",
+        "Wrist rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "Distance threshold": 0.65,
+        "Rotation threshold": 0.5,
+        "OnRecognized": {},
+        "OnUnrecognized": {}
+    },
+    {
+        "Gesture name": "Teleport",
+        "Finger bend values": [
+            0.25,
+            0.9,
+            0.9,
+            0.0,
+            0.0
+        ],
+        "Uses joint forward": false,
+        "Forward joint": "Invalid",
+        "Wrist rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "Distance threshold": 0.25,
+        "Rotation threshold": 0.5,
+        "_onRecognized": {},
+        "_onUnrecognized": {}
+    },
+    {
         "Gesture name": "Rocker",
         "Finger bend values": [
             0.982822657,
@@ -37,27 +79,6 @@
             "z": 0.0
         },
         "Distance threshold": 0.2,
-        "Rotation threshold": 0.5,
-        "OnRecognized": {},
-        "OnUnrecognized": {}
-    },
-    {
-        "Gesture name": "Grab",
-        "Finger bend values": [
-            0.25,
-            0.1,
-            0.1,
-            0.1,
-            0.1
-        ],
-        "Uses joint forward": false,
-        "Forward joint": "Invalid",
-        "Wrist rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-        },
-        "Distance threshold": 0.7,
         "Rotation threshold": 0.5,
         "OnRecognized": {},
         "OnUnrecognized": {}

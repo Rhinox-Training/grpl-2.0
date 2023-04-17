@@ -1,3 +1,5 @@
+using Rhinox.Perceptor;
+using Rhinox.XR.Grapple.It;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,9 +10,14 @@ using UnityEngine;
 /// <dependencies />
 public class GRPLTeleportAnchor : MonoBehaviour
 {
-    public GameObject AnchorTransform => _anchorPointTransform;
+    [SerializeField] private Transform _anchorPointTransform = null;
+    public Transform AnchorTransform => _anchorPointTransform;
 
-    private GameObject _anchorPointTransform = null;
+    private void Start()
+    {
+        if (_anchorPointTransform)
+            PLog.Warn<GRPLITLogger>($"[GRPLTeleportAnchor:Start], Anchor Point Transform was NULL!", this);
+    }
 
     //-----------------------
     // EDITOR ONLY METHODS
@@ -20,11 +27,12 @@ public class GRPLTeleportAnchor : MonoBehaviour
     {
         if (_anchorPointTransform == null)
         {
-            _anchorPointTransform = new GameObject("TeleportPoint");
-            _anchorPointTransform.transform.parent = transform;
-            _anchorPointTransform.transform.localPosition = Vector3.zero;
+            var anchorGo = new GameObject("TeleportPoint");
+            _anchorPointTransform = anchorGo.transform;
+            _anchorPointTransform.parent = transform;
+            _anchorPointTransform.localPosition = Vector3.zero;
             var iconContent = EditorGUIUtility.IconContent("sv_icon_dot10_pix16_gizmo");
-            EditorGUIUtility.SetIconForObject(_anchorPointTransform, (Texture2D)iconContent.image);
+            EditorGUIUtility.SetIconForObject(_anchorPointTransform.gameObject, (Texture2D)iconContent.image);
         }
     }
 
@@ -33,7 +41,7 @@ public class GRPLTeleportAnchor : MonoBehaviour
         if (_anchorPointTransform != null)
         {
             Gizmos.color = Color.cyan;
-            Gizmos.DrawCube(_anchorPointTransform.transform.position, new Vector3(0.1f, 0.1f, 0.1f));
+            Gizmos.DrawCube(_anchorPointTransform.position, new Vector3(0.1f, 0.1f, 0.1f));
         }
     }
 #endif

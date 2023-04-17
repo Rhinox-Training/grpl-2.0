@@ -77,6 +77,7 @@ namespace Rhinox.XR.Grapple.It
         private bool _isInitialized = false;
 
         private RhinoxHand _hand = RhinoxHand.Invalid;
+        private int _handLayer;
 
         private Coroutine _startVisualCoroutine = null;
         private Coroutine _stopVisualCoroutine = null;
@@ -116,6 +117,10 @@ namespace Rhinox.XR.Grapple.It
         {
             GRPLJointManager.GlobalInitialized += JointManagerInitialized;
             GRPLGestureRecognizer.GlobalInitialized += GestureRecognizerInitialized;
+
+            if (_teleportableNavMeshAreas == 0)
+                PLog.Warn<GRPLITLogger>($"[GRPLTeleport:Start]," +
+                    $" Teleportable NavMesh Areas was {LayerMask.LayerToName(_teleportableNavMeshAreas)}", this);
 
             if (_lineRenderer == null)
             {
@@ -182,6 +187,8 @@ namespace Rhinox.XR.Grapple.It
                 PLog.Warn<GRPLITLogger>($"[GRPLTeleport:Initialize], no teleportZoneVisual was given, fallback to Cube Primitive", this);
             }
 
+            _handLayer = _jointManager.HandLayer;
+
             _jointManager.TrackingAcquired += TrackingAcquired;
             _jointManager.TrackingLost += TrackingLost;
             _jointManager.OnJointCapsulesInitialized += InitializeIgnoreList;
@@ -229,10 +236,9 @@ namespace Rhinox.XR.Grapple.It
         /// <returns>If the sensor setup for the hand succeeded.</returns>
         private bool SensorSetup(out GameObject sensorObj, RhinoxHand hand, Transform handParentObj, out GRPLTriggerSensor proxySensor)
         {
-            //sensorObj = new GameObject($"{hand}Hand Sensor");
             sensorObj = Instantiate(_sensorModel, _sensorOffset, Quaternion.identity, handParentObj);
             sensorObj.name = $"{hand}Hand Sensor";
-            sensorObj.transform.SetLocalPosition(_sensorOffset);
+            //sensorObj.transform.SetLocalPosition(_sensorOffset);
             sensorObj.SetActive(false);
 
             if (!sensorObj.TryGetComponent<Collider>(out var sensCollider))
@@ -244,7 +250,7 @@ namespace Rhinox.XR.Grapple.It
 
             sensCollider.isTrigger = true;
             proxySensor = sensorObj.GetOrAddComponent<GRPLTriggerSensor>();
-            proxySensor.HandLayer = LayerMask.NameToLayer("Hands");
+            proxySensor.HandLayer = _handLayer;// LayerMask.NameToLayer("Hands");
             proxySensor.AddListenerOnSensorEnter(ConfirmTeleport);
             return true;
         }
@@ -292,15 +298,16 @@ namespace Rhinox.XR.Grapple.It
         private void Update()
         {
             //update hantracked sensors to confirm teleportation
+            //only one sensor can be active at the same time
             if (_isEnabledL && _sensorObjL.activeSelf)
             {
-                if (_jointManager.TryGetJointFromHandById(UnityEngine.XR.Hands.XRHandJointID.Wrist, RhinoxHand.Left, out var wrist))
-                    _sensorObjL.transform.SetPositionAndRotation(wrist.JointPosition, wrist.JointRotation);
+                //if (_jointManager.TryGetJointFromHandById(UnityEngine.XR.Hands.XRHandJointID.Wrist, RhinoxHand.Left, out var wrist))
+                //    _sensorObjL.transform.SetPositionAndRotation(wrist.JointPosition, wrist.JointRotation);
             }
             else if (_isEnabledR && _sensorObjR.activeSelf)
             {
-                if (_jointManager.TryGetJointFromHandById(UnityEngine.XR.Hands.XRHandJointID.Wrist, RhinoxHand.Right, out var wrist))
-                    _sensorObjR.transform.SetPositionAndRotation(wrist.JointPosition, wrist.JointRotation);
+                //if (_jointManager.TryGetJointFromHandById(UnityEngine.XR.Hands.XRHandJointID.Wrist, RhinoxHand.Right, out var wrist))
+                //    _sensorObjR.transform.SetPositionAndRotation(wrist.JointPosition, wrist.JointRotation);
             }
 
 
@@ -388,7 +395,8 @@ namespace Rhinox.XR.Grapple.It
                 Ray currentRay = new Ray(points[index], points[indexNextPoint] - points[index]);
 
                 //check which segment of the arc intersects with the ground
-                if (Physics.Raycast(currentRay, out var hitInfo, Vector3.Distance(points[indexNextPoint], points[index]), ~LayerMask.GetMask("Hands")))
+                //~(0b1 << _handLayer) converts the handlayer indext to a mask via bitshifting
+                if (Physics.Raycast(currentRay, out var hitInfo, Vector3.Distance(points[indexNextPoint], points[index]), ~(0b1 << _handLayer)))
                 {
                     //if it was a collider, check if it has a teleportanchor
                     if (_enableSnapping && hitInfo.collider.TryGetComponent<GRPLTeleportAnchor>(out var teleportAnchor))
@@ -396,7 +404,7 @@ namespace Rhinox.XR.Grapple.It
                         if (Vector3.Distance(teleportAnchor.transform.position, hitInfo.point) <= _maxSnapDistance)
                         {
                             _teleportPositions.Clear();
-                            _teleportPositions.Enqueue(teleportAnchor.AnchorTransform.transform.position);
+                            _teleportPositions.Enqueue(teleportAnchor.AnchorTransform.position);
                             _isValidTeleportPoint = true;
                         }
                         else

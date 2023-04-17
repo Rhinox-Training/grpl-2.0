@@ -153,8 +153,7 @@ namespace Rhinox.XR.Grapple
             {
                 var jointTransform = jointObjects[index].transform;
                 var rhinoxJoint = updatedJoints[index];
-                jointTransform.position = rhinoxJoint.JointPosition;
-                jointTransform.rotation = rhinoxJoint.JointRotation;
+                jointTransform.SetPositionAndRotation(rhinoxJoint.JointPosition, rhinoxJoint.JointRotation);
             }
         }
 
