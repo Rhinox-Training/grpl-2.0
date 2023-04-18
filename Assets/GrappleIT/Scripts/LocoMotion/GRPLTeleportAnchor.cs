@@ -4,15 +4,26 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Simple script that is needed for when an object should become a snappable teleport anchor
+/// This class is a simple script that is used to make an object become a snappable teleport anchor.
+/// When this script is added to an object, it will supply the transform for the teleport location of the anchor.
 /// </summary>
-/// <remarks>If the script gets reset/added it will supply the transform for the teleport location of the anchor</remarks>
+/// <remarks>If the script gets reset/added again, it will automatically create an anchor point transform for the object.</remarks>
 /// <dependencies />
 public class GRPLTeleportAnchor : MonoBehaviour
 {
+    /// <summary>
+    /// Holds the transform of the anchor point.
+    /// </summary>
     [SerializeField] private Transform _anchorPointTransform = null;
+
+    /// <summary>
+    /// Returns the transform of the anchor point.
+    /// </summary>
     public Transform AnchorTransform => _anchorPointTransform;
 
+    /// <summary>
+    /// Checks whether the anchor point transform is null and logs a warning message if it is.
+    /// </summary>
     private void Start()
     {
         if (_anchorPointTransform)

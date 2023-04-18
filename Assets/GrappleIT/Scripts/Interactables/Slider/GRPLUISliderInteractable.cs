@@ -9,59 +9,106 @@ using UnityEngine.UI;
 namespace Rhinox.XR.Grapple.It
 {
     /// <summary>
-    /// A UI slider based on the GRPLInteractable system.<br />
-    /// There is an event for each time the slider updates giving the slider value as paramter.
+    /// This class represents an interactable slider. It derives from
+    /// GRPLInteractable, and it contains properties and methods to handle interaction with a hands. It also
+    /// extends the basic functionality of a Unity Slider component to add hand tracking specific features.
     /// </summary>
     /// <remarks />
     /// <dependencies>Unity's built in<see cref="Slider"/></dependencies>
     public class GRPLUISliderInteractable : GRPLInteractable
     {
+        /// <summary>
+        /// A float that determines the duration of the fade-in effect when the slider is interacted with.
+        /// </summary>
         [SerializeField] float _fadeInDuration = .15f;
+
+        /// <summary>
+        /// A float that determines the duration of the fade-out effect when the slider is not interacted with.
+        /// </summary>
         [SerializeField] float _fadeOutDuration = .5f;
 
-        [Header("Transforms")]
-        [SerializeField] private Transform _handleTransform;
-        
+        /// <summary>
+        /// A Transform component that represents the slider's handle.
+        /// </summary>
+        [Header("Transforms")] [SerializeField]
+        private Transform _handleTransform;
+
+        /// <summary>
+        /// A float property that returns the current value of the slider.
+        /// </summary>
         public float SliderValue => _slider.value;
+
+        /// <summary>
+        /// An event that is triggered whenever the slider's value is updated.
+        /// </summary>
         public event Action<float> OnValueUpdate;
 
+        /// <summary>
+        /// A Bounds struct that defines the boundaries of the slider's interaction area.
+        /// </summary>
         private Bounds _pressBounds;
-        private Slider _slider;
-        private Vector3[] _corners = new Vector3[4];
-        private float _sliderWitdth = 0f;
 
-        private Coroutine _fadeCorotine;
+        /// <summary>
+        /// A Slider component that represents the slider.
+        /// </summary>
+        private Slider _slider;
+
+        /// <summary>
+        /// A Vector3 array that contains the corners of the slider's interaction area.
+        /// </summary>
+        private Vector3[] _corners = new Vector3[4];
+
+        /// <summary>
+        /// A float that represents the width of the slider.
+        /// </summary>
+        private float _sliderWidth = 0f;
+
+        /// <summary>
+        /// A Coroutine that controls the fade-in and fade-out effects of the slider.
+        /// </summary>
+        private Coroutine _fadeCoroutine;
+
+        /// <summary>
+        /// An Image component that represents the slider's handle image.
+        /// </summary>
         private Image _handleImage = null;
+
+        /// <summary>
+        /// A RhinoxJoint component that represents the previous interaction joint for the slider.
+        /// </summary>
         private RhinoxJoint _previousInteractJoint;
 
+        /// <summary>
+        /// This method initializes the slider's components and sets its initial values.
+        /// </summary>
         protected override void Initialize()
         {
             if (!TryGetComponent(out _slider))
                 PLog.Error<GRPLITLogger>($"[{nameof(GRPLUISliderInteractable)}] {nameof(Initialize)}: " +
-                    $"No slider Component was found!", this);
+                                         $"No slider Component was found!", this);
 
             _slider.direction = Slider.Direction.LeftToRight;
 
             if (!_slider.handleRect.GetChild(0).TryGetComponent(out _handleImage))
                 PLog.Error<GRPLITLogger>($"[GRPLUISliderInteractable:Initialize], " +
-                    $"Slider Handle does not have an image Component", this);
+                                         $"Slider Handle does not have an image Component", this);
 
             //force setting handle image to invisible on start
             _handleImage.color = new Color(_handleImage.color.r,
-                                           _handleImage.color.g,
-                                           _handleImage.color.b,
-                                           0f);
+                _handleImage.color.g,
+                _handleImage.color.b,
+                0f);
 
             CalculateBounds();
         }
 
         /// <summary>
-        /// Helper method to get the bounds of a <see cref="RectTransform"/>.
+        /// This method calculates the boundaries of the slider's interaction area.
         /// </summary>
         private void CalculateBounds()
         {
             var trans = (RectTransform)transform;
-            _sliderWitdth = trans.sizeDelta.x;
+            _sliderWidth = trans.sizeDelta.x;
 
             if (trans != null)
             {
@@ -89,11 +136,22 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
+        /// <summary>
+        /// This method returns the Transform component of the slider's handle.
+        /// </summary>
+        /// <returns>The Transform component of the slider's handle.</returns>
         public override Transform GetReferenceTransform()
         {
             return _handleTransform;
         }
 
+        /// <summary>
+        /// This method checks whether a given RhinoxJoint is interacting with the slider.
+        /// It returns a boolean value that indicates whether the interaction is successful.
+        /// </summary>
+        /// <param name="joint">The interaction joint.</param>
+        /// <param name="hand">The hand on which this joint resides</param>
+        /// <returns>Whether the interaction is successful</returns>
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
             if (!gameObject.activeInHierarchy)
@@ -113,7 +171,7 @@ namespace Rhinox.XR.Grapple.It
 
             // Projects the joint pos onto the normal out of the slider and gets the distance
             float pokeDistance = InteractableMathUtils.GetProjectedDistanceFromPointOnNormal(joint.JointPosition,
-                    sliderPos, sliderForward);
+                sliderPos, sliderForward);
 
 
             pokeDistance -= joint.JointRadius;
@@ -134,7 +192,7 @@ namespace Rhinox.XR.Grapple.It
         }
 
         /// <summary>
-        /// Calculates the slider value (0f->1f) range depending. 
+        /// This method calculates the value of the slider based on the position of the interaction joint. 
         /// </summary>
         /// <param name="jointPos">The position of the joint that is trying to interact with the slider</param>
         /// <returns></returns>
@@ -145,7 +203,7 @@ namespace Rhinox.XR.Grapple.It
 
             _slider.handleRect.GetChild(0).transform.SetLocalPosition(0f, projectedPointInLocalSpace.y, 0f);
 
-            return projectedPointInLocalSpace.x.Map(_sliderWitdth * -.5f, _sliderWitdth * .5f, 0f, 1f);
+            return projectedPointInLocalSpace.x.Map(_sliderWidth * -.5f, _sliderWidth * .5f, 0f, 1f);
         }
 
         public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint,
@@ -181,7 +239,7 @@ namespace Rhinox.XR.Grapple.It
 
             // Check if the joint pos is in front of the plane that is defined by the button
             if (!InteractableMathUtils.IsPositionInFrontOfPlane(_previousInteractJoint.JointPosition,
-                                                                transform.position, -transform.forward))
+                    transform.position, -transform.forward))
             {
                 ShouldPerformInteractCheck = false;
 
@@ -200,10 +258,10 @@ namespace Rhinox.XR.Grapple.It
         {
             base.InteractStarted();
             //stop coroutine so that the previous doesn't influence the current one
-            if (_fadeCorotine != null)
-                StopCoroutine(_fadeCorotine);
+            if (_fadeCoroutine != null)
+                StopCoroutine(_fadeCoroutine);
 
-            _fadeCorotine = StartCoroutine(Fade());
+            _fadeCoroutine = StartCoroutine(Fade());
         }
 
         /// <summary>
@@ -233,7 +291,7 @@ namespace Rhinox.XR.Grapple.It
             }
 
             if (isFadeIn)
-                _fadeCorotine = StartCoroutine(Fade(false));
+                _fadeCoroutine = StartCoroutine(Fade(false));
         }
     }
 }

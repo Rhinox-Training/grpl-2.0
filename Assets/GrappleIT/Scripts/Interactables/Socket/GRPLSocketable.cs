@@ -6,21 +6,38 @@ using UnityEngine;
 namespace Rhinox.XR.Grapple.It
 {
     /// <summary>
-    /// Socktables objects inhert from <see cref="GRPLGrabbableBase"/> and extend this by adding sockets points.<br />
+    /// This class inherits from the <see cref="GRPLGrabbableBase"/> class and adds the ability to have socket points for grabbing. 
     /// Each hand has its own socket, so the closest socket point get correctly orientated to the hands socket.
     /// </summary>
     /// <remarks>When the right hand grabs the object its orientation is mirrored compared to the left hand.</remarks>
     /// <dependencies />
     public class GRPLSocketable : GRPLGrabbableBase
     {
-        [Space(15f)]
-        [SerializeField] private float _maxSocketDistance = .025f;
+        /// <summary>
+        /// The maximum distance from a socket point that a hand can grab the object.
+        /// </summary>
+        [Space(15f)] [SerializeField] private float _maxSocketDistance = .025f;
+        /// <summary>
+        /// The list of socket points for the object.
+        /// </summary>
         [SerializeField] private List<Transform> _sockets = null;
 
+        /// <summary>
+        /// The closest socket point to the left hand.
+        /// </summary>
         private Transform _closestSocketL = null;
+        /// <summary>
+        /// The closest socket point to the right hand.
+        /// </summary>
         private Transform _closestSocketR = null;
+        /// <summary>
+        /// The squared maximum distance from a socket point that a hand can grab the object.
+        /// </summary>
         private float _maxSocketDistanceSqrd = 0f;
 
+        /// <summary>
+        /// Initializes the _maxSocketDistanceSqrd field and removes any null values from the _sockets list.
+        /// </summary>
         protected override void Initialize()
         {
             base.Initialize();
@@ -29,12 +46,20 @@ namespace Rhinox.XR.Grapple.It
             _sockets.RemoveAll(s => s == null);
             if (_sockets.Count != tempCnt)
                 PLog.Warn<GRPLITLogger>($"[GRPLSocketable:Initialize], " +
-                    $"Socket list had empties and have been purged", this);
+                                        $"Socket list had empties and have been purged", this);
 
             _maxSocketDistanceSqrd = _maxSocketDistance * _maxSocketDistance;
         }
 
         //TODO: maybe bounding box optimazition for early return?
+        /// <summary>
+        /// Checks if a hand can interact with the object. If the hand is already holding the object, it returns
+        /// whether the object is grabbed. Otherwise, it finds the closest socket point to the hand and sets a flag
+        /// to allow the hand to grab the object if it is within range.
+        /// </summary>
+        /// <param name="joint">The interact joint.</param>
+        /// <param name="hand">The hand on which the interact joint resides.</param>
+        /// <returns></returns>
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
             if (hand == _currentHandHolding)
@@ -54,10 +79,6 @@ namespace Rhinox.XR.Grapple.It
                 return IsGrabbed;
             }
 
-
-            //Predicate<Transform> predicate = (trans) => { return (joint.JointPosition - trans.position).sqrMagnitude <= _maxSocketDistanceSqrd; };
-            //_closestSocket = _sockets.GetClosestTo(joint.JointPosition, predicate);
-
             //ask Jorian/Gaetan what to do with this
             var closestSocket = _sockets.GetClosestTo(joint.JointPosition, null, ref _maxSocketDistanceSqrd);
             _maxSocketDistanceSqrd = _maxSocketDistance * _maxSocketDistance;
@@ -75,6 +96,7 @@ namespace Rhinox.XR.Grapple.It
                         _canHandGrabL = false;
                         _closestSocketL = null;
                     }
+
                     break;
                 case RhinoxHand.Right:
                     if (closestSocket != null)
@@ -87,6 +109,7 @@ namespace Rhinox.XR.Grapple.It
                         _canHandGrabR = false;
                         _closestSocketR = null;
                     }
+
                     break;
                 default:
                     break;
@@ -95,6 +118,12 @@ namespace Rhinox.XR.Grapple.It
             return IsGrabbed;
         }
 
+        /// <summary>
+        /// Grabs the object with the specified hand. It finds the closest socket point to the hand and orients the
+        /// object relative to the parent object.
+        /// </summary>
+        /// <param name="parent">The socket target in the hand.</param>
+        /// <param name="rhinoxHand">The current hand.</param>
         protected override void GrabInternal(GameObject parent, RhinoxHand rhinoxHand)
         {
             Transform _closestSocket = null;
@@ -122,17 +151,17 @@ namespace Rhinox.XR.Grapple.It
                 //because the right rhinoxHand is mirror of the left one.
                 //the object needs to be flip around the X-axis to mirror it. 
                 _closestSocket.localRotation = new Quaternion(_closestSocket.localRotation.x * -1.0f,
-                                                              _closestSocket.localRotation.y,
-                                                              _closestSocket.localRotation.z,
-                                                              _closestSocket.localRotation.w * -1.0f);
+                    _closestSocket.localRotation.y,
+                    _closestSocket.localRotation.z,
+                    _closestSocket.localRotation.w * -1.0f);
 
                 relativeMatrix = _closestSocket.GetMatrixRelativeTo(this.GetWorldMatrix());
 
                 //is a component, so i can't take a copy of it, meaning i have to reset the orriginal back.
                 _closestSocket.localRotation = new Quaternion(_closestSocket.localRotation.x * -1.0f,
-                                                              _closestSocket.localRotation.y,
-                                                              _closestSocket.localRotation.z,
-                                                              _closestSocket.localRotation.w * -1.0f);
+                    _closestSocket.localRotation.y,
+                    _closestSocket.localRotation.z,
+                    _closestSocket.localRotation.w * -1.0f);
             }
             else
             {
@@ -142,7 +171,8 @@ namespace Rhinox.XR.Grapple.It
             var relativeInverse = relativeMatrix.inverse;
             var targetMatrix = parent.GetWorldMatrix() * relativeInverse;
 
-            transform.SetPositionAndRotation(Utility.GetMatrixPosition(targetMatrix), Utility.GetMatrixRotation(targetMatrix));
+            transform.SetPositionAndRotation(Utility.GetMatrixPosition(targetMatrix),
+                Utility.GetMatrixRotation(targetMatrix));
         }
     }
 }

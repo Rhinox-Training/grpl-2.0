@@ -7,27 +7,62 @@ using UnityEngine;
 namespace Rhinox.XR.Grapple.It
 {
     /// <summary>
-    /// This object is responsible for calculating all interactions between the hands defined by the jointManager field and all interactables in the scene that inherit from GRPLInteractable.
+    /// This object is responsible for calculating all interactions between the hands defined by the jointManager
+    /// field and all interactables in the scene that inherit from GRPLInteractable.
     /// </summary>
     /// <dependencies> <see cref="GRPLJointManager"/> </dependencies>
     public class GRPLInteractableManager : Singleton<GRPLInteractableManager>
     {
+        /// <summary>
+        /// The maximum amount of proximates that can be detected per hand.
+        /// </summary>
         [Header("Proximate detection parameters")] [SerializeField]
         private int _maxAmountOfProximatesPerHand = 3;
-        
+
+        /// <summary>
+        /// A list of groups of interactables.
+        /// </summary>
         [Header("Interactible Groups")] [SerializeField]
         private List<GRPLInteractibleGroup> _interactibleGroups;
 
+        /// <summary>
+        /// Invoked when an interactable's interaction check is paused.
+        /// </summary>
         public event Action<RhinoxHand, GRPLInteractable> InteractibleInteractionCheckPaused;
+
+        /// <summary>
+        /// Invoked when an interactable's interaction check is resumed.
+        /// </summary>
         public event Action<RhinoxHand, GRPLInteractable> InteractibleInteractionCheckResumed;
+
+        /// <summary>
+        /// Invoked when an interactable is no longer in proximity of a hand.
+        /// </summary>
         public event Action<RhinoxHand, GRPLInteractable> InteractibleLeftProximity;
 
+        /// <summary>
+        /// A reference to the GRPLJointManager object that manages the joints of the tracked hands.
+        /// </summary>
         private GRPLJointManager _jointManager;
+
+        /// <summary>
+        /// A list of all GRPLInteractable objects that this GRPLInteractableManager is currently managing.
+        /// </summary>
         private List<GRPLInteractable> _interactables = null;
 
+        /// <summary>
+        /// A list of GRPLInteractable objects that are currently detected as proximate to the left hand.
+        /// </summary>
         private List<GRPLInteractable> _leftHandProximates;
+
+        /// <summary>
+        /// A list of GRPLInteractable objects that are currently detected as proximate to the right hand.
+        /// </summary>
         private List<GRPLInteractable> _rightHandProximates;
 
+        /// <summary>
+        /// Initializes this instance of GRPLInteractableManager.
+        /// </summary>
         public void Awake()
         {
             GRPLInteractable.InteractableCreated -= OnInteractableCreated;
@@ -44,6 +79,10 @@ namespace Rhinox.XR.Grapple.It
             _rightHandProximates = new List<GRPLInteractable>();
         }
 
+        /// <summary>
+        /// Initializes the GRPLJointManager.
+        /// </summary>
+        /// <param name="obj"></param>
         private void OnJointManagerInitialised(GRPLJointManager obj)
         {
             _jointManager = obj;
@@ -63,10 +102,10 @@ namespace Rhinox.XR.Grapple.It
         }
 
         /// <summary>
-        /// This methods handles all interactable updates for the given hand.  <br />
+        /// Handles all interactable updates for the given hand. <br/>
         /// It first detects the proximates and then checks those proximates for interactions.
         /// </summary>
-        /// <param name="hand">Hand to process</param>
+        /// <param name="hand">The hand to process</param>
         private void HandUpdate(RhinoxHand hand)
         {
             // Detect all the current proximates for this hand and invoke their events (if necessary)
@@ -90,7 +129,7 @@ namespace Rhinox.XR.Grapple.It
                         proximate.SetState(GRPLInteractionState.Proximate);
                     continue;
                 }
-                
+
                 // Check if an interaction is happening
                 bool isInteracted = proximate.CheckForInteraction(interactJoint, hand);
 
@@ -107,7 +146,7 @@ namespace Rhinox.XR.Grapple.It
                 }
             }
         }
-        
+
         /// <summary>
         /// Checks if interaction checks should happen for this proximate. Also bakes the mesh if that is enabled.
         /// </summary>
@@ -139,7 +178,6 @@ namespace Rhinox.XR.Grapple.It
 
             return false;
         }
-
 
         /// <summary>
         /// Detects all proximate interactables of the given hand in a range of "_proximateRadius".<br />
@@ -180,7 +218,8 @@ namespace Rhinox.XR.Grapple.It
                     continue;
 
                 // Calculate the vector from the joint to the interactable reference point
-                Vector3 fromJointToInteractable = interactable.GetReferenceTransform().position - proximateJoint.JointPosition;
+                Vector3 fromJointToInteractable =
+                    interactable.GetReferenceTransform().position - proximateJoint.JointPosition;
 
                 // Calculate the distance from the interactable to the reference pos
                 float sqrDistance = fromJointToInteractable.sqrMagnitude;
@@ -276,8 +315,16 @@ namespace Rhinox.XR.Grapple.It
             GRPLInteractable.InteractableDestroyed -= OnInteractableDestroyed;
         }
 
+        /// <summary>
+        /// Adds a new interactable to the list of interactables.
+        /// </summary>
+        /// <param name="interactable"> The interactable to add.</param>
         private void OnInteractableCreated(GRPLInteractable interactable) => _interactables.Add(interactable);
 
+        /// <summary>
+        /// Removes an interactable from the list of interactables.
+        /// </summary>
+        /// <param name="interactable">The interactable to remove.</param>
         private void OnInteractableDestroyed(GRPLInteractable interactable) => _interactables.Remove(interactable);
 
         private void OnTrackingLost(RhinoxHand hand)

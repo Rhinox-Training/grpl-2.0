@@ -20,42 +20,80 @@ namespace Rhinox.XR.Grapple.It
     /// </summary>
     public class GRPLTwoWayLever : GRPLLeverBase
     {
+        /// <summary>
+        /// An event that is raised when the lever is activated in the forward direction.
+        /// </summary>
         public event Action<GRPLTwoWayLever> LeverForwardActivated;
+
+        /// <summary>
+        /// An event that is raised when the lever is stopped in the forward direction.
+        /// </summary>
         public event Action<GRPLTwoWayLever> LeverForwardStopped;
+
+        /// <summary>
+        /// An event that is raised when the lever is activated in the backward direction.
+        /// </summary>
         public event Action<GRPLTwoWayLever> LeverBackwardActivated;
+
+        /// <summary>
+        /// An event that is raised when the lever is stopped in the backward direction.
+        /// </summary>
         public event Action<GRPLTwoWayLever> LeverBackwardStopped;
 
+        /// <summary>
+        /// A boolean flag that indicates whether the lever is currently active in the forward direction.
+        /// </summary>
         private bool _forwardActive;
+
+        /// <summary>
+        /// A boolean flag that indicates whether the lever is currently active in the backward direction.
+        /// </summary>
         private bool _backwardActive;
 
-        [Header("Debug Parameters")]
-        [SerializeField]
+        /// <summary>
+        /// A boolean flag that indicates whether debug information should be drawn for the lever.
+        /// </summary>
+        [Header("Debug Parameters")] [SerializeField]
         private bool _drawDebug = false;
 
-        [SerializeField]
-        [HideIfField(false, "_drawDebug", 0f)]
+        /// <summary>
+        /// A boolean flag that indicates whether the lever parts should be drawn.
+        /// </summary>
+        [SerializeField] [HideIfField(false, "_drawDebug", 0f)]
         private bool _drawLeverParts = false;
 
-        [SerializeField]
-        [HideIfField(false, "_drawDebug", 0f)]
+        /// <summary>
+        /// A boolean flag that indicates whether an arc should be drawn for the lever.
+        /// </summary>
+        [SerializeField] [HideIfField(false, "_drawDebug", 0f)]
         private bool _drawArc = false;
 
-        [SerializeField]
-        [HideIfField(false, "_drawDebug", 0f)]
+        /// <summary>
+        /// A boolean flag that indicates whether the lever extends should be drawn.
+        /// </summary>
+        [SerializeField] [HideIfField(false, "_drawDebug", 0f)]
         private bool _drawLeverExtends = false;
 
-        [SerializeField]
-        [HideIfField(false, "_drawDebug", 0f)]
+        /// <summary>
+        /// A boolean flag that indicates whether the grab range should be drawn.
+        /// </summary>
+        [SerializeField] [HideIfField(false, "_drawDebug", 0f)]
         private bool _drawGrabRange = false;
 
         //-----------------------
         // MONO BEHAVIOUR METHODS
         //-----------------------
+        /// <summary>
+        /// Sets the minimum angle that the lever can move.
+        /// </summary>
         private void OnValidate()
         {
             _interactMinAngle = Mathf.Clamp(_interactMinAngle, 0, _leverMaxAngle / 2);
         }
 
+        /// <summary>
+        /// Updates the lever's rotation and process the current angle.
+        /// </summary>
         private void Update()
         {
             if (State != GRPLInteractionState.Interacted)
@@ -125,12 +163,20 @@ namespace Rhinox.XR.Grapple.It
         //-----------------------
         // INHERITED METHODS
         //-----------------------
+        /// <summary>
+        /// Initializes the lever.
+        /// </summary>
         protected override void Initialize()
         {
             _initialHandlePos = _handleTransform.position;
             _initialHandleRot = _handleTransform.rotation.eulerAngles;
         }
 
+        /// <summary>
+        /// Calculates the angle of the lever based on the projected joint position.
+        /// </summary>
+        /// <param name="projectedPos">The projected joint position</param>
+        /// <returns></returns>
         protected override float GetLeverRotation(Vector3 projectedPos)
         {
             Vector3 basePos = _baseTransform.position;
@@ -145,11 +191,21 @@ namespace Rhinox.XR.Grapple.It
             return angle;
         }
 
+        /// <summary>
+        /// Returns the transform of the handle.
+        /// </summary>
+        /// <returns></returns>
         public override Transform GetReferenceTransform()
         {
             return _handleTransform;
         }
 
+        /// <summary>
+        /// Checks if the given RhinoxJoint and RhinoxHand are interacting with the lever.
+        /// </summary>
+        /// <param name="joint">The interact joint.</param>
+        /// <param name="hand">The hand on which this joint resides.</param>
+        /// <returns></returns>
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
             if (_gestureRecognizer == null)
@@ -157,6 +213,7 @@ namespace Rhinox.XR.Grapple.It
                 PLog.Warn<GRPLITLogger>("[GRPLOneWayLever, CheckForInteraction()], Gesture recognizer is null!");
                 return false;
             }
+
             // Get the current gesture from the target hand
             RhinoxGesture gestureOnHand = _gestureRecognizer.GetCurrentGestureOfHand(hand);
 

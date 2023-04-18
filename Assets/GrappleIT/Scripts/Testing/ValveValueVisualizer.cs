@@ -14,12 +14,12 @@ public class ValveValueVisualizer : MonoBehaviour
         //if (_screen != null)
         //    _screen.text = (_sliderInteractable.SliderValue * 100f).ToString("0.00") + "%";
 
-        _valve.OnValueUpdate += SliderUpdate;
+        _valve.ValueUpdated += SliderUpdate;
     }
 
     private void OnDisable()
     {
-        _valve.OnValueUpdate -= SliderUpdate;
+        _valve.ValueUpdated -= SliderUpdate;
     }
 
     private void SliderUpdate(GRPLValve obj, float value)

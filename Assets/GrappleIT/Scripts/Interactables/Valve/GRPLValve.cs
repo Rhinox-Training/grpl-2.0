@@ -10,52 +10,127 @@ using UnityEngine.XR.Hands;
 namespace Rhinox.XR.Grapple.It
 {
     /// <summary>
-    /// This is a valve interactable.<br />
-    /// 
+    /// This class represents a valve that can be interacted with in a hand tracking context.
+    /// It extends the <see cref="GRPLInteractable"/> class.
     /// </summary>
-    /// <remarks>Only one hand can interact with it at the same time.</remarks>
+    /// <remarks>Only one hand can interact with it at the same time. <br />
+    /// Turning the valve clockwise is considered to be closing the valve. <br />
+    /// Turning the valve counter-clockwise is considered to be opening the valve. <br />
+    /// </remarks>
     /// <dependencies><see cref="GRPLJointManager"/><br /><see cref="GRPLGestureRecognizer"/></dependencies>
     public class GRPLValve : GRPLInteractable
     {
-        [Space(10f)]
-        [Header("Valve Settings")]
-        [Space(5f)]
-        [SerializeField] private Transform _visualTransform = null;
-        [SerializeField] private GameObject _TEST = null;
+        /// <summary>
+        /// A reference to the valve's Transform component that holds the visual representation of the valve.
+        /// </summary>
+        [Space(10f)] [Header("Valve Settings")] [Space(5f)] [SerializeField]
+        private Transform _visualTransform = null;
 
-        [Header("Grab parameters")]
-        [SerializeField] private string _grabGestureName = "Grab";
-        [SerializeField][Range(0f, .5f)] private float _grabRadius = .1f;
-        [SerializeField][Range(0f, .25f)] private float _grabTolaranceRadius = .025f;
+        /// <summary>
+        /// The name of the gesture that triggers the valve grab.
+        /// </summary>
+        [Header("Grab parameters")] [SerializeField]
+        private string _grabGestureName = "Grab";
 
-        [Header("Valve Settings")]
-        [SerializeField] float _fullyOpenAngle = 0f;
-        [SerializeField] float _fullyClosedAngle = 360f;
+        /// <summary>
+        /// The radius within which the user's hand must be positioned in order to grab the valve.
+        /// </summary>
+        [SerializeField] [Range(0f, .5f)] private float _grabRadius = .1f;
 
-        [Header("Gizmos")]
-        [SerializeField] bool _drawGizmos = true;
+        /// <summary>
+        /// The tolerance radius within which the user's hand must be positioned in order to grab the valve.
+        /// </summary>
+        [SerializeField] [Range(0f, .25f)] private float _grabToleranceRadius = .025f;
 
+        /// <summary>
+        /// The angle at which the valve is fully open.
+        /// </summary>
+        [Header("Valve Settings")] [SerializeField]
+        private float _fullyOpenAngle = 0f;
+
+        /// <summary>
+        /// The angle at which the valve is fully closed.
+        /// </summary>
+        [SerializeField] private float _fullyClosedAngle = 360f;
+
+        /// <summary>
+        /// Whether or not to draw gizmos in the Unity Editor.
+        /// </summary>
+        [Header("Gizmos")] [SerializeField] bool _drawGizmos = true;
+
+        /// <summary>
+        /// Whether or not the valve is currently being grabbed.
+        /// </summary>
         public bool IsGrabbed { get; protected set; } = false;
+
+        /// <summary>
+        /// The current angle of the valve.
+        /// </summary>
         public float CurrentValveRotation => _currentValveRotation;
 
-        //righty tighty, lefty loosey
-        public Action<GRPLValve> OnFullyClosed;
-        public Action<GRPLValve> OnFullyOpen;
-        public Action<GRPLValve, float> OnValueUpdate;
+        /// <summary>
+        /// An event that is triggered when the valve is fully closed.
+        /// </summary>
+        public Action<GRPLValve> FullyClosed;
 
+        /// <summary>
+        /// an event that is triggered when the valve is fully open.
+        /// </summary>
+        public Action<GRPLValve> FullyOpen;
 
+        /// <summary>
+        /// An event that is triggered when the value of the valve is updated.
+        /// </summary>
+        public Action<GRPLValve, float> ValueUpdated;
+
+        /// <summary>
+        /// A reference to the joint manager used to track hand joints.
+        /// </summary>
         private static GRPLJointManager _jointManager = null;
+
+        /// <summary>
+        /// The joint that is currently interacting with the valve.
+        /// </summary>
         private RhinoxJoint _interactingJoint = null;
+
+        /// <summary>
+        /// The gesture used to grab the valve.
+        /// </summary>
         private RhinoxGesture _grabGesture = null;
+
+        /// <summary>
+        /// The hand that is currently holding the valve.
+        /// </summary>
         private RhinoxHand _currentHandHolding = RhinoxHand.Invalid;
 
+        /// <summary>
+        /// The vector representing the position where the valve was grabbed.
+        /// </summary>
         private Vector3 _grabbedVec = Vector3.positiveInfinity;
 
+        /// <summary>
+        /// The minimum radius at which a hand can grab the valve.
+        /// </summary>
         private float _minRadius = 0f;
+
+        /// <summary>
+        /// The maximum radius at which a hand can grab the valve.
+        /// </summary>
         private float _maxRadius = 0f;
+
+        /// <summary>
+        /// The current rotation of the valve in degrees.
+        /// </summary>
         private float _currentValveRotation = 0f;
 
+        /// <summary>
+        /// Whether or not the left hand is able to grab the valve.
+        /// </summary>
         private bool _canHandGrabL = false;
+
+        /// <summary>
+        /// Whether or not the right hand is able to grab the valve.
+        /// </summary>
         private bool _canHandGrabR = false;
 
         protected void Awake()
@@ -64,6 +139,10 @@ namespace Rhinox.XR.Grapple.It
             _forcedInteractJointID = XRHandJointID.MiddleProximal;
         }
 
+        /// <summary>
+        /// This method initializes the valve's rotation, minimum and maximum grab radii and checks if the
+        /// visualTransform variable is not null.
+        /// </summary>
         protected override void Initialize()
         {
             base.Initialize();
@@ -71,7 +150,7 @@ namespace Rhinox.XR.Grapple.It
             if (_visualTransform == null)
             {
                 PLog.Error<GRPLITLogger>($"[GRPLValve:Initialize], " +
-                    $"Visual Transform was null", this);
+                                         $"Visual Transform was null", this);
                 return;
             }
 
@@ -83,10 +162,14 @@ namespace Rhinox.XR.Grapple.It
 
             _currentValveRotation = _visualTransform.localEulerAngles.z;
 
-            _minRadius = _grabRadius - _grabTolaranceRadius;
-            _maxRadius = _grabRadius + _grabTolaranceRadius;
+            _minRadius = _grabRadius - _grabToleranceRadius;
+            _maxRadius = _grabRadius + _grabToleranceRadius;
         }
 
+        /// <summary>
+        /// This method is called when the joint manager is initialized. It adds a listener to the TrackingLost event.
+        /// </summary>
+        /// <param name="jointManager"></param>
         private void JointManagerInitialized(GRPLJointManager jointManager)
         {
             if (_jointManager == null)
@@ -98,11 +181,19 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
+        /// <summary>
+        /// This method is called when tracking is lost on the given hand. It tries to let go of the valve.
+        /// </summary>
+        /// <param name="hand"></param>
         private void TrackingLost(RhinoxHand hand)
         {
             TryLetGo(hand);
         }
 
+        /// <summary>
+        /// This method is called when the gesture recognizer is initialized. It adds listeners to the TryGrab and TryLetGo methods.
+        /// </summary>
+        /// <param name="gestureRecognizer"></param>
         private void GestureRecognizerInitialized(GRPLGestureRecognizer gestureRecognizer)
         {
             if (_grabGesture == null)
@@ -157,6 +248,13 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
+        /// <summary>
+        /// This method checks if a joint is within range of the valve and if it is in a proper gesture state to grab
+        /// the valve. If so, it returns true, else false.
+        /// </summary>
+        /// <param name="joint">The interaction joint.</param>
+        /// <param name="hand">The hand on which this joint resides</param>
+        /// <returns>Whether the interaction is successful</returns>
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
             //Check if jointPosition is inside torus, these calculations happen in 2 steps.
@@ -167,18 +265,21 @@ namespace Rhinox.XR.Grapple.It
             // -Reposition projected point to center line of min and max radius'
             // -check if distance between this point and joint position is within tollerance radius
 
-            Vector3 projectedJoint = joint.JointPosition.ProjectOnPlaneAndTranslate(transform.position, -transform.forward);
+            Vector3 projectedJoint =
+                joint.JointPosition.ProjectOnPlaneAndTranslate(transform.position, -transform.forward);
             float dstValveToPrjJointSqr = transform.position.SqrDistanceTo(projectedJoint);
-            bool isInRange = dstValveToPrjJointSqr >= _minRadius * _minRadius && dstValveToPrjJointSqr <= _maxRadius * _maxRadius;
+            bool isInRange = dstValveToPrjJointSqr >= _minRadius * _minRadius &&
+                             dstValveToPrjJointSqr <= _maxRadius * _maxRadius;
             //early return if not inside annulus (min and max radius)
             if (!isInRange)
                 return IsGrabbed;
 
             //calculate worldposition of projected point in center of min and max range of annulus.
-            Vector3 prjPointCenterAnnulus = ((projectedJoint - transform.position).normalized * _grabRadius) + transform.position;
+            Vector3 prjPointCenterAnnulus =
+                ((projectedJoint - transform.position).normalized * _grabRadius) + transform.position;
             //float dst2 = MathF.Abs(prjPointCenterAnnulus.SqrDistanceTo(joint.JointPosition));
             float dstRecenterdPointToJointSqr = MathF.Abs(prjPointCenterAnnulus.SqrDistanceTo(joint.JointPosition));
-            isInRange &= dstRecenterdPointToJointSqr <= _grabTolaranceRadius * _grabTolaranceRadius;
+            isInRange &= dstRecenterdPointToJointSqr <= _grabToleranceRadius * _grabToleranceRadius;
 
             if (isInRange)
                 _interactingJoint = joint;
@@ -199,7 +300,8 @@ namespace Rhinox.XR.Grapple.It
             return IsGrabbed;
         }
 
-        public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint, RhinoxHand hand)
+        public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint,
+            RhinoxHand hand)
         {
             outJoint = joints.FirstOrDefault(x => x.JointID == _forcedInteractJointID);
             return outJoint != null;
@@ -259,20 +361,21 @@ namespace Rhinox.XR.Grapple.It
                 if (_currentValveRotation >= _fullyClosedAngle)
                 {
                     _currentValveRotation = _fullyClosedAngle;
-                    OnFullyClosed?.Invoke(this);
+                    FullyClosed?.Invoke(this);
                 }
                 else if (_currentValveRotation <= _fullyOpenAngle)
                 {
                     _currentValveRotation = _fullyOpenAngle;
-                    OnFullyOpen?.Invoke(this);
+                    FullyOpen?.Invoke(this);
                 }
 
                 _grabbedVec = _interactingJoint.JointPosition - transform.position;
 
-                OnValueUpdate?.Invoke(this, _currentValveRotation);
+                ValueUpdated?.Invoke(this, _currentValveRotation);
 
                 //ROTATE VISUAL
-                _visualTransform.localEulerAngles = _visualTransform.localEulerAngles.With(null, null, _currentValveRotation);
+                _visualTransform.localEulerAngles =
+                    _visualTransform.localEulerAngles.With(null, null, _currentValveRotation);
             }
         }
 
@@ -288,52 +391,9 @@ namespace Rhinox.XR.Grapple.It
                 using (new eUtility.GizmoColor(0f, 1f, 0f, .5f))
                 {
                     GizmoExtensions.DrawSolidAnnulus(trans.position, trans.right, -trans.forward,
-                    _grabRadius - _grabTolaranceRadius, _grabRadius + _grabTolaranceRadius, true, 12);
-                    //GizmoExtensions.DrawSolidArc(transform.position, -transform.up, transform.right, .5f, 480f, true, 40);
-                    //GizmoExtensions.DrawSolidTorus(trans.position, trans.right, -trans.forward, _grabRadius, _grabTolaranceRadius);
-                    //GizmoExtensions.DrawWireTorus(trans.position, trans.right, -trans.forward, _grabRadius, _grabTolaranceRadius);
+                        _grabRadius - _grabToleranceRadius, _grabRadius + _grabToleranceRadius, true, 12);
                 }
             }
-            if (_TEST == null)
-                return;
-
-            //Vector3 joint = _TEST.transform.position;
-            //Gizmos.DrawSphere(joint, 0.01f);
-
-            //var projectedJoint = joint.ProjectOnPlaneAndTranslate(transform.position, -transform.forward);
-            //float dstValveToPrjJointSqr = transform.position.SqrDistanceTo(projectedJoint);
-
-            //float minRadius = _grabRadius - _grabTolaranceRadius;
-            //float maxRadius = _grabRadius + _grabTolaranceRadius;
-            //bool isInRange = dstValveToPrjJointSqr >= minRadius * minRadius && dstValveToPrjJointSqr <= maxRadius * maxRadius;
-
-
-            //var s = ((projectedJoint - transform.position).normalized * _grabRadius) + transform.position;
-            //float dst2 = MathF.Abs(s.SqrDistanceTo(joint));
-            //bool isInRange2 = dst2 <= _grabTolaranceRadius * _grabTolaranceRadius;
-
-
-            //if (isInRange && isInRange2)
-            //{
-            //    using (new eUtility.GizmoColor(0f, 1f, 0f, .5f))
-            //    {
-            //        Gizmos.DrawSphere(s, 0.005f);
-            //    }
-            //}
-            //else if (isInRange || isInRange2)
-            //{
-            //    using (new eUtility.GizmoColor(1f, 1f, 0f, .5f))
-            //    {
-            //        Gizmos.DrawSphere(s, 0.005f);
-            //    }
-            //}
-            //else
-            //{
-            //    using (new eUtility.GizmoColor(1f, 0f, 0f, .5f))
-            //    {
-            //        Gizmos.DrawSphere(s, 0.005f);
-            //    }
-            //}
         }
 
         private void Reset()
