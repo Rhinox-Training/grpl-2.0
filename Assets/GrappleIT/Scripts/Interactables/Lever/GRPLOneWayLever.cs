@@ -228,6 +228,13 @@ namespace Rhinox.XR.Grapple.It
             return State == GRPLInteractionState.Interacted;
         }
 
+        /// <summary>
+        /// Returns the current interact joint, if it is found.
+        /// </summary>
+        /// <param name="joints">The joints on the current hand.</param>
+        /// <param name="joint">An out parameter holding the interaction joint.</param>
+        /// <param name="hand">The current hand.</param>
+        /// <returns>Whether an interact joint was found.</returns>
         public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint joint,
             RhinoxHand hand)
         {
@@ -240,6 +247,9 @@ namespace Rhinox.XR.Grapple.It
         // EDITOR ONLY METHODS
         //-----------------------
 #if UNITY_EDITOR
+        /// <summary>
+        /// Draws the desired gizmos.
+        /// </summary>
         protected override void OnDrawGizmos()
         {
             base.OnDrawGizmos();

@@ -31,11 +31,6 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField]//TODO: ASK SENSIORS
         [HideIfField(false, nameof(_useCollidersInsteadOfBoundingBox))]
         private List<Collider> _boundColliders;
-        //private Collider[] _boundColliders;
-
-
-        //[Conditional(nameof(_useCollidersInsteadOfBoundingBox))]
-
 
         public bool IsGrabbed { get; protected set; } = false;
 

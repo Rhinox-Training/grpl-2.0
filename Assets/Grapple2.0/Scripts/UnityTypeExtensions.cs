@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.XR.Hands;
 
 /// <summary>
-/// Contains extensions for Unity types.
+/// This static class contains additional extension methods for Unity types.
 /// </summary>
 public static class UnityTypeExtensions
 {

@@ -133,6 +133,9 @@ namespace Rhinox.XR.Grapple.It
         /// </summary>
         private bool _canHandGrabR = false;
 
+        /// <summary>
+        /// Sets _forceInteractibleJoint to true and sets the correct _forcedInteractJointID.
+        /// </summary>
         protected void Awake()
         {
             _forceInteractibleJoint = true;
@@ -208,6 +211,9 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
+        /// <summary>
+        /// Subscribes the needed events.
+        /// </summary>
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -228,6 +234,9 @@ namespace Rhinox.XR.Grapple.It
             }
         }
 
+        /// <summary>
+        /// Unsubscribes the needed events.
+        /// </summary>
         protected override void OnDisable()
         {
             base.OnDisable();
@@ -300,6 +309,13 @@ namespace Rhinox.XR.Grapple.It
             return IsGrabbed;
         }
 
+        /// <summary>
+        /// Returns the current interact joint, if it is found.
+        /// </summary>
+        /// <param name="joints">The joints on the current hand.</param>
+        /// <param name="outJoint">An out parameter holding the interaction joint.</param>
+        /// <param name="hand">The current hand.</param>
+        /// <returns>Whether an interact joint was found.</returns>
         public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint,
             RhinoxHand hand)
         {

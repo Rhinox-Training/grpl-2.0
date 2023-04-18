@@ -104,12 +104,18 @@ namespace Rhinox.XR.Grapple.It
         /// </summary>
         public bool ShouldPerformInteractCheck { set; get; } = true;
 
+        /// <summary>
+        /// Calls the Initialize method and invoke the InteractableCreated event.
+        /// </summary>
         protected virtual void Start()
         {
             Initialize();
             InteractableCreated?.Invoke(this);
         }
 
+        /// <summary>
+        /// Invokes the InteractableDestroyed event and calls the Destroyed methods.
+        /// </summary>
         protected virtual void OnDestroy()
         {
             InteractableDestroyed?.Invoke(this);
@@ -129,8 +135,14 @@ namespace Rhinox.XR.Grapple.It
         {
         }
 
+        /// <summary>
+        /// Sets the state of this interactable to active.
+        /// </summary>
         protected virtual void OnEnable() => _state = GRPLInteractionState.Active;
 
+        /// <summary>
+        /// Sets the state of this interactable to disabled.
+        /// </summary>
         protected virtual void OnDisable() => _state = GRPLInteractionState.Disabled;
 
         /// <summary>
@@ -166,10 +178,22 @@ namespace Rhinox.XR.Grapple.It
             _state = newState;
         }
 
+        /// <summary>
+        /// Invokes the OnInteractStarted event.
+        /// </summary>
         protected virtual void InteractStarted() => OnInteractStarted?.Invoke(this);
+        /// <summary>
+        /// Invokes the OnInteractEnded event.
+        /// </summary>
         protected virtual void InteractStopped() => OnInteractEnded?.Invoke(this);
 
+        /// <summary>
+        /// Invokes the OnProximityStarted event. 
+        /// </summary>
         protected virtual void ProximityStarted() => OnProximityStarted?.Invoke(this);
+        /// <summary>
+        /// Invokes the OnProximityStopped event.
+        /// </summary>
         protected virtual void ProximityStopped() => OnProximityEnded?.Invoke(this);
 
         /// <summary>
