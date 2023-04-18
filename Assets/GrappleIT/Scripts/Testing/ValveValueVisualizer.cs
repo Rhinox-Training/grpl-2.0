@@ -14,20 +14,19 @@ public class ValveValueVisualizer : MonoBehaviour
         //if (_screen != null)
         //    _screen.text = (_sliderInteractable.SliderValue * 100f).ToString("0.00") + "%";
 
-        _valve.OnValueUpdate += SliderUpdate;
+        _valve.OnValueUpdate += ValveUpdate;
     }
 
     private void OnDisable()
     {
-        _valve.OnValueUpdate -= SliderUpdate;
+        _valve.OnValueUpdate -= ValveUpdate;
     }
 
-    private void SliderUpdate(GRPLValve obj, float value)
+    private void ValveUpdate(GRPLValve _, ValveState __, float value)
     {
         if (_screen != null)
         {
             _screen.text = value.ToString("0.00") + " deg";
-            //_screen.color = Color.Lerp(Color.red, Color.green, value);
         }
     }
 }

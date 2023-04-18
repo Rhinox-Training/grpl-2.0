@@ -20,7 +20,7 @@ public class PercentageVisualizer : MonoBehaviour
         _sliderInteractable.OnValueUpdate -= SliderUpdate;
     }
 
-    private void SliderUpdate(float value)
+    private void SliderUpdate(GRPLUISliderInteractable slider, float value)
     {
         if (_screen != null)
         {

@@ -12,11 +12,11 @@ namespace Rhinox.XR.Grapple.It
     /// <dependencies> <see cref="GRPLJointManager"/> </dependencies>
     public class GRPLInteractableManager : Singleton<GRPLInteractableManager>
     {
-        [Header("Proximate detection parameters")] [SerializeField]
-        private int _maxAmountOfProximatesPerHand = 3;
-        
-        [Header("Interactible Groups")] [SerializeField]
-        private List<GRPLInteractibleGroup> _interactibleGroups;
+        [Header("Proximate detection parameters")]
+        [SerializeField] private int _maxAmountOfProximatesPerHand = 3;
+
+        [Header("Interactible Groups")]
+        [SerializeField] private List<GRPLInteractibleGroup> _interactibleGroups;
 
         public event Action<RhinoxHand, GRPLInteractable> InteractibleInteractionCheckPaused;
         public event Action<RhinoxHand, GRPLInteractable> InteractibleInteractionCheckResumed;
@@ -90,7 +90,7 @@ namespace Rhinox.XR.Grapple.It
                         proximate.SetState(GRPLInteractionState.Proximate);
                     continue;
                 }
-                
+
                 // Check if an interaction is happening
                 bool isInteracted = proximate.CheckForInteraction(interactJoint, hand);
 
@@ -107,7 +107,7 @@ namespace Rhinox.XR.Grapple.It
                 }
             }
         }
-        
+
         /// <summary>
         /// Checks if interaction checks should happen for this proximate. Also bakes the mesh if that is enabled.
         /// </summary>
@@ -195,7 +195,7 @@ namespace Rhinox.XR.Grapple.It
                 // Add it to the list and continue
                 if (newProximateInteractables.Count < _maxAmountOfProximatesPerHand)
                 {
-                    newProximateInteractables.Add(sqrDistance, interactable);
+                    newProximateInteractables.TryAdd(sqrDistance, interactable);
                     continue;
                 }
 
@@ -207,7 +207,7 @@ namespace Rhinox.XR.Grapple.It
                 {
                     // Replace it in the list
                     newProximateInteractables.Remove(furthestKey);
-                    newProximateInteractables.Add(sqrDistance, interactable);
+                    newProximateInteractables.TryAdd(sqrDistance, interactable);
                 }
             }
 

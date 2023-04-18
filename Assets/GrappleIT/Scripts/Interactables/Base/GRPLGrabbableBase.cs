@@ -1,8 +1,10 @@
 using Rhinox.Lightspeed;
 using Rhinox.Perceptor;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.XR;
 using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple.It
@@ -36,6 +38,9 @@ namespace Rhinox.XR.Grapple.It
 
         //[Conditional(nameof(_useCollidersInsteadOfBoundingBox))]
 
+
+        public event Action<GRPLGrabbableBase, RhinoxHand> OnGrabbed;
+        public event Action<GRPLGrabbableBase, RhinoxHand> OnDropped;
 
         public bool IsGrabbed { get; protected set; } = false;
 
@@ -91,8 +96,6 @@ namespace Rhinox.XR.Grapple.It
                 _bounds = gameObject.GetObjectBounds();
                 _bounds.extents += _boundingBoxExtensionValues;
             }
-
-            //_rigidBody = MonoBehaviourExtensions.GetOrAddComponent<Rigidbody>(this);
 
             if (TryGetComponent(out _rigidBody))
             {
@@ -196,6 +199,28 @@ namespace Rhinox.XR.Grapple.It
         //=========
         //OVERRIDES
         //=========
+        protected override void InteractStarted()
+        {
+            OnGrabbed?.Invoke(this, _currentHandHolding);
+
+            base.InteractStarted();
+        }
+
+        protected override void InteractStopped()
+        {
+            OnDropped?.Invoke(this, _currentHandHolding);
+
+            base.InteractStopped();
+        }
+
+        protected override void ProximityStopped()
+        {
+            _canHandGrabL = false;
+            _canHandGrabR = false;
+
+            base.ProximityStopped();
+        }
+
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
             switch (hand)
@@ -277,7 +302,7 @@ namespace Rhinox.XR.Grapple.It
         //PROTECTED METHODS
         //=================
         //save and change the rigidbody settings so it can properly move along with the handand it is now attached to
-        protected virtual void GrabInternal(GameObject parent, RhinoxHand rhinoxHand)
+        protected virtual void GrabInternal(GameObject parent, RhinoxHand hand)
         {
             if (!_isValid)
                 return;
@@ -304,6 +329,19 @@ namespace Rhinox.XR.Grapple.It
             _rigidBody.useGravity = _hadGravity;
 
             gameObject.transform.parent = _previousParentTransform;
+
+            //switch (_currentHandHolding)
+            //{
+            //    case RhinoxHand.Left:
+            //        _canHandGrabL = false;
+            //        break;
+            //    case RhinoxHand.Right:
+            //        _canHandGrabR = false;
+            //        break;
+            //    case RhinoxHand.Invalid:
+            //    default:
+            //        break;
+            //}
 
             IsGrabbed = false;
         }

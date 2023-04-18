@@ -83,6 +83,8 @@ namespace Rhinox.XR.Grapple.It
         private Coroutine _stopVisualCoroutine = null;
 
         private LimitedQueue<Vector3> _teleportPositions = new LimitedQueue<Vector3>(5);
+        private Quaternion _TeleportAnchorOrientation = Quaternion.identity;
+
         private GameObject _sensorObjL = null;
         private GameObject _sensorObjR = null;
         private GRPLTriggerSensor _proxySensorL = null;
@@ -360,7 +362,7 @@ namespace Rhinox.XR.Grapple.It
                                              _teleportPositions.Average(vec => vec.y),
                                              _teleportPositions.Average(vec => vec.z));
 
-                _teleportZoneVisual.transform.position = _avgTeleportPoint;
+                _teleportZoneVisual.transform.SetPositionAndRotation(_avgTeleportPoint, _TeleportAnchorOrientation);
                 _teleportZoneVisual.SetActive(true);
             }
             else
@@ -405,6 +407,7 @@ namespace Rhinox.XR.Grapple.It
                         {
                             _teleportPositions.Clear();
                             _teleportPositions.Enqueue(teleportAnchor.AnchorTransform.position);
+                            _TeleportAnchorOrientation = teleportAnchor.AnchorTransform.rotation;
                             _isValidTeleportPoint = true;
                         }
                         else
@@ -432,8 +435,10 @@ namespace Rhinox.XR.Grapple.It
         /// <returns>Returns <see langword="true"/> if the given point is on the navmesh</returns>
         private bool CheckAndAddIfPointOnNavmesh(Vector3 pos)
         {
+            _TeleportAnchorOrientation = Quaternion.identity;
+
             //adding .5f to the y axis to avoid the problem of the position is at the same level as the navmesh making the navmesh raycast fail
-            if (NavMesh.SamplePosition(new Vector3(pos.x, pos.y + .5f, pos.z), out var info, 1f, _teleportableNavMeshAreas))//1 << NavMesh.GetAreaFromName("Teleportable")))
+            if (NavMesh.SamplePosition(new Vector3(pos.x, pos.y + .5f, pos.z), out _, 1f, _teleportableNavMeshAreas))//1 << NavMesh.GetAreaFromName("Teleportable")))
             {
                 _teleportPositions.Enqueue(pos);
                 return true;
@@ -449,7 +454,7 @@ namespace Rhinox.XR.Grapple.It
             if (_isOnCooldown || !_isValidTeleportPoint)
                 return;//could call even for failed teleport
 
-            gameObject.transform.position = _avgTeleportPoint;
+            gameObject.transform.SetPositionAndRotation(_avgTeleportPoint, _TeleportAnchorOrientation);
 
             _lineRenderer.startColor = Color.red;
             _lineRenderer.endColor = Color.red;

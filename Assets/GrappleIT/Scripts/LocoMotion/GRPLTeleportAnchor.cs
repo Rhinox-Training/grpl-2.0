@@ -15,7 +15,7 @@ public class GRPLTeleportAnchor : MonoBehaviour
 
     private void Start()
     {
-        if (_anchorPointTransform)
+        if (_anchorPointTransform == null)
             PLog.Warn<GRPLITLogger>($"[GRPLTeleportAnchor:Start], Anchor Point Transform was NULL!", this);
     }
 
@@ -36,7 +36,7 @@ public class GRPLTeleportAnchor : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmos()
+    private void OnDrawGizmosSelected()
     {
         if (_anchorPointTransform != null)
         {

@@ -11,7 +11,7 @@ namespace Rhinox.XR.Grapple.It
     {
         [Header("Delayed activation parameters")]
         [SerializeField] private bool _delayInteractibleReactivation = true;
-        [SerializeField] private float _delayInteractibleReactivationTime = 0.25f;
+        [SerializeField][HideIfField(false, nameof(_delayInteractibleReactivation))] private float _delayInteractibleReactivationTime = 0.25f;
 
         private List<GRPLInteractable> _interactables;
         private GRPLInteractable _currentInteractedObject;

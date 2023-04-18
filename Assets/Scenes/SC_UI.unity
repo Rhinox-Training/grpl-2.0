@@ -6318,7 +6318,6 @@ GameObject:
   - component: {fileID: 1830188013}
   - component: {fileID: 1830188012}
   - component: {fileID: 1830188011}
-  - component: {fileID: 1830188010}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -6326,20 +6325,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1830188010
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1830188009}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5542bb0dda26e994ca289baab453f344, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _enableSocketing: 1
-  _handLayer: 3
 --- !u!114 &1830188011
 MonoBehaviour:
   m_ObjectHideFlags: 0

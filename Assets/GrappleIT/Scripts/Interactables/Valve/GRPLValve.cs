@@ -9,9 +9,19 @@ using UnityEngine.XR.Hands;
 
 namespace Rhinox.XR.Grapple.It
 {
+    public enum ValveState
+    {
+        GreyZone,
+        FullyOpen,
+        FullyClosed
+    }
+
     /// <summary>
     /// This is a valve interactable.<br />
-    /// 
+    /// This has 3 events that get invoked:<br />
+    /// - Fully closed<br />
+    /// - Fully open<br />
+    /// - Updated value
     /// </summary>
     /// <remarks>Only one hand can interact with it at the same time.</remarks>
     /// <dependencies><see cref="GRPLJointManager"/><br /><see cref="GRPLGestureRecognizer"/></dependencies>
@@ -21,7 +31,6 @@ namespace Rhinox.XR.Grapple.It
         [Header("Valve Settings")]
         [Space(5f)]
         [SerializeField] private Transform _visualTransform = null;
-        [SerializeField] private GameObject _TEST = null;
 
         [Header("Grab parameters")]
         [SerializeField] private string _grabGestureName = "Grab";
@@ -29,19 +38,21 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField][Range(0f, .25f)] private float _grabTolaranceRadius = .025f;
 
         [Header("Valve Settings")]
-        [SerializeField] float _fullyOpenAngle = 0f;
-        [SerializeField] float _fullyClosedAngle = 360f;
+        [SerializeField] private float _fullyOpenAngle = 0f;
+        [SerializeField] private float _fullyClosedAngle = 360f;
 
         [Header("Gizmos")]
-        [SerializeField] bool _drawGizmos = true;
+        [SerializeField] private bool _drawGrabRange = true;
 
         public bool IsGrabbed { get; protected set; } = false;
         public float CurrentValveRotation => _currentValveRotation;
 
+        public ValveState CurrentValveState => _currentValveState;
+
         //righty tighty, lefty loosey
         public Action<GRPLValve> OnFullyClosed;
         public Action<GRPLValve> OnFullyOpen;
-        public Action<GRPLValve, float> OnValueUpdate;
+        public Action<GRPLValve, ValveState, float> OnValueUpdate;
 
 
         private static GRPLJointManager _jointManager = null;
@@ -49,7 +60,10 @@ namespace Rhinox.XR.Grapple.It
         private RhinoxGesture _grabGesture = null;
         private RhinoxHand _currentHandHolding = RhinoxHand.Invalid;
 
+        private ValveState _currentValveState = ValveState.GreyZone;
+
         private Vector3 _grabbedVec = Vector3.positiveInfinity;
+        //private Joint _previousInteractJoint;
 
         private float _minRadius = 0f;
         private float _maxRadius = 0f;
@@ -77,9 +91,15 @@ namespace Rhinox.XR.Grapple.It
 
             float currentRot = _visualTransform.localEulerAngles.z;
             if (currentRot > _fullyClosedAngle)
+            {
+                _currentValveState = ValveState.FullyClosed;
                 _visualTransform.localEulerAngles.With(null, null, _fullyClosedAngle);
+            }
             else if (currentRot < _fullyOpenAngle)
+            {
+                _currentValveState = ValveState.FullyOpen;
                 _visualTransform.localEulerAngles.With(null, null, _fullyOpenAngle);
+            }
 
             _currentValveRotation = _visualTransform.localEulerAngles.z;
 
@@ -212,6 +232,26 @@ namespace Rhinox.XR.Grapple.It
             base.InteractStopped();
         }
 
+        public override bool ShouldInteractionCheckStop()
+        {
+            if (State != GRPLInteractionState.Interacted)
+                return false;
+
+            if (_interactingJoint.JointPosition.SqrDistanceTo(transform.position) <= ProximateRadius * ProximateRadius)
+            {
+                ShouldPerformInteractCheck = false;
+                return true;
+            }
+
+            ShouldPerformInteractCheck = true;
+            return false;
+        }
+
+        public override Transform GetReferenceTransform()
+        {
+            return _visualTransform;
+        }
+
         /// <summary>
         /// Function that allows external code to grab the valve if given hand is in range.
         /// </summary>
@@ -252,6 +292,10 @@ namespace Rhinox.XR.Grapple.It
                 float dAngle = Vector3.SignedAngle(_grabbedVec,
                     (_interactingJoint.JointPosition - transform.position), -transform.forward);
 
+                //if the value didn't change then don't update it
+                if (Mathf.Abs(dAngle) <= float.Epsilon)
+                    return;
+
                 //apply the delta rotation to total
                 //and clamp to given max values
                 //if max value is hit event will be invoked.
@@ -259,17 +303,27 @@ namespace Rhinox.XR.Grapple.It
                 if (_currentValveRotation >= _fullyClosedAngle)
                 {
                     _currentValveRotation = _fullyClosedAngle;
-                    OnFullyClosed?.Invoke(this);
+
+                    if (_currentValveState != ValveState.FullyClosed)
+                        OnFullyClosed?.Invoke(this);
+
+                    _currentValveState = ValveState.FullyClosed;
                 }
                 else if (_currentValveRotation <= _fullyOpenAngle)
                 {
                     _currentValveRotation = _fullyOpenAngle;
-                    OnFullyOpen?.Invoke(this);
+
+                    if (_currentValveState != ValveState.FullyOpen)
+                        OnFullyOpen?.Invoke(this);
+
+                    _currentValveState = ValveState.FullyOpen;
                 }
+                else
+                    _currentValveState = ValveState.GreyZone;
 
                 _grabbedVec = _interactingJoint.JointPosition - transform.position;
 
-                OnValueUpdate?.Invoke(this, _currentValveRotation);
+                OnValueUpdate?.Invoke(this, _currentValveState, _currentValveRotation);
 
                 //ROTATE VISUAL
                 _visualTransform.localEulerAngles = _visualTransform.localEulerAngles.With(null, null, _currentValveRotation);
@@ -281,59 +335,19 @@ namespace Rhinox.XR.Grapple.It
         {
             base.OnDrawGizmos();
 
-            if (_drawGizmos)
+            if (_drawGrabRange)
             {
                 var trans = transform;
 
                 using (new eUtility.GizmoColor(0f, 1f, 0f, .5f))
                 {
-                    GizmoExtensions.DrawSolidAnnulus(trans.position, trans.right, -trans.forward,
-                    _grabRadius - _grabTolaranceRadius, _grabRadius + _grabTolaranceRadius, true, 12);
+                    //GizmoExtensions.DrawSolidAnnulus(trans.position, trans.right, -trans.forward,
+                    //_grabRadius - _grabTolaranceRadius, _grabRadius + _grabTolaranceRadius, true, 12);
                     //GizmoExtensions.DrawSolidArc(transform.position, -transform.up, transform.right, .5f, 480f, true, 40);
-                    //GizmoExtensions.DrawSolidTorus(trans.position, trans.right, -trans.forward, _grabRadius, _grabTolaranceRadius);
+                    GizmoExtensions.DrawSolidTorus(trans.position, trans.right, -trans.forward, _grabRadius, _grabTolaranceRadius);
                     //GizmoExtensions.DrawWireTorus(trans.position, trans.right, -trans.forward, _grabRadius, _grabTolaranceRadius);
                 }
             }
-            if (_TEST == null)
-                return;
-
-            //Vector3 joint = _TEST.transform.position;
-            //Gizmos.DrawSphere(joint, 0.01f);
-
-            //var projectedJoint = joint.ProjectOnPlaneAndTranslate(transform.position, -transform.forward);
-            //float dstValveToPrjJointSqr = transform.position.SqrDistanceTo(projectedJoint);
-
-            //float minRadius = _grabRadius - _grabTolaranceRadius;
-            //float maxRadius = _grabRadius + _grabTolaranceRadius;
-            //bool isInRange = dstValveToPrjJointSqr >= minRadius * minRadius && dstValveToPrjJointSqr <= maxRadius * maxRadius;
-
-
-            //var s = ((projectedJoint - transform.position).normalized * _grabRadius) + transform.position;
-            //float dst2 = MathF.Abs(s.SqrDistanceTo(joint));
-            //bool isInRange2 = dst2 <= _grabTolaranceRadius * _grabTolaranceRadius;
-
-
-            //if (isInRange && isInRange2)
-            //{
-            //    using (new eUtility.GizmoColor(0f, 1f, 0f, .5f))
-            //    {
-            //        Gizmos.DrawSphere(s, 0.005f);
-            //    }
-            //}
-            //else if (isInRange || isInRange2)
-            //{
-            //    using (new eUtility.GizmoColor(1f, 1f, 0f, .5f))
-            //    {
-            //        Gizmos.DrawSphere(s, 0.005f);
-            //    }
-            //}
-            //else
-            //{
-            //    using (new eUtility.GizmoColor(1f, 0f, 0f, .5f))
-            //    {
-            //        Gizmos.DrawSphere(s, 0.005f);
-            //    }
-            //}
         }
 
         private void Reset()

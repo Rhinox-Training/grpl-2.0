@@ -1,6 +1,5 @@
 using Rhinox.Lightspeed.Collections;
 using Rhinox.XR.Grapple.It;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,6 +14,8 @@ public class ObjectReseter : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
+
         foreach (var obj in _objects)
         {
             _transforms.Add(obj.transform.position, obj.transform.rotation);

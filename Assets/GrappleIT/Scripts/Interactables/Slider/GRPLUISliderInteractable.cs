@@ -16,19 +16,26 @@ namespace Rhinox.XR.Grapple.It
     /// <dependencies>Unity's built in<see cref="Slider"/></dependencies>
     public class GRPLUISliderInteractable : GRPLInteractable
     {
+        [Header("Handle Fade settings")]
         [SerializeField] float _fadeInDuration = .15f;
         [SerializeField] float _fadeOutDuration = .5f;
 
+#if UNITY_EDITOR
+        [Header("Gizmo")]
+        [SerializeField] private bool _showBoundingBox;
+#endif
+
         [Header("Transforms")]
         [SerializeField] private Transform _handleTransform;
-        
+
         public float SliderValue => _slider.value;
-        public event Action<float> OnValueUpdate;
+        public event Action<GRPLUISliderInteractable, float> OnValueUpdate;
 
         private Bounds _pressBounds;
         private Slider _slider;
         private Vector3[] _corners = new Vector3[4];
         private float _sliderWitdth = 0f;
+        private float _sliderHeight = 0f;
 
         private Coroutine _fadeCorotine;
         private Image _handleImage = null;
@@ -62,6 +69,7 @@ namespace Rhinox.XR.Grapple.It
         {
             var trans = (RectTransform)transform;
             _sliderWitdth = trans.sizeDelta.x;
+            _sliderHeight = trans.sizeDelta.y;
 
             if (trans != null)
             {
@@ -84,7 +92,7 @@ namespace Rhinox.XR.Grapple.It
                 _pressBounds = new Bounds()
                 {
                     center = transform.position,
-                    extents = new Vector3(maxX - minX, maxY - minY, maxZ - minZ)
+                    size = new Vector3(maxX - minX, maxY - minY, maxZ - minZ)
                 };
             }
         }
@@ -124,8 +132,7 @@ namespace Rhinox.XR.Grapple.It
             {
                 var val = CalculateSliderValueFromSliderDirection(joint.JointPosition);
                 _slider.value = val;
-                OnValueUpdate?.Invoke(_slider.value);
-
+                OnValueUpdate?.Invoke(this, _slider.value);
                 _previousInteractJoint = joint;
                 return true;
             }
@@ -143,9 +150,11 @@ namespace Rhinox.XR.Grapple.It
             var projectedJointOnPlane = Vector3.ProjectOnPlane(jointPos, -transform.forward);
             var projectedPointInLocalSpace = transform.InverseTransformPoint(projectedJointOnPlane);
 
-            _slider.handleRect.GetChild(0).transform.SetLocalPosition(0f, projectedPointInLocalSpace.y, 0f);
+            float handYPos = Mathf.Clamp(projectedPointInLocalSpace.y, _sliderHeight * -.5f, _sliderHeight * .5f);
 
-            return projectedPointInLocalSpace.x.Map(_sliderWitdth * -.5f, _sliderWitdth * .5f, 0f, 1f);
+            _slider.handleRect.GetChild(0).transform.SetLocalPosition(0f, handYPos, 0f);
+
+            return Mathf.Clamp01(projectedPointInLocalSpace.x.Map(_sliderWitdth * -.5f, _sliderWitdth * .5f, 0f, 1f));
         }
 
         public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint,
@@ -179,7 +188,7 @@ namespace Rhinox.XR.Grapple.It
             if (State != GRPLInteractionState.Interacted)
                 return false;
 
-            // Check if the joint pos is in front of the plane that is defined by the button
+            // Check if the joint pos is in front of the plane that is defined by the Slider
             if (!InteractableMathUtils.IsPositionInFrontOfPlane(_previousInteractJoint.JointPosition,
                                                                 transform.position, -transform.forward))
             {
@@ -187,7 +196,7 @@ namespace Rhinox.XR.Grapple.It
 
                 var val = CalculateSliderValueFromSliderDirection(_previousInteractJoint.JointPosition);
                 _slider.value = val;
-                OnValueUpdate?.Invoke(_slider.value);
+                OnValueUpdate?.Invoke(this, _slider.value);
 
                 return true;
             }
@@ -235,5 +244,17 @@ namespace Rhinox.XR.Grapple.It
             if (isFadeIn)
                 _fadeCorotine = StartCoroutine(Fade(false));
         }
+
+#if UNITY_EDITOR
+        protected override void OnDrawGizmos()
+        {
+            base.OnDrawGizmos();
+
+            if (_showBoundingBox)
+            {
+                Gizmos.DrawWireCube(transform.position, _pressBounds.size);
+            }
+        }
+#endif
     }
 }
