@@ -1,9 +1,0 @@
-title: Grapple 2.0 documentation
-description: A starter template for a Jeykll site using the Just the Docs theme!
-theme: just-the-docs
-
-url: https://tris666w.github.io/temp
-
-mermaid:
-    version: "10.1.0"
-
