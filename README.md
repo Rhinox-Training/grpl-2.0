@@ -13,7 +13,7 @@ are:
 - Hand visualization
 - Extension methods for Unity types
 
-To have a look at the documentation of Grapple Core, click [here](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_Core/core.html)
+To have a look at the documentation and installation guide of Grapple Core, click [here](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_Core/core.html)
 
 ## Grapple Interaction Toolkit
 The Grapple Interaction Toolkit provides functionality to create interactive experiences in Unity. The main features of
