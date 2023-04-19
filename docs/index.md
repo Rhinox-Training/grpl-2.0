@@ -18,7 +18,7 @@ These are:
 - Hand visualization
 - Extension methods for Unity types
 
-To have a look at the documentation of Grapple Core, [click here](/pages/GRPL_Core/Core)
+To have a look at the documentation of Grapple Core, [click here](pages/GRPL_Core/Core)
 
 ## Grapple interaction toolkit
 The Grapple Interaction Toolkit provides functionality to create interactive experiences in Unity.
@@ -29,4 +29,4 @@ The main features of the Grapple IT package are:
 - 3D math functions.
 - Gizmo extension to generate 3D shapes in the scene view.
 
-To have a look at the documentation of Grapple Interaction Toolkit, [click here](/pages/GRPL_IT/GrappleIT)
+To have a look at the documentation of Grapple Interaction Toolkit, [click here](pages/GRPL_IT/GrappleIT)
