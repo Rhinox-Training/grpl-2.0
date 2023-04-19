@@ -18,7 +18,7 @@ These are:
 - Hand visualization
 - Extension methods for Unity types
 
-To have a look at the documentation of Grapple Core, [click here](pages/GRPL_Core/Core)
+To have a look at the documentation of Grapple Core, [click here](pages/GRPL_Core/core)
 
 ## Grapple interaction toolkit
 The Grapple Interaction Toolkit provides functionality to create interactive experiences in Unity.
