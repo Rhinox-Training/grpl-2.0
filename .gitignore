@@ -86,3 +86,6 @@ crashlytics-build.properties
 # VS editor config file
 .editorconfig
 *.orig.meta
+
+# jekyll site folder
+/docs/_site/*
