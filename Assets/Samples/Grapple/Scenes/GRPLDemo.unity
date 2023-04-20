@@ -2809,7 +2809,7 @@ MonoBehaviour:
   _grabGestureName: Grab
   _useCollidersInsteadOfBoundingBox: 0
   _showBoundingBox: 1
-  _boundingBoxExtensionValues: {x: 0.035, y: 0.035, z: 0.035}
+  _boundingBoxExtensionValues: {x: 0.045, y: 0.045, z: 0.045}
   _boundColliders: []
 --- !u!1 &395858224
 GameObject:
@@ -3056,7 +3056,7 @@ MonoBehaviour:
   _grabGestureName: Grab
   _useCollidersInsteadOfBoundingBox: 1
   _showBoundingBox: 1
-  _boundingBoxExtensionValues: {x: 0.035, y: 0.035, z: 0.035}
+  _boundingBoxExtensionValues: {x: 0.045, y: 0.045, z: 0.045}
   _boundColliders:
   - {fileID: 712534410}
   - {fileID: 442420952}
@@ -3657,8 +3657,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.1, y: 0.06, z: 0.18}
-  m_Center: {x: 0, y: 0.07, z: 0}
+  m_Size: {x: 0.125, y: 0.08, z: 0.18}
+  m_Center: {x: 0, y: 0.08, z: 0}
 --- !u!1 &458834896
 GameObject:
   m_ObjectHideFlags: 0
@@ -4989,7 +4989,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.15, y: 0.15, z: 0.13}
+  m_Size: {x: 0.175, y: 0.175, z: 0.15}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &732249282
 GameObject:
@@ -5644,7 +5644,7 @@ MonoBehaviour:
   _grabGestureName: Grab
   _useCollidersInsteadOfBoundingBox: 0
   _showBoundingBox: 1
-  _boundingBoxExtensionValues: {x: 0.035, y: 0.035, z: 0.035}
+  _boundingBoxExtensionValues: {x: 0.045, y: 0.045, z: 0.045}
   _boundColliders: []
 --- !u!1 &835542198
 GameObject:
@@ -8342,7 +8342,7 @@ MonoBehaviour:
   _grabGestureName: Grab
   _useCollidersInsteadOfBoundingBox: 0
   _showBoundingBox: 1
-  _boundingBoxExtensionValues: {x: 0.035, y: 0.035, z: 0.035}
+  _boundingBoxExtensionValues: {x: 0.045, y: 0.045, z: 0.045}
   _boundColliders: []
 --- !u!1 &1204014851
 GameObject:
@@ -13710,7 +13710,7 @@ MonoBehaviour:
   _grabGestureName: Grab
   _useCollidersInsteadOfBoundingBox: 0
   _showBoundingBox: 1
-  _boundingBoxExtensionValues: {x: 0.035, y: 0.035, z: 0.035}
+  _boundingBoxExtensionValues: {x: 0.045, y: 0.045, z: 0.045}
   _boundColliders: []
 --- !u!1 &1874004869
 GameObject:
@@ -16797,7 +16797,8 @@ MonoBehaviour:
   _showBoundingBox: 0
   _boundingBoxExtensionValues: {x: 0.5, y: 0.5, z: 0.5}
   _boundColliders: []
-  _maxSocketDistance: 0.025
+  _maxSocketDistance: 0.075
+  _showSocketGrabRange: 1
   _sockets:
   - {fileID: 1621302371}
   - {fileID: 5807893578177859190}
@@ -16856,7 +16857,8 @@ MonoBehaviour:
   _showBoundingBox: 0
   _boundingBoxExtensionValues: {x: 0.5, y: 0.5, z: 0.5}
   _boundColliders: []
-  _maxSocketDistance: 0.025
+  _maxSocketDistance: 0.075
+  _showSocketGrabRange: 1
   _sockets:
   - {fileID: 5442778915410127876}
   - {fileID: 404085138}

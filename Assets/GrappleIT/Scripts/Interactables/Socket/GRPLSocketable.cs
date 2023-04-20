@@ -13,8 +13,10 @@ namespace Rhinox.XR.Grapple.It
     /// <dependencies />
     public class GRPLSocketable : GRPLGrabbableBase
     {
-        [Space(15f)]
-        [SerializeField] private float _maxSocketDistance = .025f;
+        [Header("Socket Settings")]
+        [SerializeField] private float _maxSocketDistance = .055f;
+        [SerializeField] private bool _showSocketGrabRange = false;
+        [Space(5f)]
         [SerializeField] private List<Transform> _sockets = null;
 
         private Transform _closestSocketL = null;
@@ -144,5 +146,20 @@ namespace Rhinox.XR.Grapple.It
 
             transform.SetPositionAndRotation(Utility.GetMatrixPosition(targetMatrix), Utility.GetMatrixRotation(targetMatrix));
         }
+
+#if UNITY_EDITOR
+        protected override void OnDrawGizmos()
+        {
+            base.OnDrawGizmos();
+
+            if (_showSocketGrabRange)
+            {
+                foreach (var socket in _sockets)
+                {
+                    Gizmos.DrawWireSphere(socket.transform.position, _maxSocketDistance);
+                }
+            }
+        }
+#endif
     }
 }

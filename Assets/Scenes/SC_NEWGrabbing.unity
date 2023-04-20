@@ -1464,6 +1464,22 @@ PrefabInstance:
       propertyPath: m_LocalRotation.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 302915264, guid: 81a16ddb07757184e9a5674960abad9b, type: 3}
+      propertyPath: _maxSocketDistance
+      value: 0.055
+      objectReference: {fileID: 0}
+    - target: {fileID: 302915264, guid: 81a16ddb07757184e9a5674960abad9b, type: 3}
+      propertyPath: _sockets.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 302915264, guid: 81a16ddb07757184e9a5674960abad9b, type: 3}
+      propertyPath: _showSocketGrabRange
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 302915264, guid: 81a16ddb07757184e9a5674960abad9b, type: 3}
+      propertyPath: _sockets.Array.data[0]
+      value: 
+      objectReference: {fileID: 1196909861}
     - target: {fileID: 5877459778520661969, guid: 81a16ddb07757184e9a5674960abad9b, type: 3}
       propertyPath: m_Name
       value: Cup
@@ -1526,6 +1542,11 @@ Transform:
 --- !u!1 &1196909860 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5877459778520661969, guid: 81a16ddb07757184e9a5674960abad9b, type: 3}
+  m_PrefabInstance: {fileID: 1196909858}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1196909861 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 168965453, guid: 81a16ddb07757184e9a5674960abad9b, type: 3}
   m_PrefabInstance: {fileID: 1196909858}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1370054200
@@ -1923,6 +1944,7 @@ MonoBehaviour:
   _boundingBoxExtensionValues: {x: 0.5, y: 0.5, z: 0.5}
   _boundColliders: []
   _maxSocketDistance: 0.01
+  _showSocketGrabRange: 0
   _sockets: []
 --- !u!54 &1711070354
 Rigidbody:
@@ -2321,6 +2343,7 @@ MonoBehaviour:
   _boundingBoxExtensionValues: {x: 0.5, y: 0.5, z: 0.5}
   _boundColliders: []
   _maxSocketDistance: 0.01
+  _showSocketGrabRange: 0
   _sockets: []
 --- !u!54 &1913588395
 Rigidbody:
@@ -3000,6 +3023,7 @@ MonoBehaviour:
   _boundingBoxExtensionValues: {x: 0.5, y: 0.5, z: 0.5}
   _boundColliders: []
   _maxSocketDistance: 0.075
+  _showSocketGrabRange: 1
   _sockets:
   - {fileID: 521542655210110409}
   - {fileID: 1680206003}
