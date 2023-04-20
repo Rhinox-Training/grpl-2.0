@@ -32,6 +32,8 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField]
         private bool _drawDebug = false;
 
+        [Space(10f)]
+
         [SerializeField]
         [HideIfField(false, "_drawDebug", 0f)]
         private bool _drawLeverParts = false;

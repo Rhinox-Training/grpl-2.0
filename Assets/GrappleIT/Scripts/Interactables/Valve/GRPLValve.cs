@@ -50,10 +50,11 @@ namespace Rhinox.XR.Grapple.It
         public ValveState CurrentValveState => _currentValveState;
 
         //righty tighty, lefty loosey
-        public Action<GRPLValve> OnFullyClosed;
-        public Action<GRPLValve> OnFullyOpen;
-        public Action<GRPLValve, ValveState, float> OnValueUpdate;
-
+        public event Action<GRPLValve> OnFullyClosedStarted;
+        public event Action<GRPLValve> OnFullyClosedStopped;
+        public event Action<GRPLValve> OnFullyOpenStarted;
+        public event Action<GRPLValve> OnFullyOpenStopped;
+        public event Action<GRPLValve, ValveState, float> OnValueUpdate;
 
         private static GRPLJointManager _jointManager = null;
         private RhinoxJoint _interactingJoint = null;
@@ -305,7 +306,7 @@ namespace Rhinox.XR.Grapple.It
                     _currentValveRotation = _fullyClosedAngle;
 
                     if (_currentValveState != ValveState.FullyClosed)
-                        OnFullyClosed?.Invoke(this);
+                        OnFullyClosedStarted?.Invoke(this);
 
                     _currentValveState = ValveState.FullyClosed;
                 }
@@ -314,12 +315,27 @@ namespace Rhinox.XR.Grapple.It
                     _currentValveRotation = _fullyOpenAngle;
 
                     if (_currentValveState != ValveState.FullyOpen)
-                        OnFullyOpen?.Invoke(this);
+                        OnFullyOpenStarted?.Invoke(this);
 
                     _currentValveState = ValveState.FullyOpen;
                 }
                 else
+                {
+                    switch (_currentValveState)
+                    {
+                        case ValveState.FullyClosed:
+                            OnFullyClosedStopped?.Invoke(this);
+                            break;
+                        case ValveState.FullyOpen:
+                            OnFullyOpenStopped?.Invoke(this);
+                            break;
+                        case ValveState.GreyZone:
+                        default:
+                            break;
+                    }
+
                     _currentValveState = ValveState.GreyZone;
+                }
 
                 _grabbedVec = _interactingJoint.JointPosition - transform.position;
 

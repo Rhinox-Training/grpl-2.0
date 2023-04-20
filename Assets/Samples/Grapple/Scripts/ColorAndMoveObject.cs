@@ -34,8 +34,8 @@ public class ColorAndMoveObject : MonoBehaviour
 
         _valve.OnValueUpdate += ValveUpdate;
 
-        _valve.OnFullyOpen += IsOpen;
-        _valve.OnFullyClosed += IsClosed;
+        _valve.OnFullyOpenStarted += IsOpen;
+        _valve.OnFullyClosedStarted += IsClosed;
     }
 
     private void IsClosed(GRPLValve valve)

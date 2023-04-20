@@ -23,16 +23,16 @@ namespace Rhinox.XR.Grapple
 
         private SerializedProperty _useJointForward;
         private SerializedProperty _forwardJoint;
-        
+
         private SerializedProperty _gestures;
 
 
-        private bool _importInEditor = false;        
+        private bool _importInEditor = false;
         private bool _showImportSettings = false;
         private bool _showExportSettings = false;
         private bool _showRecordingSettings = false;
 
-        
+
         private void OnEnable()
         {
             _importOnPlay = serializedObject.FindProperty("ImportOnPlay");
@@ -42,11 +42,11 @@ namespace Rhinox.XR.Grapple
             _exportOnDestroy = serializedObject.FindProperty("ExportOnDestroy");
             _exportPath = serializedObject.FindProperty("ExportFilePath");
             _exportFileName = serializedObject.FindProperty("ExportFileName");
-            
+
             _recordActionReference = serializedObject.FindProperty("RecordActionReference");
             _newGestureName = serializedObject.FindProperty("SavedGestureName");
             _handToRecord = serializedObject.FindProperty("HandToRecord");
-            
+
             _recognitionDistanceThreshold = serializedObject.FindProperty("GestureBendThreshold");
             _recognitionForwardThreshold = serializedObject.FindProperty("GestureForwardThreshold");
             _gestures = serializedObject.FindProperty("Gestures");
@@ -63,14 +63,14 @@ namespace Rhinox.XR.Grapple
             // Import
             //--------------------------
             _showImportSettings = EditorGUILayout.BeginFoldoutHeaderGroup(_showImportSettings, "Import settings");
-            
+
             if (_showImportSettings)
                 ShowImportSettings(script);
 
             EditorGUILayout.EndFoldoutHeaderGroup();
-            
+
             InsertSeparation();
-            
+
             //--------------------------
             // Export
             //--------------------------
@@ -78,7 +78,7 @@ namespace Rhinox.XR.Grapple
 
             if (_showExportSettings)
                 ShowExportSettings(script);
-            
+
             EditorGUILayout.EndFoldoutHeaderGroup();
             InsertSeparation();
 
@@ -96,9 +96,9 @@ namespace Rhinox.XR.Grapple
             //--------------------------
             // Gestures
             //--------------------------
-           
-            EditorGUILayout.PropertyField(_gestures,new GUIContent("Current Gestures"));
-            
+
+            EditorGUILayout.PropertyField(_gestures, new GUIContent("Current Gestures"));
+
             var warningStyle = new GUIStyle()
             {
                 normal =
@@ -107,7 +107,7 @@ namespace Rhinox.XR.Grapple
                 }
             };
             GUILayout.Label("!!!  Warning: each gesture should contain 5 bend values  !!!", warningStyle);
-            
+
             serializedObject.ApplyModifiedProperties();
         }
 
@@ -132,11 +132,13 @@ namespace Rhinox.XR.Grapple
             var files = dirInfo.GetFiles();
             foreach (var file in files)
             {
-                sequenceMenu.AddItem(new GUIContent(file.Name), false, OnSequenceSelected, file.Name);
+                if (file.Extension == ".json")
+                    sequenceMenu.AddItem(new GUIContent(file.Name), false, OnSequenceSelected, file.Name);
             }
 
             sequenceMenu.ShowAsContext();
         }
+
 
         private void OnSequenceSelected(object userData)
         {
@@ -151,7 +153,7 @@ namespace Rhinox.XR.Grapple
         {
             _overwriteOnImport.boolValue =
                 EditorGUILayout.Toggle("Overwrite gestures on import", _overwriteOnImport.boolValue);
-            
+
             _importOnPlay.boolValue = EditorGUILayout.Toggle("Import on play", _importOnPlay.boolValue);
             if (_importOnPlay.boolValue)
             {
@@ -217,26 +219,26 @@ namespace Rhinox.XR.Grapple
             if (GUILayout.Button("Export Gestures"))
             {
                 script.WriteGesturesToJson();
-                
+
             }
         }
 
         private void ShowRecordingSettings()
         {
             EditorGUILayout.PropertyField(_recordActionReference);
-            
+
             _newGestureName.stringValue =
                 EditorGUILayout.TextField("New gesture name", _newGestureName.stringValue);
             EditorGUILayout.PropertyField(_handToRecord);
             _useJointForward.boolValue =
                 EditorGUILayout.Toggle("Use joint forward", _useJointForward.boolValue);
-            if(_useJointForward.boolValue)
+            if (_useJointForward.boolValue)
                 EditorGUILayout.PropertyField(_forwardJoint);
 
             _recognitionDistanceThreshold.floatValue = EditorGUILayout.FloatField("Recognition finger bend threshold",
                 _recognitionDistanceThreshold.floatValue);
             _recognitionForwardThreshold.floatValue = EditorGUILayout.FloatField("Recognition forward threshold",
                 _recognitionForwardThreshold.floatValue);
-        }        
+        }
     }
 }

@@ -16,19 +16,18 @@ namespace Rhinox.XR.Grapple.It
     /// </summary>
     public abstract class GRPLLeverBase : GRPLInteractable
     {
-        [Space(5)] [Header("Lever parameters")] [SerializeField]
-        protected Transform _baseTransform;
-
+        [Space(5)]
+        [Header("Lever parameters")]
+        [SerializeField] protected Transform _baseTransform;
         [SerializeField] protected Transform _stemTransform;
         [SerializeField] protected Transform _handleTransform;
-
         [SerializeField] protected float _interactMinAngle = 90f;
 
-        [SerializeField] [Range(0, 360f)] protected float _leverMaxAngle = 180f;
+        [SerializeField][Range(0, 360f)] protected float _leverMaxAngle = 180f;
         protected bool _ignoreDistanceOnGrab = true;
 
-        [Header("Grab parameters")] [SerializeField]
-        protected string _grabGestureName = "Grab";
+        [Header("Grab parameters")]
+        [SerializeField] protected string _grabGestureName = "Grab";
 
         [SerializeField] protected float _grabRadius = .1f;
 
