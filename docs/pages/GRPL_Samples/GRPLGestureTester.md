@@ -16,4 +16,6 @@ This scene is just to test out gestures and see both the raw and re-mapped finde
 This is less of a demo scene and more of a testing ground.
 
 You can make a certain gesture with your hand, record it into the list of gestures and tweak its values all at runtime.
-To know more about how a [**RhinoxGesture**](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_Core/rhinoxxrgrapple-RhinoxGesture.html) or how the [**Gesture Recognition system**](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_Core/rhinoxxrgrapple-GRPLGestureRecognizer.html) works in general, clikc the high lighted words.
+To know more about how a [**RhinoxGesture**](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_Core/rhinoxxrgrapple-RhinoxGesture.html) or how the [**Gesture Recognition system**](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_Core/rhinoxxrgrapple-GRPLGestureRecognizer.html) works in general, click the high lighted words.
+
+To change the remapped values. Go to the [**Jointmanager**](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_Core/rhinoxxrgrapple-GRPLJointManager.html) on the Grapple_Player rig and and there you can change the threshold values to your own liking.
