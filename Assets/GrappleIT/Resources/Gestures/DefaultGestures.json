@@ -2,7 +2,7 @@
     {
         "Gesture name": "Grab",
         "Finger bend values": [
-            0.25,
+            0.5,
             0.1,
             0.1,
             0.1,
@@ -15,7 +15,7 @@
             "y": 0.0,
             "z": 0.0
         },
-        "Distance threshold": 0.6,
+        "Distance threshold": 0.65,
         "Rotation threshold": 0.5,
         "_onRecognized": {},
         "_onUnrecognized": {}
