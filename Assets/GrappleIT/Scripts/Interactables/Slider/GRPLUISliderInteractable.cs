@@ -20,6 +20,7 @@ namespace Rhinox.XR.Grapple.It
         /// <summary>
         /// A float that determines the duration of the fade-in effect when the slider is interacted with.
         /// </summary>
+        [Header("Handle Fade settings")]
         [SerializeField] float _fadeInDuration = .15f;
 
         /// <summary>
@@ -27,11 +28,16 @@ namespace Rhinox.XR.Grapple.It
         /// </summary>
         [SerializeField] float _fadeOutDuration = .5f;
 
+#if UNITY_EDITOR
+        [Header("Gizmo")]
+        [SerializeField] private bool _showBoundingBox;
+#endif
+
         /// <summary>
         /// A Transform component that represents the slider's handle.
         /// </summary>
-        [Header("Transforms")] [SerializeField]
-        private Transform _handleTransform;
+        [Header("Transforms")]
+        [SerializeField] private Transform _handleTransform;
 
         /// <summary>
         /// A float property that returns the current value of the slider.
@@ -41,7 +47,7 @@ namespace Rhinox.XR.Grapple.It
         /// <summary>
         /// An event that is triggered whenever the slider's value is updated.
         /// </summary>
-        public event Action<float> OnValueUpdate;
+        public event Action<GRPLUISliderInteractable, float> OnValueUpdate;
 
         /// <summary>
         /// A Bounds struct that defines the boundaries of the slider's interaction area.
@@ -62,6 +68,11 @@ namespace Rhinox.XR.Grapple.It
         /// A float that represents the width of the slider.
         /// </summary>
         private float _sliderWidth = 0f;
+
+        /// <summary>
+        /// A float that represents the height of the slider.
+        /// </summary>
+        private float _sliderHeight = 0f;
 
         /// <summary>
         /// A Coroutine that controls the fade-in and fade-out effects of the slider.
@@ -95,9 +106,9 @@ namespace Rhinox.XR.Grapple.It
 
             //force setting handle image to invisible on start
             _handleImage.color = new Color(_handleImage.color.r,
-                _handleImage.color.g,
-                _handleImage.color.b,
-                0f);
+                                           _handleImage.color.g,
+                                           _handleImage.color.b,
+                                           0f);
 
             CalculateBounds();
         }
@@ -109,6 +120,7 @@ namespace Rhinox.XR.Grapple.It
         {
             var trans = (RectTransform)transform;
             _sliderWidth = trans.sizeDelta.x;
+            _sliderHeight = trans.sizeDelta.y;
 
             if (trans != null)
             {
@@ -131,7 +143,7 @@ namespace Rhinox.XR.Grapple.It
                 _pressBounds = new Bounds()
                 {
                     center = transform.position,
-                    extents = new Vector3(maxX - minX, maxY - minY, maxZ - minZ)
+                    size = new Vector3(maxX - minX, maxY - minY, maxZ - minZ)
                 };
             }
         }
@@ -182,8 +194,7 @@ namespace Rhinox.XR.Grapple.It
             {
                 var val = CalculateSliderValueFromSliderDirection(joint.JointPosition);
                 _slider.value = val;
-                OnValueUpdate?.Invoke(_slider.value);
-
+                OnValueUpdate?.Invoke(this, _slider.value);
                 _previousInteractJoint = joint;
                 return true;
             }
@@ -201,9 +212,11 @@ namespace Rhinox.XR.Grapple.It
             var projectedJointOnPlane = Vector3.ProjectOnPlane(jointPos, -transform.forward);
             var projectedPointInLocalSpace = transform.InverseTransformPoint(projectedJointOnPlane);
 
-            _slider.handleRect.GetChild(0).transform.SetLocalPosition(0f, projectedPointInLocalSpace.y, 0f);
+            float handYPos = Mathf.Clamp(projectedPointInLocalSpace.y, _sliderHeight * -.5f, _sliderHeight * .5f);
 
-            return projectedPointInLocalSpace.x.Map(_sliderWidth * -.5f, _sliderWidth * .5f, 0f, 1f);
+            _slider.handleRect.GetChild(0).transform.SetLocalPosition(0f, handYPos, 0f);
+
+            return Mathf.Clamp01(projectedPointInLocalSpace.x.Map(_sliderWidth * -.5f, _sliderWidth * .5f, 0f, 1f));
         }
 
         public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint outJoint,
@@ -237,15 +250,15 @@ namespace Rhinox.XR.Grapple.It
             if (State != GRPLInteractionState.Interacted)
                 return false;
 
-            // Check if the joint pos is in front of the plane that is defined by the button
+            // Check if the joint pos is in front of the plane that is defined by the Slider
             if (!InteractableMathUtils.IsPositionInFrontOfPlane(_previousInteractJoint.JointPosition,
-                    transform.position, -transform.forward))
+                                                                transform.position, -transform.forward))
             {
                 ShouldPerformInteractCheck = false;
 
                 var val = CalculateSliderValueFromSliderDirection(_previousInteractJoint.JointPosition);
                 _slider.value = val;
-                OnValueUpdate?.Invoke(_slider.value);
+                OnValueUpdate?.Invoke(this, _slider.value);
 
                 return true;
             }
@@ -293,5 +306,17 @@ namespace Rhinox.XR.Grapple.It
             if (isFadeIn)
                 _fadeCoroutine = StartCoroutine(Fade(false));
         }
+
+#if UNITY_EDITOR
+        protected override void OnDrawGizmos()
+        {
+            base.OnDrawGizmos();
+
+            if (_showBoundingBox)
+            {
+                Gizmos.DrawWireCube(transform.position, _pressBounds.size);
+            }
+        }
+#endif
     }
 }

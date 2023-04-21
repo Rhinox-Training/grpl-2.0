@@ -20,9 +20,9 @@ namespace Rhinox.XR.Grapple.It
         /// <summary>
         /// The transform of the base of the lever.
         /// </summary>
-        [Space(5)] [Header("Lever parameters")] [SerializeField]
-        protected Transform _baseTransform;
-
+        [Space(5)]
+        [Header("Lever parameters")]
+        [SerializeField] protected Transform _baseTransform;
         /// <summary>
         /// The transform of the stem of the lever.
         /// </summary>
@@ -32,7 +32,6 @@ namespace Rhinox.XR.Grapple.It
         /// The transform of the handle of the lever.
         /// </summary>
         [SerializeField] protected Transform _handleTransform;
-
         /// <summary>
         /// The minimum angle at which the lever can be interacted with.
         /// </summary>

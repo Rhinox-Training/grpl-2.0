@@ -14,8 +14,8 @@ namespace Rhinox.XR.Grapple.It
         /// <summary>
         /// Determines whether there should be a delay before interactables can be interacted with again.
         /// </summary>
-        [Header("Delayed activation parameters")] [SerializeField]
-        private bool _delayInteractibleReactivation = true;
+        [Header("Delayed activation parameters")]
+        [SerializeField] private bool _delayInteractibleReactivation = true;
 
         /// <summary>
         /// The time to wait before interactables can be interacted with again.
@@ -26,10 +26,12 @@ namespace Rhinox.XR.Grapple.It
         /// A list of interactables that are part of the group.
         /// </summary>
         private List<GRPLInteractable> _interactables;
+
         /// <summary>
         /// The current interacted object in the group.
         /// </summary>
         private GRPLInteractable _currentInteractedObject;
+
         /// <summary>
         /// Whether the group is on cooldown
         /// </summary>

@@ -411,8 +411,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _proximateRadius: 0.5
+  _showProximateRadius: 0
+  _proximateJointID: 12
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
+  _allowMultiHandInteraction: 0
+  _fadeInDuration: 0.15
+  _fadeOutDuration: 0.5
+  _handleTransform: {fileID: 4674662000978036376}
 --- !u!114 &4674662002763616799
 MonoBehaviour:
   m_ObjectHideFlags: 0

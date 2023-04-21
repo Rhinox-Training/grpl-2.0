@@ -27,13 +27,14 @@ namespace Rhinox.XR.Grapple.It
         /// <summary>
         /// The name of the gesture used to initiate the teleportation.
         /// </summary>
-        [Header("Teleport Gesture")] [SerializeField]
-        private string _teleportGestureName = "Teleport";
+        [Header("Teleport Gesture")]
+        [SerializeField] private string _teleportGestureName = "Teleport";
 
         /// <summary>
         /// A game object that represents the teleportation area.
         /// </summary>
-        [Header("Visuals")] [SerializeField] private GameObject _sensorModel = null;
+        [Header("Visuals")]
+        [SerializeField] private GameObject _sensorModel = null;
 
         /// <summary>
         /// A visual representation of the teleportation zone.
@@ -43,8 +44,8 @@ namespace Rhinox.XR.Grapple.It
         /// <summary>
         /// A component that draws a parabolic arc from the user's hand to the target location.
         /// </summary>
-        [Header("Arc Visual Settings")] [SerializeField]
-        private LineRenderer _lineRenderer = null;
+        [Header("Arc Visual Settings")]
+        [SerializeField] private LineRenderer _lineRenderer = null;
 
         /// <summary>
         /// The time delay before the line renderer and teleportation zone visual are enabled.
@@ -64,8 +65,8 @@ namespace Rhinox.XR.Grapple.It
         /// <summary>
         /// The number of points used to smooth the destination point.
         /// </summary>
-        [Header("Arc General Settings")] [Range(1, 10)] [SerializeField]
-        private int _destinationSmoothingAmount = 5;
+        [Header("Arc General Settings")]
+        [Range(1, 10)][SerializeField] private int _destinationSmoothingAmount = 5;
 
         /// <summary>
         /// The maximum distance that the user can teleport.
@@ -85,12 +86,12 @@ namespace Rhinox.XR.Grapple.It
         /// <summary>
         /// The number of sub-iterations used to calculate the parabolic arc.
         /// </summary>
-        [Range(0.001f, 2f)] [SerializeField] private float _lineSubIterations = 1f;
+        [Range(0.001f, 2f)][SerializeField] private float _lineSubIterations = 1f;
 
         /// <summary>
         /// A flag that enables or disables snapping to a valid teleportation point.
         /// </summary>
-        [Header("Snapping")] [SerializeField] private bool _enableSnapping = true;
+        [Header("Snapping")][SerializeField] private bool _enableSnapping = true;
 
         /// <summary>
         /// The maximum distance that the user can snap to a valid teleportation point.
@@ -100,7 +101,9 @@ namespace Rhinox.XR.Grapple.It
         /// <summary>
         /// The NavMesh area mask that specifies which areas are valid for teleportation.
         /// </summary>
-        [Header("Miscellaneous Settings")] [NavMeshArea(true)] [SerializeField]
+        [Header("Miscellaneous Settings")]
+        [NavMeshArea(true)]
+        [SerializeField]
         private int _teleportableNavMeshAreas;
 
         /// <summary>
@@ -171,6 +174,11 @@ namespace Rhinox.XR.Grapple.It
         /// A queue that stores the recent teleportation points.
         /// </summary>
         private LimitedQueue<Vector3> _teleportPositions = new LimitedQueue<Vector3>(5);
+
+        /// <summary>
+        /// A Quaternion that saves the orientation of a teleport Anchor.
+        /// </summary>
+        private Quaternion _TeleportAnchorOrientation = Quaternion.identity;
 
         /// <summary>
         /// The left sensor object.
@@ -396,7 +404,7 @@ namespace Rhinox.XR.Grapple.It
 
             sensCollider.isTrigger = true;
             proxySensor = sensorObj.GetOrAddComponent<GRPLTriggerSensor>();
-            proxySensor.HandLayer = _handLayer; // LayerMask.NameToLayer("Hands");
+            proxySensor.HandLayer = _handLayer;
             proxySensor.AddListenerOnSensorEnter(ConfirmTeleport);
             return true;
         }
@@ -503,10 +511,10 @@ namespace Rhinox.XR.Grapple.It
             if (_isValidTeleportPoint)
             {
                 _avgTeleportPoint = new Vector3(_teleportPositions.Average(vec => vec.x),
-                    _teleportPositions.Average(vec => vec.y),
-                    _teleportPositions.Average(vec => vec.z));
+                                                _teleportPositions.Average(vec => vec.y),
+                                                _teleportPositions.Average(vec => vec.z));
 
-                _teleportZoneVisual.transform.position = _avgTeleportPoint;
+                _teleportZoneVisual.transform.SetPositionAndRotation(_avgTeleportPoint, _TeleportAnchorOrientation);
                 _teleportZoneVisual.SetActive(true);
             }
             else
@@ -565,6 +573,7 @@ namespace Rhinox.XR.Grapple.It
                         {
                             _teleportPositions.Clear();
                             _teleportPositions.Enqueue(teleportAnchor.AnchorTransform.position);
+                            _TeleportAnchorOrientation = teleportAnchor.AnchorTransform.rotation;
                             _isValidTeleportPoint = true;
                         }
                         else
@@ -595,9 +604,10 @@ namespace Rhinox.XR.Grapple.It
         /// <returns>Returns <see langword="true"/> if the given point is on the navmesh</returns>
         private bool CheckAndAddIfPointOnNavmesh(Vector3 pos)
         {
+            _TeleportAnchorOrientation = Quaternion.identity;
+
             //adding .5f to the y axis to avoid the problem of the position is at the same level as the navmesh making the navmesh raycast fail
-            if (NavMesh.SamplePosition(new Vector3(pos.x, pos.y + .5f, pos.z), out var info, 1f,
-                    _teleportableNavMeshAreas)) //1 << NavMesh.GetAreaFromName("Teleportable")))
+            if (NavMesh.SamplePosition(new Vector3(pos.x, pos.y + .5f, pos.z), out _, 1f, _teleportableNavMeshAreas))
             {
                 _teleportPositions.Enqueue(pos);
                 return true;
@@ -619,7 +629,7 @@ namespace Rhinox.XR.Grapple.It
             if (_isOnCooldown || !_isValidTeleportPoint)
                 return; //could call even for failed teleport
 
-            gameObject.transform.position = _avgTeleportPoint;
+            gameObject.transform.SetPositionAndRotation(_avgTeleportPoint, _TeleportAnchorOrientation);
 
             _lineRenderer.startColor = Color.red;
             _lineRenderer.endColor = Color.red;
@@ -801,6 +811,7 @@ namespace Rhinox.XR.Grapple.It
                     return _isEnabledL;
                 case RhinoxHand.Right:
                     return _isEnabledR;
+                case RhinoxHand.Invalid:
                 default:
                     return false;
             }

@@ -22,25 +22,29 @@ namespace Rhinox.XR.Grapple.It
         /// <summary>
         /// A boolean flag to indicate if debugging is enabled.
         /// </summary>
-        [Header("Debug Parameters")] [SerializeField]
-        private bool _drawDebug = false;
+        [Header("Debug Parameters")]
+        [SerializeField] private bool _drawDebug = false;
 
         /// <summary>
         /// A boolean flag to indicate if drawing the arc is enabled. Hidden if _drawDebug is false.
         /// </summary>
-        [SerializeField] [HideIfField(false, "_drawDebug", 0f)]
+        [Space(10f)]
+        [SerializeField]
+        [HideIfField(false, "_drawDebug", 0f)]
         private bool _drawArc = false;
 
         /// <summary>
         /// A boolean flag to indicate if drawing the grab range is enabled. Hidden if _drawDebug is false.
         /// </summary>
-        [SerializeField] [HideIfField(false, "_drawDebug", 0f)]
+        [SerializeField]
+        [HideIfField(false, "_drawDebug", 0f)]
         private bool _drawGrabRange = false;
 
         /// <summary>
         /// A boolean flag to indicate if drawing the arc extends is enabled. Hidden if _drawDebug is false.
         /// </summary>
-        [SerializeField] [HideIfField(false, "_drawDebug", 0f)]
+        [SerializeField]
+        [HideIfField(false, "_drawDebug", 0f)]
         private bool _drawArcExtends = false;
 
         /// <summary>
@@ -52,6 +56,7 @@ namespace Rhinox.XR.Grapple.It
         /// Triggered when the lever is stopped.
         /// </summary>
         public event Action<GRPLOneWayLever> LeverStopped;
+
 
         private bool _isLeverActivated = false;
 

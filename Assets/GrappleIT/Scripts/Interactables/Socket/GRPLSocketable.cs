@@ -16,7 +16,17 @@ namespace Rhinox.XR.Grapple.It
         /// <summary>
         /// The maximum distance from a socket point that a hand can grab the object.
         /// </summary>
-        [Space(15f)] [SerializeField] private float _maxSocketDistance = .025f;
+        [Space(15f)]
+        [SerializeField] private float _maxSocketDistance = .055f;
+        
+        /// <summary>
+        /// A boolean toggle to show the grab range gizmo of each socket in the list of sockets.
+        /// </summary>
+#if UNITY_EDITOR
+        [SerializeField] private bool _showSocketGrabRange = false;
+        [Space(5f)]
+#endif
+
         /// <summary>
         /// The list of socket points for the object.
         /// </summary>
@@ -26,10 +36,12 @@ namespace Rhinox.XR.Grapple.It
         /// The closest socket point to the left hand.
         /// </summary>
         private Transform _closestSocketL = null;
+
         /// <summary>
         /// The closest socket point to the right hand.
         /// </summary>
         private Transform _closestSocketR = null;
+
         /// <summary>
         /// The squared maximum distance from a socket point that a hand can grab the object.
         /// </summary>
@@ -151,17 +163,17 @@ namespace Rhinox.XR.Grapple.It
                 //because the right rhinoxHand is mirror of the left one.
                 //the object needs to be flip around the X-axis to mirror it. 
                 _closestSocket.localRotation = new Quaternion(_closestSocket.localRotation.x * -1.0f,
-                    _closestSocket.localRotation.y,
-                    _closestSocket.localRotation.z,
-                    _closestSocket.localRotation.w * -1.0f);
+                                                              _closestSocket.localRotation.y,
+                                                              _closestSocket.localRotation.z,
+                                                              _closestSocket.localRotation.w * -1.0f);
 
                 relativeMatrix = _closestSocket.GetMatrixRelativeTo(this.GetWorldMatrix());
 
                 //is a component, so i can't take a copy of it, meaning i have to reset the orriginal back.
                 _closestSocket.localRotation = new Quaternion(_closestSocket.localRotation.x * -1.0f,
-                    _closestSocket.localRotation.y,
-                    _closestSocket.localRotation.z,
-                    _closestSocket.localRotation.w * -1.0f);
+                                                              _closestSocket.localRotation.y,
+                                                              _closestSocket.localRotation.z,
+                                                              _closestSocket.localRotation.w * -1.0f);
             }
             else
             {
@@ -174,5 +186,20 @@ namespace Rhinox.XR.Grapple.It
             transform.SetPositionAndRotation(Utility.GetMatrixPosition(targetMatrix),
                 Utility.GetMatrixRotation(targetMatrix));
         }
+
+#if UNITY_EDITOR
+        protected override void OnDrawGizmos()
+        {
+            base.OnDrawGizmos();
+
+            if (_showSocketGrabRange)
+            {
+                foreach (var socket in _sockets)
+                {
+                    Gizmos.DrawWireSphere(socket.transform.position, _maxSocketDistance);
+                }
+            }
+        }
+#endif
     }
 }

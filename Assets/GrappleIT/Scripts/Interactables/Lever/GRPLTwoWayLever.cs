@@ -53,12 +53,13 @@ namespace Rhinox.XR.Grapple.It
         /// <summary>
         /// A boolean flag that indicates whether debug information should be drawn for the lever.
         /// </summary>
-        [Header("Debug Parameters")] [SerializeField]
-        private bool _drawDebug = false;
+        [Header("Debug Parameters")]
+        [SerializeField] private bool _drawDebug = false;
 
         /// <summary>
         /// A boolean flag that indicates whether the lever parts should be drawn.
         /// </summary>
+        [Space(10f)]
         [SerializeField] [HideIfField(false, "_drawDebug", 0f)]
         private bool _drawLeverParts = false;
 

@@ -16,14 +16,14 @@ namespace Rhinox.XR.Grapple.It
         /// <summary>
         /// The maximum amount of proximates that can be detected per hand.
         /// </summary>
-        [Header("Proximate detection parameters")] [SerializeField]
-        private int _maxAmountOfProximatesPerHand = 3;
+        [Header("Proximate detection parameters")]
+        [SerializeField] private int _maxAmountOfProximatesPerHand = 3;
 
         /// <summary>
         /// A list of groups of interactables.
         /// </summary>
-        [Header("Interactible Groups")] [SerializeField]
-        private List<GRPLInteractibleGroup> _interactibleGroups;
+        [Header("Interactible Groups")]
+        [SerializeField] private List<GRPLInteractibleGroup> _interactibleGroups;
 
         /// <summary>
         /// Invoked when an interactable's interaction check is paused.
@@ -234,7 +234,7 @@ namespace Rhinox.XR.Grapple.It
                 // Add it to the list and continue
                 if (newProximateInteractables.Count < _maxAmountOfProximatesPerHand)
                 {
-                    newProximateInteractables.Add(sqrDistance, interactable);
+                    newProximateInteractables.TryAdd(sqrDistance, interactable);
                     continue;
                 }
 
@@ -246,7 +246,7 @@ namespace Rhinox.XR.Grapple.It
                 {
                     // Replace it in the list
                     newProximateInteractables.Remove(furthestKey);
-                    newProximateInteractables.Add(sqrDistance, interactable);
+                    newProximateInteractables.TryAdd(sqrDistance, interactable);
                 }
             }
 

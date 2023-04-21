@@ -23,14 +23,14 @@ namespace Rhinox.XR.Grapple.It
         /// <summary>
         ///  A private bool field used to determine whether to draw debug information in the editor.
         /// </summary>
-        [Header("Debug drawing")] [SerializeField]
-        private bool _drawDebug;
+        [Header("Debug drawing")]
+        [SerializeField] private bool _drawDebug;
 
         /// <summary>
         /// A private Transform field representing the transform of the button base.
         /// </summary>
-        [Header("Poke parameters")] [SerializeField]
-        private Transform _interactableBaseTransform;
+        [Header("Poke parameters")]
+        [SerializeField] private Transform _interactableBaseTransform;
 
         /// <summary>
         /// A private Transform field representing the transform of the button surface.
@@ -40,8 +40,8 @@ namespace Rhinox.XR.Grapple.It
         /// <summary>
         /// A private bool field used to determine whether there should be a delay between button presses.
         /// </summary>
-        [Header("Activation parameters")] [SerializeField]
-        private bool _useInteractDelay = true;
+        [Header("Activation parameters")]
+        [SerializeField] private bool _useInteractDelay = true;
 
         /// <summary>
         ///  A private float field representing the amount of time to wait between button presses.
@@ -88,7 +88,7 @@ namespace Rhinox.XR.Grapple.It
             // Calculate the initial distance between the interact object and base transform
             var position = _interactableBaseTransform.position;
             _maxPressDistance = Vector3.Dot(_interactObject.transform.position - position,
-                _interactableBaseTransform.forward);
+                -_interactableBaseTransform.forward);
 
             var boundExtends = _interactObject.gameObject.GetObjectBounds().extents;
             boundExtends.z += 0.005f;
@@ -113,7 +113,7 @@ namespace Rhinox.XR.Grapple.It
             // Cache the button fields that get re-used
             Transform buttonBaseTransform = _interactableBaseTransform;
 
-            Vector3 forward = buttonBaseTransform.forward;
+            Vector3 forward = -buttonBaseTransform.forward;
 
             // Projects the joint pos onto the normal out of the button and gets the distance
             float pokeDistance =
@@ -128,7 +128,7 @@ namespace Rhinox.XR.Grapple.It
             }
 
             _interactObject.transform.position = buttonBaseTransform.position +
-                                                 pokeDistance * buttonBaseTransform.forward;
+                                                 pokeDistance * forward;
 
             float pressPercentage = 1 - (pokeDistance / _maxPressDistance);
 
@@ -181,7 +181,7 @@ namespace Rhinox.XR.Grapple.It
             if (_useInteractDelay)
                 StartCoroutine(DisableInteractibleForDuration());
             _interactObject.transform.position = _interactableBaseTransform.position +
-                                                 _maxPressDistance * _interactableBaseTransform.forward;
+                                                 _maxPressDistance * -_interactableBaseTransform.forward;
 
             _interactHand = RhinoxHand.Invalid;
             base.InteractStopped();
@@ -193,7 +193,7 @@ namespace Rhinox.XR.Grapple.It
         protected override void ProximityStopped()
         {
             _interactObject.transform.position = _interactableBaseTransform.position +
-                                                 _maxPressDistance * _interactableBaseTransform.forward;
+                                                 _maxPressDistance * -_interactableBaseTransform.forward;
             base.ProximityStopped();
         }
 
@@ -229,7 +229,7 @@ namespace Rhinox.XR.Grapple.It
             // Cache the button fields that get re-used
             Transform buttonBaseTransform = _interactableBaseTransform;
 
-            Vector3 forward = buttonBaseTransform.forward;
+            Vector3 forward = -buttonBaseTransform.forward;
 
             // Check if the joint pos is in front of the plane that is defined by the button
             if (!InteractableMathUtils.IsPositionInFrontOfPlane(joint.JointPosition, buttonBaseTransform.position,
@@ -238,7 +238,7 @@ namespace Rhinox.XR.Grapple.It
 
             // Check if the projected joint pos is within the button bounding box
             if (!InteractableMathUtils.IsPlaneProjectedPointInBounds(joint.JointPosition, buttonBaseTransform.position,
-                    transform.forward, _pressBounds))
+                    -transform.forward, _pressBounds))
                 return false;
 
             // Projects the joint pos onto the normal out of the button and gets the distance
@@ -275,7 +275,7 @@ namespace Rhinox.XR.Grapple.It
             float closestDist = float.MaxValue;
 
             var normalPos = _interactableBaseTransform.position;
-            var normal = _interactableBaseTransform.forward;
+            var normal = -_interactableBaseTransform.forward;
 
             foreach (var joint in joints)
             {
@@ -306,7 +306,7 @@ namespace Rhinox.XR.Grapple.It
             // Check if the joint pos is in front of the plane that is defined by the button
             if (!InteractableMathUtils.IsPositionInFrontOfPlane(_previousInteractJoint.JointPosition,
                     _interactableBaseTransform.position,
-                    _interactableBaseTransform.forward))
+                    -_interactableBaseTransform.forward))
             {
                 ShouldPerformInteractCheck = false;
                 return true;
@@ -344,7 +344,7 @@ namespace Rhinox.XR.Grapple.It
                 buttonObject.transform.SetParent(transform, false);
 
                 // Set the position of the button press object
-                buttonObject.transform.localPosition = INITIAL_INTERACT_OFFSET * _interactableBaseTransform.forward;
+                buttonObject.transform.localPosition = INITIAL_INTERACT_OFFSET * -_interactableBaseTransform.forward;
 
                 _interactObject = buttonObject.transform;
             }
