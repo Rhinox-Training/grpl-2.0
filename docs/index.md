@@ -30,3 +30,16 @@ The main features of the Grapple IT package are:
 - Gizmo extension to generate 3D shapes in the scene view.
 
 To have a look at the documentation of Grapple Interaction Toolkit, [click here](pages/GRPL_IT/GrappleIT)
+
+
+## Grapple Samples
+Within the Grapple sample package are 2 scenes.
+
+- GRPLDemo, this scene uses all the system available in the Grapple Interaction Toolkit to showcase how they can be used.
+- GRPLGestureTester, this scene gives you the finger bending values and current gesture each hand is making. This is really useful for testing and tweaking new or existing gestures.
+
+To have a look at a more in depth explenation about the Grapple Sample scenes, click [here](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_Samples/GRPLSamples.html)
+
+#License
+
+Apache-2.0 © Rhinox NV
