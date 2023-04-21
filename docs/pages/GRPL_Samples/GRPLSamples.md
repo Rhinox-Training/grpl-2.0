@@ -17,10 +17,14 @@ There are 2 scenes inside the Grapple Samples package:
 
 # Package contents
 - scenes
-    - GRPLDemo
-    - GRPLGestureTester
+    - [**GRPLDemo**](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_Samples/GRPLDemo.html)
+    - [**GRPLGestureTester**](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_Samples/GRPLGestureTester.html)
 - Scripts
-    - 
+    - Games (Simons says and Rock paper scissors)
+    - Wrappers (these hook into the events of some GRPLInteractables and link them to Unity events)
+    - Helper (visualize gestures and bend values, object reseter used in [desk 1](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_Samples/GRPLDemo.html#desk-1) and a move-and-color the cube of [desk 2](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_Samples/GRPLDemo.html#desk-2))
+ - Prefabs (Hand prefabs used for the rock paper scissors)
+ - Materials (Different color materials, mainly for the simon says game)
 	
 # Required packages
 Grapple Samples requires the Grapple Interaction Toolkit and all its Required packages to work correctly. 
