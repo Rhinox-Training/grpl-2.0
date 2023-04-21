@@ -2805,7 +2805,6 @@ MonoBehaviour:
   _proximateJointID: 12
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
-  _allowMultiHandInteraction: 0
   _grabGestureName: Grab
   _useCollidersInsteadOfBoundingBox: 0
   _showBoundingBox: 1
@@ -2886,13 +2885,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 395858224}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.5, z: 5}
   m_LocalScale: {x: 20.25, y: 1, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_Father: {fileID: 1867119297}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &399081860
 GameObject:
@@ -3052,7 +3051,6 @@ MonoBehaviour:
   _proximateJointID: 12
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
-  _allowMultiHandInteraction: 0
   _grabGestureName: Grab
   _useCollidersInsteadOfBoundingBox: 1
   _showBoundingBox: 1
@@ -4375,12 +4373,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 568580384}
   m_LocalRotation: {x: -0, y: -0.70710677, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -10, y: 0.5, z: -5.0000052}
+  m_LocalPosition: {x: -10, y: 0.5, z: -5}
   m_LocalScale: {x: 19.75, y: 1, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_Father: {fileID: 1867119297}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1 &593991077
 GameObject:
@@ -5640,7 +5638,6 @@ MonoBehaviour:
   _proximateJointID: 12
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
-  _allowMultiHandInteraction: 0
   _grabGestureName: Grab
   _useCollidersInsteadOfBoundingBox: 0
   _showBoundingBox: 1
@@ -8338,7 +8335,6 @@ MonoBehaviour:
   _proximateJointID: 12
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
-  _allowMultiHandInteraction: 0
   _grabGestureName: Grab
   _useCollidersInsteadOfBoundingBox: 0
   _showBoundingBox: 1
@@ -10971,7 +10967,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1559787255
 GameObject:
@@ -12857,12 +12853,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1786586512}
   m_LocalRotation: {x: -0, y: -0.70710677, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 10, y: 0.5, z: -4.9999948}
+  m_LocalPosition: {x: 10, y: 0.5, z: -5}
   m_LocalScale: {x: 19.75, y: 1, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_Father: {fileID: 1867119297}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1 &1791474815
 GameObject:
@@ -13706,12 +13702,46 @@ MonoBehaviour:
   _proximateJointID: 12
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
-  _allowMultiHandInteraction: 0
   _grabGestureName: Grab
   _useCollidersInsteadOfBoundingBox: 0
   _showBoundingBox: 1
   _boundingBoxExtensionValues: {x: 0.045, y: 0.045, z: 0.045}
   _boundColliders: []
+--- !u!1 &1867119296
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1867119297}
+  m_Layer: 0
+  m_Name: Walls
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1867119297
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1867119296}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 395858228}
+  - {fileID: 2126975940}
+  - {fileID: 568580387}
+  - {fileID: 1786586515}
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1874004869
 GameObject:
   m_ObjectHideFlags: 0
@@ -16245,13 +16275,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2126975937}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.5, z: -15}
   m_LocalScale: {x: 20.25, y: 1, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_Father: {fileID: 1867119297}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2128652159
 GameObject:
@@ -16791,7 +16821,6 @@ MonoBehaviour:
   _proximateJointID: 12
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
-  _allowMultiHandInteraction: 0
   _grabGestureName: Grab
   _useCollidersInsteadOfBoundingBox: 0
   _showBoundingBox: 0
@@ -16851,7 +16880,6 @@ MonoBehaviour:
   _proximateJointID: 12
   _forceInteractibleJoint: 0
   _forcedInteractJointID: 11
-  _allowMultiHandInteraction: 0
   _grabGestureName: Grab
   _useCollidersInsteadOfBoundingBox: 0
   _showBoundingBox: 0

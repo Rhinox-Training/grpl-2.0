@@ -33,11 +33,6 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField]//TODO: ASK SENSIORS
         [HideIfField(false, nameof(_useCollidersInsteadOfBoundingBox))]
         private List<Collider> _boundColliders;
-        //private Collider[] _boundColliders;
-
-
-        //[Conditional(nameof(_useCollidersInsteadOfBoundingBox))]
-
 
         public event Action<GRPLGrabbableBase, RhinoxHand> OnGrabbed;
         public event Action<GRPLGrabbableBase, RhinoxHand> OnDropped;

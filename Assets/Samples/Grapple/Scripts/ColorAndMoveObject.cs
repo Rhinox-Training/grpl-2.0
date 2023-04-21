@@ -32,10 +32,10 @@ public class ColorAndMoveObject : MonoBehaviour
         _sliderG.OnValueUpdate += ColorSliderUpdate;
         _sliderB.OnValueUpdate += ColorSliderUpdate;
 
-        _valve.OnValueUpdate += ValveUpdate;
+        _valve.ValueUpdated += ValveUpdated;
 
-        _valve.OnFullyOpenStarted += IsOpen;
-        _valve.OnFullyClosedStarted += IsClosed;
+        _valve.FullyOpenStarted += IsOpen;
+        _valve.FullyClosedStarted += IsClosed;
     }
 
     private void IsClosed(GRPLValve valve)
@@ -51,10 +51,10 @@ public class ColorAndMoveObject : MonoBehaviour
     private void OnDisable()
     {
         _sliderR.OnValueUpdate -= ColorSliderUpdate;
-        _valve.OnValueUpdate -= ValveUpdate;
+        _valve.ValueUpdated -= ValveUpdated;
     }
 
-    private void ValveUpdate(GRPLValve valve, ValveState state, float value)
+    private void ValveUpdated(GRPLValve valve, ValveState state, float value)
     {
         //rotate around the Y-Axis
         transform.localEulerAngles = transform.localEulerAngles.With(null, value);

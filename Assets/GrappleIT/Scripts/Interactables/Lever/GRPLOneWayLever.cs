@@ -13,36 +13,61 @@ using Rhinox.GUIUtils.Editor;
 namespace Rhinox.XR.Grapple.It
 {
     /// <summary>
-    /// The GRPLOneWayLever class is a subclass of GRPLLeverBase and provides functionality for one-way levers in a 3D environment. <br /><br />
-    /// The class contains the {LeverActivated} and {LeverStopped} events for lever activation and lever stopping.<br /><br />
-    /// Additionally, the class includes fields for debugging and drawing.
+    /// The GRPLOneWayLever class is a subclass of GRPLLeverBase and provides functionality for one-way levers in
+    /// a 3D environment. The class contains the LeverActivated and LeverStopped events for lever activation and lever
+    /// stopping. <br /> Additionally, the class includes fields for debugging and drawing.
     /// </summary>
     public class GRPLOneWayLever : GRPLLeverBase
     {
+        /// <summary>
+        /// A boolean flag to indicate if debugging is enabled.
+        /// </summary>
         [Header("Debug Parameters")]
         [SerializeField] private bool _drawDebug = false;
 
+        /// <summary>
+        /// A boolean flag to indicate if drawing the arc is enabled. Hidden if _drawDebug is false.
+        /// </summary>
         [Space(10f)]
         [SerializeField]
         [HideIfField(false, "_drawDebug", 0f)]
         private bool _drawArc = false;
 
+        /// <summary>
+        /// A boolean flag to indicate if drawing the grab range is enabled. Hidden if _drawDebug is false.
+        /// </summary>
         [SerializeField]
         [HideIfField(false, "_drawDebug", 0f)]
         private bool _drawGrabRange = false;
 
+        /// <summary>
+        /// A boolean flag to indicate if drawing the arc extends is enabled. Hidden if _drawDebug is false.
+        /// </summary>
         [SerializeField]
         [HideIfField(false, "_drawDebug", 0f)]
         private bool _drawArcExtends = false;
 
+        /// <summary>
+        /// Triggered when the lever is activated.
+        /// </summary>
         public event Action<GRPLOneWayLever> LeverActivated;
+
+        /// <summary>
+        /// Triggered when the lever is stopped.
+        /// </summary>
         public event Action<GRPLOneWayLever> LeverStopped;
+
 
         private bool _isLeverActivated = false;
 
         //-----------------------
         // MONO BEHAVIOUR METHODS
         //-----------------------
+        /// <summary>
+        ///  Checks if the lever is interacted and calls the CheckLeverActivationAndSetLeverTransform method to
+        /// determine if the lever has been activated or stopped. If the lever has been activated, invokes the
+        /// LeverActivated event. If the lever has been stopped, invokes the LeverStopped event.
+        /// </summary>
         private void Update()
         {
             if (State != GRPLInteractionState.Interacted)
@@ -67,7 +92,9 @@ namespace Rhinox.XR.Grapple.It
         // MEMBER METHODS
         //-----------------------
         /// <summary>
-        /// Set's the transform of the lever according to the current interact joint
+        /// Calculates the angle between the projected position of the joint and the original handle position.
+        /// Sets the transform of the lever according to the current interact joint. Returns whether the angle of the
+        /// lever has exceeded the interact angle.
         /// </summary>
         /// <param name="jointPos">The position of the interact joint</param>
         /// <returns>Whether the angle of the lever has exceeded the interact angle</returns>
@@ -88,7 +115,7 @@ namespace Rhinox.XR.Grapple.It
         }
 
         /// <summary>
-        /// Calculates the angle between the projected position of the joint and original handle pos.
+        /// Calculates the angle between the projected position of the joint and the original handle position.
         /// </summary>
         /// <param name="projectedPos">The position of the projected joint on the plane defined by the lever.</param>
         /// <returns></returns>
@@ -135,12 +162,22 @@ namespace Rhinox.XR.Grapple.It
         //-----------------------
         // INHERITED METHODS
         //-----------------------
+        /// <summary>
+        /// Initializes the initial handle position and rotation.
+        /// </summary>
         protected override void Initialize()
         {
             _initialHandlePos = _handleTransform.position;
             _initialHandleRot = _handleTransform.rotation.eulerAngles;
         }
 
+        /// <summary>
+        /// Checks if a joint and hand are interacting with the lever.
+        /// Returns true if the joint and hand are interacting with the lever, false otherwise.
+        /// </summary>
+        /// <param name="joint">The interact joint</param>
+        /// <param name="hand">The hand on which this joint resides</param>
+        /// <returns></returns>
         public override bool CheckForInteraction(RhinoxJoint joint, RhinoxHand hand)
         {
             if (_gestureRecognizer == null)
@@ -196,6 +233,13 @@ namespace Rhinox.XR.Grapple.It
             return State == GRPLInteractionState.Interacted;
         }
 
+        /// <summary>
+        /// Returns the current interact joint, if it is found.
+        /// </summary>
+        /// <param name="joints">The joints on the current hand.</param>
+        /// <param name="joint">An out parameter holding the interaction joint.</param>
+        /// <param name="hand">The current hand.</param>
+        /// <returns>Whether an interact joint was found.</returns>
         public override bool TryGetCurrentInteractJoint(ICollection<RhinoxJoint> joints, out RhinoxJoint joint,
             RhinoxHand hand)
         {
@@ -208,6 +252,9 @@ namespace Rhinox.XR.Grapple.It
         // EDITOR ONLY METHODS
         //-----------------------
 #if UNITY_EDITOR
+        /// <summary>
+        /// Draws the desired gizmos.
+        /// </summary>
         protected override void OnDrawGizmos()
         {
             base.OnDrawGizmos();

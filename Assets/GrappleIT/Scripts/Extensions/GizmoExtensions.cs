@@ -2,17 +2,21 @@ using UnityEngine;
 
 namespace Rhinox.XR.Grapple.It
 {
+    
+    /// <summary>
+    /// This utility class provides extension methods for drawing various geometrical shapes as gizmos.
+    /// </summary>
     public static class GizmoExtensions
     {
         /// <summary>
-        /// Draws a wire arc shape in 3D space.
+        /// This method draws a wireframe arc using Gizmos in the scene view
         /// </summary>
         /// <param name="arcCenter"> The center point of the arc</param>
-        /// <param name="direction">The direction in which the arc will be drawn.</param>
-        /// <param name="arcNormal">The normal vector of the plane in which the arc lies.</param>
+        /// <param name="direction">The initial direction in which the arc will be drawn.</param>
+        /// <param name="arcNormal">A perpendicular vector to the plane in which the arc lies. </param>
         /// <param name="arcRadius">The radius of the arc.</param>
-        /// <param name="arcAngle">Optional parameter specifying the angle of the arc in degrees.</param>
-        /// <param name="segments">Optional parameter specifying the number of line segments that will be used to draw the arc.</param>
+        /// <param name="arcAngle">Specifies the angle, in degrees, that the arc spans.</param>
+        /// <param name="segments">Specifies the number of line segments used to draw the arc (default is 10).</param>
         /// <remarks>The <paramref name="direction"/> and <paramref name="arcNormal"/> should be normalized otherwise the circle will be drawn incorrectly.</remarks>
         public static void DrawWireArc(Vector3 arcCenter, Vector3 direction, Vector3 arcNormal, float arcRadius, float arcAngle, int segments = 10)
         {
@@ -36,17 +40,16 @@ namespace Rhinox.XR.Grapple.It
         }
 
         /// <summary>
-        /// Draws a solid arc shape in 3D space using triangle meshes. The drawn arc is culled from behind.
+        /// Draws a solid arc using Gizmos in the scene view.
         /// </summary>
         /// <param name="arcCenter"> The center point of the arc</param>
-        /// <param name="direction">The direction in which the arc will be drawn.</param>
-        /// <param name="arcNormal">The normal vector of the plane in which the arc lies.</param>
+        /// <param name="direction">The initial direction in which the arc will be drawn.</param>
+        /// <param name="arcNormal">A perpendicular vector to the plane in which the arc lies. </param>
         /// <param name="arcRadius">The radius of the arc.</param>
-        /// <param name="arcAngle">The angle of the arc in degrees.</param>
+        /// <param name="arcAngle">Specifies the angle, in degrees, that the arc spans.</param>
         /// <param name="force2Sided">Optional parameter specifying if the arc will be visible from both sides of the normal (basically no culling).</param>
-        /// <param name="segments">Optional parameter specifying the number of line segments that will be used to draw the arc.</param>
-        /// <remarks>The <paramref name="direction"/> and <paramref name="arcNormal"/> should be normalized otherwise the circle will be drawn incorrectly.<br />
-        /// This function has not yet been optimized!</remarks>
+        /// <param name="segments">Specifies the number of line segments used to draw the arc (default is 10).</param>
+        /// <remarks>The <paramref name="direction"/> and <paramref name="arcNormal"/> should be normalized otherwise the circle will be drawn incorrectly.</remarks>
         public static void DrawSolidArc(Vector3 arcCenter, Vector3 direction, Vector3 arcNormal, float arcRadius,
             float arcAngle, bool force2Sided = false, int segments = 10)
         {
@@ -104,13 +107,13 @@ namespace Rhinox.XR.Grapple.It
         }
 
         /// <summary>
-        /// Draws a wire circle gizmo in 3D space.
+        /// Draws a wireframe circle using Gizmos in the scene view.
         /// </summary>
-        /// <param name="circleCenter">The center point of the circle in worldspace.</param>
-        /// <param name="direction">The direction of where the circle start point is.</param>
-        /// <param name="circleNormal">The normal of the plane the circle is on.</param>
+        /// <param name="circleCenter">The center point of the circle in world space.</param>
+        /// <param name="direction">Specifies the initial direction in which the circle is drawn.</param>
+        /// <param name="circleNormal"> A perpendicular vector to the plane in which the circle lies.</param>
         /// <param name="circleRadius">The radius of the circle.</param>
-        /// <param name="segments">Optional parameter specifying the number of line segments that will be used to draw the circle border.</param>
+        /// <param name="segments">Specifies the number of line segments used to draw the arc (default is 10).</param>
         /// <remarks>The <paramref name="direction"/> and <paramref name="circleNormal"/> should be normalized otherwise the circle will be drawn incorrectly.</remarks>
         public static void DrawWireCircle(Vector3 circleCenter, Vector3 direction, Vector3 circleNormal, float circleRadius, int segments = 10)
         {
@@ -120,12 +123,12 @@ namespace Rhinox.XR.Grapple.It
         /// <summary>
         /// Draw a filled circle gizmo in 3D space.
         /// </summary>
-        /// <param name="circleCenter">The center point of the circle in worldspace.</param>
-        /// <param name="direction">The direction of where the circle start point is.</param>
-        /// <param name="circleNormal">The normal of the plane the circle is on.</param>
-        /// <param name="circleRadius">The radius of the circle.</param>    /// 
+        /// <param name="circleCenter">The center point of the circle in world space.</param>
+        /// <param name="direction">Specifies the initial direction in which the circle is drawn.</param>
+        /// <param name="circleNormal"> A perpendicular vector to the plane in which the circle lies.</param>
+        /// <param name="circleRadius">The radius of the circle.</param>
         /// <param name="force2Sided">Optional parameter specifying if the circle will be visible from both sides of the normal (basically no culling).</param>
-        /// <param name="segments">Optional parameter specifying the number of line segments that will be used to draw the circle border.</param>
+        /// <param name="segments">Specifies the number of line segments used to draw the arc (default is 10).</param>
         /// <remarks>The <paramref name="direction"/> and <paramref name="circleNormal"/> should be normalized otherwise the circle will be drawn incorrectly.</remarks>
         public static void DrawSolidCircle(Vector3 circleCenter, Vector3 direction, Vector3 circleNormal, float circleRadius, bool force2Sided = false, int segments = 10)
         {
@@ -135,14 +138,14 @@ namespace Rhinox.XR.Grapple.It
         /// <summary>
         /// Draws a filled Annulus (2D flat donut) arc in 3D space.
         /// </summary>
-        /// <param name="center">The center point of the annulus arc in worldspace.</param>
+        /// <param name="center">The center point of the annulus arc in world space.</param>
         /// <param name="direction">The direction of where the annulus arc start point is.</param>
         /// <param name="forwardVec">The normal of the plane the annulus is on.</param>
         /// <param name="innerR">The radius of the annulus's inner border.</param>
         /// <param name="outerR">The radius of the annulus's outer border.</param>
         /// <param name="angle">The angle of the annulus arc in degrees.</param>
         /// <param name="force2Sided">Optional parameter specifying if the annulus will be visible from both sides of the normal (basically no culling).</param>
-        /// <param name="segments">Optional parameter specifying the number of line segments that will be used to draw the inner and outer circle borders of the annulus.</param>
+        /// <param name="segments">Specifies the number of line segments used to draw the arc (default is 12).</param>
         /// <remarks>DOES NOT DO ARC, STILL CLOSES The <paramref name="direction"/> and <paramref name="forwardVec"/> should be normalized otherwise the circle will be drawn incorrectly.<br />
         /// <paramref name="segments"/> cannot go below 3, as 3 is the minimum to make a triangle.</remarks>
         public static void DrawSolidAnnulusArc(Vector3 center, Vector3 direction, Vector3 forwardVec,
@@ -225,15 +228,15 @@ namespace Rhinox.XR.Grapple.It
         }
 
         /// <summary>
-        /// Draws a filled Annulus (2D flat donut) kdsin 3D space.
+        /// Draws a solid annulus arc (a solid ring segment) using Gizmos in the scene view. 
         /// </summary>
-        /// <param name="center">The center point of the annulus in worldspace.</param>
-        /// <param name="direction">The direction of where the annulus start point is.</param>
-        /// <param name="forwardVec">The normal of the plane the annulus is on.</param>
+        /// <param name="center">The center point of the annulus in world space.</param>
+        /// <param name="direction">The initial direction in which the annulus is drawn. </param>
+        /// <param name="forwardVec">A vector that defines the plane in which the annulus lies.</param>
         /// <param name="innerR">The radius of the annulus's inner border.</param>
         /// <param name="outerR">The radius of the annulus's outer border.</param>
         /// <param name="force2Sided">Optional parameter specifying if the annulus will be visible from both sides of the normal (basically no culling).</param>
-        /// <param name="segments">Optional parameter specifying the number of line segments that will be used to draw the inner and outer circle borders of the annulus.</param>
+        /// <param name="segments">Specifies the number of line segments used to draw the arc (default is 12).</param>
         /// <remarks>The <paramref name="direction"/> and <paramref name="forwardVec"/> should be normalized otherwise the circle will be drawn incorrectly.</remarks>
         public static void DrawSolidAnnulus(Vector3 center, Vector3 direction, Vector3 forwardVec,
             float innerR, float outerR, bool force2Sided = false, int segments = 12)
@@ -245,12 +248,12 @@ namespace Rhinox.XR.Grapple.It
         /// Draws a filled Annulus (2D flat donut) in 3D space.
         /// </summary>
         /// <param name="center">The center point of the annulus in worldspace.</param>
-        /// <param name="direction">The direction of where the annulus start point is.</param>
-        /// <param name="forwardVec">The normal of the plane the annulus is on.</param>
+        /// <param name="direction">The initial direction in which the annulus is drawn. </param>
+        /// <param name="forwardVec">A vector that defines the plane in which the annulus lies.</param>
         /// <param name="centerR">The radius of the annulus's.</param>
         /// <param name="halfWidth">The half width of the filled part of annulus.</param>
-        /// <param name="force2Sided">Optional parameter specifying if the annulu will be visible from both sides of the normal (basically no culling).</param>
-        /// <param name="segments">Optional parameter specifying the number of line segments that will be used to draw the inner and outer circle borders of the annulus.</param>
+        /// <param name="force2Sided">Optional parameter specifying if the annulus will be visible from both sides of the normal (basically no culling).</param>
+        /// <param name="segments">Specifies the number of line segments used to draw the arc (default is 12).</param>
         /// <remarks>The <paramref name="direction"/> and <paramref name="forwardVec"/> should be normalized otherwise the circle will be drawn incorrectly.</remarks>
         public static void DrawSolidAnnulusWidth(Vector3 center, Vector3 direction, Vector3 forwardVec,
             float centerR, float halfWidth, bool force2Sided = false, int segments = 12)
@@ -261,9 +264,9 @@ namespace Rhinox.XR.Grapple.It
         //Potential extra, wire annulus
 
         /// <summary>
-        /// Draws a Filled Torus in 3D space
+        /// Draws a solid torus using Gizmos in the scene view. 
         /// </summary>
-        /// <param name="center">The center point of the torus in worldspace.</param>
+        /// <param name="center">The center point of the torus in worlds pace.</param>
         /// <param name="direction">The direction of where the torus start point is.</param>
         /// <param name="forwardVec">The normal of the plane the torus is on.</param>
         /// <param name="innerR">The radius of the annulus's inner border.</param>
@@ -337,6 +340,21 @@ namespace Rhinox.XR.Grapple.It
         }
 
         //Needs re-work or maybe deprecated...
+
+        /// <summary>
+        /// Draws a wire torus using Gizmos in the scene view. 
+        /// </summary>
+        /// <param name="center">The center point of the torus in worlds pace.</param>
+        /// <param name="direction">The direction of where the torus start point is.</param>
+        /// <param name="forwardVec">The normal of the plane the torus is on.</param>
+        /// <param name="innerR">The radius of the annulus's inner border.</param>
+        /// <param name="outerR">The radius of the annulus's outer border.</param>
+        /// <param name="segmentsInner">Optional parameter specifying the number of line segments that will be used to draw 
+        /// the loop around the given normal.</param>
+        /// <param name="segmentsOuter">Optional parameter specifying the number of line segments that will be used to draw 
+        /// the loop of each segment.</param>
+        /// <remarks>The <paramref name="direction"/> and <paramref name="forwardVec"/> should be normalized otherwise the circle will be drawn incorrectly.<br />
+        /// <paramref name="segmentsInner"/> and <paramref name="segmentsOuter"/> cannot go below 3, as 3 is the minimum to make a triangle.</remarks>
         public static void DrawWireTorus(Vector3 center, Vector3 direction, Vector3 forwardVec,
             float innerR, float outerR, int segmentsInner = 12, int segmentsOuter = 8)
         {

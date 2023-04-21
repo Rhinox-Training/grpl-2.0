@@ -20,25 +20,52 @@ namespace Rhinox.XR.Grapple.It
     /// <remarks> The vector from the base to the surface should follow the local forward vector!</remarks>
     public class GRPLButtonInteractable : GRPLInteractable
     {
+        /// <summary>
+        ///  A private bool field used to determine whether to draw debug information in the editor.
+        /// </summary>
         [Header("Debug drawing")]
-        [SerializeField]
-        private bool _drawDebug;
+        [SerializeField] private bool _drawDebug;
 
+        /// <summary>
+        /// A private Transform field representing the transform of the button base.
+        /// </summary>
         [Header("Poke parameters")]
-        [SerializeField]
-        private Transform _interactableBaseTransform;
+        [SerializeField] private Transform _interactableBaseTransform;
 
+        /// <summary>
+        /// A private Transform field representing the transform of the button surface.
+        /// </summary>
         [SerializeField] private Transform _interactObject;
 
+        /// <summary>
+        /// A private bool field used to determine whether there should be a delay between button presses.
+        /// </summary>
         [Header("Activation parameters")]
-        [SerializeField]
-        private bool _useInteractDelay = true;
+        [SerializeField] private bool _useInteractDelay = true;
 
+        /// <summary>
+        ///  A private float field representing the amount of time to wait between button presses.
+        /// </summary>
         [SerializeField] private float _interactDelay = 0.25f;
-        [Range(0f, 1f)][SerializeField] private float _selectStartPercentage = 0.25f;
 
+        /// <summary>
+        ///  A private float field representing the percentage of the total press distance at which the button press event should be triggered.
+        /// </summary>
+        [Range(0f, 1f)] [SerializeField] private float _selectStartPercentage = 0.25f;
+
+        /// <summary>
+        /// An event that occurs when the button is pressed down. The event takes a GRPLButtonInteractable as a parameter.
+        /// </summary>
         public event Action<GRPLButtonInteractable> ButtonDown;
+
+        /// <summary>
+        /// An event that occurs when the button is released. The event takes a GRPLButtonInteractable as a parameter.
+        /// </summary>
         public event Action<GRPLButtonInteractable> ButtonUp;
+
+        /// <summary>
+        /// An event that occurs when the button is held down. The event takes a GRPLButtonInteractable as a parameter.
+        /// </summary>
         public event Action<GRPLButtonInteractable> ButtonPressed;
 
 
@@ -53,6 +80,9 @@ namespace Rhinox.XR.Grapple.It
         //-----------------------
         // MONO BEHAVIOUR METHODS
         //-----------------------
+        /// <summary>
+        /// Used to initialize the button.
+        /// </summary>
         protected override void Initialize()
         {
             // Calculate the initial distance between the interact object and base transform
@@ -70,6 +100,9 @@ namespace Rhinox.XR.Grapple.It
             };
         }
 
+        /// <summary>
+        /// Used to update the state of the button.
+        /// </summary>
         private void Update()
         {
             if (State != GRPLInteractionState.Interacted)
@@ -105,6 +138,7 @@ namespace Rhinox.XR.Grapple.It
                 SetButtonState(true);
                 return;
             }
+
             SetButtonState(false);
         }
 
@@ -112,9 +146,9 @@ namespace Rhinox.XR.Grapple.It
         // OWN METHODS
         //-----------------------
         /// <summary>
-        /// Sets the state of the button and invokes the correct events.
+        /// Used to set the state of the button and invoke the appropriate events.
         /// </summary>
-        /// <param name="state"></param>
+        /// <param name="state">The new state of the button.</param>
         private void SetButtonState(bool state)
         {
             // Button down
@@ -132,12 +166,16 @@ namespace Rhinox.XR.Grapple.It
                 // Button up
                 ButtonUp?.Invoke(this);
             }
+
             _buttonPressed = state;
         }
 
         //-----------------------
         // INHERITED EVENTS
         //-----------------------
+        /// <summary>
+        /// Used to stop interaction with the button.
+        /// </summary>
         protected override void InteractStopped()
         {
             if (_useInteractDelay)
@@ -149,6 +187,9 @@ namespace Rhinox.XR.Grapple.It
             base.InteractStopped();
         }
 
+        /// <summary>
+        /// Used to stop proximity with the button.
+        /// </summary>
         protected override void ProximityStopped()
         {
             _interactObject.transform.position = _interactableBaseTransform.position +
@@ -159,6 +200,10 @@ namespace Rhinox.XR.Grapple.It
         //-----------------------
         // COROUTINES
         //-----------------------
+        /// <summary>
+        /// A private IEnumerator used to disable interaction with the button for a certain duration.
+        /// </summary>
+        /// <returns></returns>
         private IEnumerator DisableInteractibleForDuration()
         {
             _isOnCooldown = true;
