@@ -92,8 +92,17 @@ This keeps going until you fail.
 
 ### Desk 4
 
-A simple game of Rock paper scissors based on your hand gesture.
+This desk has just a simple game of Rock paper scissors, based on the gesture your hand makes.
+Press the start button to start. Once started a hand will appear in front of you making one of the 3 gestures at random.
+After 3 seconds it will stop and use that gesture as its move.  
+You will need to make either a rock, paper or scissors gesture before the PC is done making it's choice.
+The gesture you made as soon as the PC is done will be used to calculate the scores.
+The winner gets 3 points and loser nothing, if it was a draw, you both get 1 point.
+This cycle keeps going until you press the stop button.
 
+**NOTE**:  
+The teleport is deactivated during the rock paper scissors game.  
+As soon as the game has been stopped you will be able to teleport again. 
 
 #### using
 
