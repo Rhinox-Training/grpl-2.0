@@ -27,6 +27,13 @@ the Grapple IT package are:
 
 To have a look at the documentation of Grapple Interaction Toolkit, click [here](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_IT/GrappleIT.html).
 
+## Grapple Samples
+Within the Grapple sample package are 2 scenes.
+
+- GRPLDemo, this scene uses all the system available in the Grapple Interaction Toolkit to showcase how they can be used.
+- GRPLGestureTester, this scene gives you the finger bending values and current gesture each hand is making. This is really useful for testing and tweaking new or existing gestures.
+
+To have a look at a more in depth explenation about the Grapple Sample scenes, click [here]
 
 # License
 
