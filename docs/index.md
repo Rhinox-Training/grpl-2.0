@@ -40,6 +40,6 @@ Within the Grapple sample package are 2 scenes.
 
 To have a look at a more in depth explenation about the Grapple Sample scenes, [click here](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_Samples/GRPLSamples.html)
 
-#License
+# License
 
 Apache-2.0 © Rhinox NV
