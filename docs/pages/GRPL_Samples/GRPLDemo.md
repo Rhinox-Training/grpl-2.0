@@ -69,7 +69,18 @@ There is some leeway. You can either let got or move far away enough from the va
 
 ### Desk 3
 
-INFO COMING SOON!
+This desk has a lever to change from day to night or night to day.  
+Putting the lever in the **UP** position will make it day (if it was night).  
+Putting the lever in the **DOWN** position will make it night (if it was day).  
+On the right side of the desk is a game of simon says with colors.  
+In case you don't know how to play.  
+Just press start to begin. Once the game and after a small delay to prepare yourself,
+a sequence of colors will be shown. after the sequence is done (starting sequence is 4 long).  
+You will need to repeat the sequence back via the small same colored diamond buttons.  
+If you fail, all the big diamonds will turn red and your score will return to 0.  
+To play again just press the start button.  
+If you succeed, you will gain 10 points. the sequence will then play again, but increased by one color.  
+This keeps going until you fail.  
 
 #### using
 
