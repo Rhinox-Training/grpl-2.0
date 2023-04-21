@@ -21,33 +21,35 @@ This scene is a comprehensive intro to what is possible with the Grapple Interac
 
 ## Teleportation
 
-To move around, you need to make use of the teleport. To teleport, make a scissor gesture with either hand into the direction you want to goto.  
+To move around, you need to make use of the teleport.  
+To [**teleport**](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_IT/rhinoxxrgrappleit-GRPLTeleport.html), make a scissor gesture with either hand into the direction you want to goto.  
 After a short delay a arc will show up indicating where you are pointing.  
-The demo scene only uses teleport anchors, so you are limited to teleporting between any of the 4 anchors.  
+The demo scene only uses [**teleport anchors**](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_IT/rhinoxxrgrappleit-GRPLTeleportAnchor.html), so you are limited to teleporting between any of the 4 anchors.  
 The teleport destination marker will snap to the anchor point if you are close enough.  
 To confirm the teleport, you just have to touch the green square with the other hand.
 
 ## Desks
 
 There are multiple desks made splitting these features up, to not overwhelm someone with all these features once.
-Anytime something is grabbed, it is using the GRPLGesture system to recognize the grabbing gesture.
+Anytime something is grabbed, it is using the [**Gesture recognition system**](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_Core/rhinoxxrgrapple-GRPLGestureRecognizer.html) to recognize the grabbing gesture.
 
-### Desk 01
+### Desk 1
 This desk has small objects you can interact with or pick up.  
 The Hammer and cup are socketable objects, meaning they have certain points that will snap to you hands socket point if you try and grab them.
 The others objects are just normal grabable objects, meaning that they will keep their orientation when you grab them.
 On the right side of the desk is a big red button. this button once pressed, will reset all the objects back to their orriginal position.
 
 #### using
- - **GRPLProxyPhysics**
- - **GRPLInteractable**:  
-   - GRPLGrabbableBase and GRPLSocketable for the objects
-   - GRPLButton for the reset button
+ - [**GRPLProxyPhysics**](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_Core/joints.html)
+ - [**GRPLInteractable**](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_IT/Interactables.html):  
+   - [**GRPLGrabbableBase**](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_IT/rhinoxxrgrappleit-GRPLInteractable.html) and
+     [**GRPLSocketable**](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_IT/rhinoxxrgrappleit-GRPLSocketable.html) for the objects
+   - [**GRPLButton**](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_IT/rhinoxxrgrappleit-GRPLButtonInteractable.html) for the reset button
    
 
 ![Desk01](https://user-images.githubusercontent.com/76707656/233655362-363a9ab8-5b29-4293-bd3d-1d85556b4933.PNG)
 
-### Desk 02
+### Desk 2
 
 INFO COMING SOON!
 
@@ -59,7 +61,7 @@ INFO COMING SOON!
 
 ![Desk02](https://user-images.githubusercontent.com/76707656/233656970-5ee24e3f-5c77-48af-aea6-d4a3c6d08c7e.PNG)
 
-### Desk 03
+### Desk 3
 
 INFO COMING SOON!
 
@@ -71,7 +73,7 @@ INFO COMING SOON!
 
 ![Desk03](https://user-images.githubusercontent.com/76707656/233655502-14f275a0-c1c3-423a-a3c3-360ea6e02128.PNG)
 
-### Desk 04
+### Desk 4
 
 INFO COMING SOON!
 
