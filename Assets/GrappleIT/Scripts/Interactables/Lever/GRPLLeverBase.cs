@@ -40,7 +40,7 @@ namespace Rhinox.XR.Grapple.It
         /// <summary>
         /// The maximum angle that the lever can be rotated to.
         /// </summary>
-        [SerializeField] [Range(0, 360f)] protected float _leverMaxAngle = 180f;
+        [SerializeField][Range(0, 360f)] protected float _leverMaxAngle = 180f;
 
         /// <summary>
         /// Determines whether the distance between the hand and the handle is considered when grabbing the lever.
@@ -50,7 +50,8 @@ namespace Rhinox.XR.Grapple.It
         /// <summary>
         /// The name of the gesture used for grabbing the lever.
         /// </summary>
-        [Header("Grab parameters")] [SerializeField]
+        [Header("Grab parameters")]
+        [SerializeField]
         protected string _grabGestureName = "Grab";
 
         /// <summary>
@@ -220,7 +221,7 @@ namespace Rhinox.XR.Grapple.It
         /// </summary>
         protected void DrawGrabRange()
         {
-            using (new eUtility.GizmoColor(Color.magenta))
+            using (new eUtility.GizmoColor(new Color(1f, 0, 1f, 0.75f)))//transparent Magenta
             {
                 Gizmos.DrawSphere(GetReferenceTransform().position, _grabRadius);
             }

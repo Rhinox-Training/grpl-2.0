@@ -3698,7 +3698,27 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1394714768775866335, guid: fbcc0f5517328564da11eace983c6c15, type: 3}
       propertyPath: _drawDebug
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1394714768775866335, guid: fbcc0f5517328564da11eace983c6c15, type: 3}
+      propertyPath: _grabRadius
+      value: 0.12
+      objectReference: {fileID: 0}
+    - target: {fileID: 1394714768775866335, guid: fbcc0f5517328564da11eace983c6c15, type: 3}
+      propertyPath: _drawGrabRange
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1394714768775866335, guid: fbcc0f5517328564da11eace983c6c15, type: 3}
+      propertyPath: _drawLeverParts
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1394714768775866335, guid: fbcc0f5517328564da11eace983c6c15, type: 3}
+      propertyPath: _drawLeverExtends
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1394714768775866335, guid: fbcc0f5517328564da11eace983c6c15, type: 3}
+      propertyPath: _interactMinAngle
+      value: 65
       objectReference: {fileID: 0}
     - target: {fileID: 8370463003274483180, guid: fbcc0f5517328564da11eace983c6c15, type: 3}
       propertyPath: m_RootOrder
@@ -8513,7 +8533,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2602005729610315787, guid: 87786065f9fafa9459ad0bcc3d0600d5, type: 3}
       propertyPath: _grabRadius
-      value: 0.185
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 2602005729610315787, guid: 87786065f9fafa9459ad0bcc3d0600d5, type: 3}
       propertyPath: _proximateRadius
@@ -8522,6 +8542,10 @@ PrefabInstance:
     - target: {fileID: 2602005729610315787, guid: 87786065f9fafa9459ad0bcc3d0600d5, type: 3}
       propertyPath: _grabTolaranceRadius
       value: 0.06
+      objectReference: {fileID: 0}
+    - target: {fileID: 2602005729610315787, guid: 87786065f9fafa9459ad0bcc3d0600d5, type: 3}
+      propertyPath: _grabToleranceRadius
+      value: 0.075
       objectReference: {fileID: 0}
     - target: {fileID: 2602005729610315787, guid: 87786065f9fafa9459ad0bcc3d0600d5, type: 3}
       propertyPath: _showProximateRadius
