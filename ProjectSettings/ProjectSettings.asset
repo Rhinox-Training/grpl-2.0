@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: com.Rhinox
-  productName: Grapple_Demo
+  productName: Grapple_Gesture_Demo
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -135,9 +135,7 @@ PlayerSettings:
     16:9: 1
     Others: 1
   bundleVersion: 0.0.1
-  preloadedAssets:
-  - {fileID: 4786676161276418148, guid: 31afc48df68d175469cb13867d577bf1, type: 2}
-  - {fileID: 4456804829576128812, guid: b665cdd933e8b9445b74f034be9d52b8, type: 2}
+  preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
