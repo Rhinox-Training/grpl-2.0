@@ -171,7 +171,7 @@ A float property that returns the current value of the slider.
 #### OnValueUpdate
 
 ```csharp
-public event Action<float> OnValueUpdate
+public event Action<GRPLUISliderInteractable, float> OnValueUpdate
 ```
 
 ##### Summary
