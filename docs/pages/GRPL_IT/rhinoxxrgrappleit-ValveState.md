@@ -10,7 +10,7 @@ nav_order: 12
 
 ## Description
 
-The possible states the GRPLValve can be in.
+The possible states the [GRPLValve](./rhinoxxrgrappleit-GRPLValve) can be in.
 
 ## Diagram
 
@@ -27,7 +27,7 @@ The possible states the GRPLValve can be in.
 
 ### Summary
 
-The possible states the GRPLValve can be in.
+The possible states the [GRPLValve](./rhinoxxrgrappleit-GRPLValve) can be in.
 
 ### Fields
 
@@ -50,7 +50,3 @@ The valve is in this state when the valve is in fully opened.
 The valve is in this state when the valve is in fully closed.
 
 *Generated with* [*ModularDoc*](https://github.com/hailstorm75/ModularDoc)
-
-GreyZone,
-FullyOpen,
-FullyClosed
