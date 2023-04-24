@@ -33,11 +33,11 @@ Rhinox.XR.Grapple.It.GRPLInteractable --> Rhinox.XR.Grapple.It.GRPLValve
 
 #### Public  properties
 
-| Type    | Name                                                                                                                 | Methods              |
-|---------|----------------------------------------------------------------------------------------------------------------------|----------------------|
-| `float` | [`CurrentValveRotation`](#currentvalverotation)<br>The current angle of the valve.                                   | `get`                |
-| [`ValveState`](./rhinoxxrgrappleit-ValveState)  | [`CurrentValveState`](#currentValveState)<br>The current state of the valve. | `get`                |
-| `bool`  | [`IsGrabbed`](#isgrabbed)<br>Whether or not the valve is currently being grabbed.                                    | `get, protected set` |
+| Type    | Name                                                                                                                       | Methods              |
+|---------|----------------------------------------------------------------------------------------------------------------------------|----------------------|
+| `float`                                         | [`CurrentValveRotation`](#currentvalverotation)<br>The current angle of the valve. | `get`                |
+| [`ValveState`](./rhinoxxrgrappleit-ValveState)  | [`CurrentValveState`](#currentvalvestate)<br>The current state of the valve.       | `get`                |
+| `bool`                                          | [`IsGrabbed`](#isgrabbed)<br>Whether or not the valve is currently being grabbed.  | `get, protected set` |
 
 ### Methods
 
