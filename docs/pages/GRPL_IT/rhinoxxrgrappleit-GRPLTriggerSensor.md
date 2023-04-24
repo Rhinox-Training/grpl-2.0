@@ -3,7 +3,7 @@ layout: page
 title: Grapple Trigger Sensor
 parent: Interactables
 grand_parent: Grapple IT
-nav_order: 13
+nav_order: 14
 ---
 
 # GRPLTriggerSensor `Public class`

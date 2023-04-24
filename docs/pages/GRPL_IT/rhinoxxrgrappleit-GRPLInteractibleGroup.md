@@ -3,7 +3,7 @@ layout: page
 title: Grapple Interactible Group
 parent: Interactables
 grand_parent: Grapple IT
-nav_order: 12
+nav_order: 13
 ---
 
 # GRPLInteractibleGroup `Public class`
