@@ -1,5 +1,5 @@
 title: Grapple 2.0 documentation
-description: A starter template for a Jeykll site using the Just the Docs theme!
+description: The documentation for the entire Grapple 2.0 project.
 theme: just-the-docs
 
 url: https://rhinox-training.github.io/grpl-2.0/
@@ -8,5 +8,5 @@ mermaid:
     version: "10.1.0"
 
 
-logo: "/assets/images/GrappleLogoWhite.png"
-favicon_ico: "/assets/images/GrappleLogoWhite.ico"
+logo: "docs/assets/images/GrappleLogoWhite.png"
+favicon_ico: "docs//assets/images/GrappleLogoWhite.ico"
