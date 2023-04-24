@@ -10253,7 +10253,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: ImportOnPlay
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: ExportFileName
@@ -10269,27 +10269,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.size
-      value: 0
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: OverwriteGesturesOnImport
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[0].Name
-      value: Thumbs up
+      value: Grab
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[1].Name
-      value: Thumbs up
+      value: Teleport
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[2].Name
-      value: Thumbs up
+      value: Rocker
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[3].Name
-      value: Thumbs up
+      value: Nice
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[4].Name
@@ -10297,7 +10297,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[5].Name
-      value: Rock
+      value: Paper
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[6].Name
@@ -10309,19 +10309,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[0].CheckJoint
-      value: 6
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[1].CheckJoint
-      value: 6
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[2].CheckJoint
-      value: 6
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[3].CheckJoint
-      value: 6
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[4].CheckJoint
@@ -10329,15 +10329,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[0].BendThreshold
-      value: 0.2
+      value: 0.65
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[1].BendThreshold
-      value: 0.2
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[2].BendThreshold
-      value: 0.2
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[3].BendThreshold
@@ -10349,7 +10349,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[5].BendThreshold
-      value: 0.25
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[6].BendThreshold
@@ -10361,51 +10361,51 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[0].JointForward.x
-      value: 0.0005738139
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[0].JointForward.y
-      value: 0.9606992
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[0].JointForward.z
-      value: 0.2775916
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[1].JointForward.x
-      value: 0.0005738139
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[1].JointForward.y
-      value: 0.9606992
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[1].JointForward.z
-      value: 0.2775916
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[2].JointForward.x
-      value: 0.0005738139
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[2].JointForward.y
-      value: 0.9606992
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[2].JointForward.z
-      value: 0.2775916
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[3].JointForward.x
-      value: 0.0005738139
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[3].JointForward.y
-      value: 0.9606992
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[3].JointForward.z
-      value: 0.2775916
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[4].JointForward.x
@@ -10421,19 +10421,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[0].UseJointForward
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[1].UseJointForward
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[2].UseJointForward
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[3].UseJointForward
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[4].UseJointForward
@@ -10505,35 +10505,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[0].FingerBendValues.Array.data[0]
-      value: 0.9217584
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[0].FingerBendValues.Array.data[1]
-      value: 0
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[0].FingerBendValues.Array.data[2]
-      value: 0
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[0].FingerBendValues.Array.data[3]
-      value: 0
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[0].FingerBendValues.Array.data[4]
-      value: 0
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[1].FingerBendValues.Array.data[0]
-      value: 0.9217584
+      value: 0.85
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[1].FingerBendValues.Array.data[1]
-      value: 0
+      value: 0.95
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[1].FingerBendValues.Array.data[2]
-      value: 0
+      value: 0.95
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[1].FingerBendValues.Array.data[3]
@@ -10545,43 +10545,43 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[2].FingerBendValues.Array.data[0]
-      value: 0.9217584
+      value: 0.98282266
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[2].FingerBendValues.Array.data[1]
-      value: 0
+      value: 0.9219447
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[2].FingerBendValues.Array.data[2]
-      value: 0
+      value: 0.08654165
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[2].FingerBendValues.Array.data[3]
-      value: 0
+      value: 0.106257245
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[2].FingerBendValues.Array.data[4]
-      value: 0
+      value: 0.97877836
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[3].FingerBendValues.Array.data[0]
-      value: 0.9217584
+      value: 0.7013786
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[3].FingerBendValues.Array.data[1]
-      value: 0
+      value: 0.48174536
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[3].FingerBendValues.Array.data[2]
-      value: 0
+      value: 0.96459705
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[3].FingerBendValues.Array.data[3]
-      value: 0
+      value: 0.9926205
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[3].FingerBendValues.Array.data[4]
-      value: 0
+      value: 0.9756108
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[4].FingerBendValues.Array.data[0]
@@ -10589,7 +10589,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[5].FingerBendValues.Array.data[0]
-      value: 0
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[5].FingerBendValues.Array.data[1]
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[5].FingerBendValues.Array.data[2]
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[5].FingerBendValues.Array.data[3]
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
+      propertyPath: Gestures.Array.data[5].FingerBendValues.Array.data[4]
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1580037713721437767, guid: c639ac3fa8ca10a409049faccbac1b03, type: 3}
       propertyPath: Gestures.Array.data[6].FingerBendValues.Array.data[0]

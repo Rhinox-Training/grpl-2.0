@@ -1,8 +1,11 @@
-﻿using Rhinox.GUIUtils.Editor;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Hands;
+
+#if UNITY_EDITOR
+    using Rhinox.GUIUtils.Editor;
+#endif
 
 namespace Rhinox.XR.Grapple.It
 {

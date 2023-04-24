@@ -7,6 +7,7 @@ using System.IO;
 using Newtonsoft.Json;
 using Rhinox.Lightspeed;
 using Rhinox.Perceptor;
+using UnityEditor;
 using UnityEngine.InputSystem;
 
 namespace Rhinox.XR.Grapple

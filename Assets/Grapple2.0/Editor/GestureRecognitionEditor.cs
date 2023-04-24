@@ -85,7 +85,8 @@ namespace Rhinox.XR.Grapple
             //--------------------------
             // Recording
             //--------------------------
-            _showRecordingSettings = EditorGUILayout.BeginFoldoutHeaderGroup(_showRecordingSettings, "Recording settings");
+            _showRecordingSettings =
+                EditorGUILayout.BeginFoldoutHeaderGroup(_showRecordingSettings, "Recording settings");
 
             if (_showRecordingSettings)
                 ShowRecordingSettings();
@@ -181,7 +182,7 @@ namespace Rhinox.XR.Grapple
                         script.ImportFilePath != "" ? script.ImportFilePath : Application.dataPath, "json");
 
                     script.ReadGesturesFromJson(chosenFilePath);
-                    //serializedObject.ApplyModifiedProperties();
+                    EditorUtility.SetDirty(script);
                 }
             }
         }
@@ -219,7 +220,6 @@ namespace Rhinox.XR.Grapple
             if (GUILayout.Button("Export Gestures"))
             {
                 script.WriteGesturesToJson();
-
             }
         }
 

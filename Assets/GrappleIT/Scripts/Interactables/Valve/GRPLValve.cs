@@ -1,4 +1,3 @@
-using Rhinox.GUIUtils.Editor;
 using Rhinox.Lightspeed;
 using Rhinox.Perceptor;
 using System;
@@ -6,6 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.XR.Hands;
+
+#if UNITY_EDITOR
+    using Rhinox.GUIUtils.Editor;
+#endif
 
 namespace Rhinox.XR.Grapple.It
 {
@@ -30,33 +33,30 @@ namespace Rhinox.XR.Grapple.It
         /// <summary>
         /// A reference to the valve's Transform component that holds the visual representation of the valve.
         /// </summary>
-        [Space(10f)]
-        [Header("Valve Settings")]
-        [SerializeField]
+        [Space(10f)] [Header("Valve Settings")] [SerializeField]
         private Transform _visualTransform = null;
 
         /// <summary>
         /// The name of the gesture that triggers the valve grab.
         /// </summary>
-        [Header("Grab parameters")]
-        [SerializeField]
+        [Header("Grab parameters")] [SerializeField]
         private string _grabGestureName = "Grab";
 
         /// <summary>
         /// The radius within which the user's hand must be positioned in order to grab the valve.
         /// </summary>
-        [SerializeField][Range(0f, .5f)] private float _grabRadius = .1f;
+        [SerializeField] [Range(0f, .5f)] private float _grabRadius = .1f;
 
         /// <summary>
         /// The tolerance radius within which the user's hand must be positioned in order to grab the valve.
         /// </summary>
-        [SerializeField][Range(0f, .25f)] private float _grabToleranceRadius = .025f;
+        [SerializeField] [Range(0f, .25f)] private float _grabToleranceRadius = .025f;
 
         /// <summary>
         /// The angle at which the valve is fully open.
         /// </summary>
-        [Header("Valve Settings")]
-        [SerializeField] private float _fullyOpenAngle = 0f;
+        [Header("Valve Settings")] [SerializeField]
+        private float _fullyOpenAngle = 0f;
 
         /// <summary>
         /// The angle at which the valve is fully closed.
@@ -66,7 +66,7 @@ namespace Rhinox.XR.Grapple.It
         /// <summary>
         /// Whether or not to draw gizmos in the Unity Editor.
         /// </summary>
-        [Header("Gizmos")][SerializeField] bool _drawGizmos = true;
+        [Header("Gizmos")] [SerializeField] bool _drawGizmos = true;
 
         /// <summary>
         /// Whether or not the valve is currently being grabbed.
@@ -492,7 +492,8 @@ namespace Rhinox.XR.Grapple.It
 
                 using (new eUtility.GizmoColor(0f, 1f, 0f, .5f))
                 {
-                    GizmoExtensions.DrawSolidTorus(trans.position, trans.right, -trans.forward, _grabRadius, _grabToleranceRadius);
+                    GizmoExtensions.DrawSolidTorus(trans.position, trans.right, -trans.forward, _grabRadius,
+                        _grabToleranceRadius);
                 }
             }
         }
