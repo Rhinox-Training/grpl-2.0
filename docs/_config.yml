@@ -7,3 +7,6 @@ url: https://rhinox-training.github.io/grpl-2.0/
 mermaid:
     version: "10.1.0"
 
+
+logo: "/assets/images/GrappleLogoWhite.png"
+favicon_ico: "/assets/images/GrappleLogoWhite.ico"
