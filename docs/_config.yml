@@ -8,5 +8,5 @@ mermaid:
     version: "10.1.0"
 
 
-logo: "docs/assets/imgs/GrappleLogoWhite.png"
-favicon_ico: "docs/assets/imgs/GrappleLogoWhite.ico"
+logo: "assets/imgs/GrappleLogoWhite.png"
+favicon_ico: "assets/imgs/GrappleLogoWhite.ico"
