@@ -65,6 +65,13 @@ namespace Rhinox.XR.Grapple.It
         /// </summary>
         public void Awake()
         {
+            int tempCnt = _interactibleGroups.Count;
+            _interactibleGroups.RemoveAll(s => s == null);
+            if (_interactibleGroups.Count != tempCnt)
+                PLog.Warn<GRPLITLogger>($"[{GetType().Name}:Initialize], " +
+                    $"Interactable groups list had empties and have been purged", this);
+
+
             GRPLInteractable.InteractableCreated -= OnInteractableCreated;
             GRPLInteractable.InteractableCreated += OnInteractableCreated;
 

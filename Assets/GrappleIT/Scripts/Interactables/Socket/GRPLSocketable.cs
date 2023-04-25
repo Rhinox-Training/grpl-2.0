@@ -91,7 +91,7 @@ namespace Rhinox.XR.Grapple.It
                 return IsGrabbed;
             }
 
-            //ask Jorian/Gaetan what to do with this
+            //TODO: ask Jorian/Gaetan what to do with this
             var closestSocket = _sockets.GetClosestTo(joint.JointPosition, null, ref _maxSocketDistanceSqrd);
             _maxSocketDistanceSqrd = _maxSocketDistance * _maxSocketDistance;
 
