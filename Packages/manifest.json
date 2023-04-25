@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.rhinox.open.guiutils": "2.8.0",
+    "com.rhinox.open.guiutils": "2.8.1",
     "com.rhinox.open.lightspeed": "1.4.2",
     "com.rhinox.open.utilities": "1.5.4",
     "com.unity.2d.sprite": "1.0.0",
