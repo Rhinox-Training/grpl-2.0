@@ -27,11 +27,11 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField] private bool _useCollidersInsteadOfBoundingBox = false;
 
         [SerializeField]
-        [HideIf(nameof(_useCollidersInsteadOfBoundingBox))]
+        [HideIfField(true, nameof(_useCollidersInsteadOfBoundingBox))]
         private bool _showBoundingBox;
 
         [SerializeField]
-        [HideIf(nameof(_useCollidersInsteadOfBoundingBox))]
+        [HideIfField(true, nameof(_useCollidersInsteadOfBoundingBox))]
         private Vector3 _boundingBoxExtensionValues = new Vector3(0.5f, 0.5f, 0.5f);
 
         [SerializeField]
