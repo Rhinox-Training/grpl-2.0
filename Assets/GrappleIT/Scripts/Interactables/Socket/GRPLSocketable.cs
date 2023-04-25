@@ -18,7 +18,7 @@ namespace Rhinox.XR.Grapple.It
         /// </summary>
         [Space(15f)]
         [SerializeField] private float _maxSocketDistance = .055f;
-        
+
         /// <summary>
         /// A boolean toggle to show the grab range gizmo of each socket in the list of sockets.
         /// </summary>
@@ -91,9 +91,8 @@ namespace Rhinox.XR.Grapple.It
                 return IsGrabbed;
             }
 
-            //TODO: ask Jorian/Gaetan what to do with this
-            var closestSocket = _sockets.GetClosestTo(joint.JointPosition, null, ref _maxSocketDistanceSqrd);
-            _maxSocketDistanceSqrd = _maxSocketDistance * _maxSocketDistance;
+            float startingMaxDistanceSqrd = _maxSocketDistance * _maxSocketDistance;
+            var closestSocket = _sockets.GetClosestTo(joint.JointPosition, null, ref startingMaxDistanceSqrd);
 
             switch (hand)
             {

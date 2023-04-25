@@ -225,16 +225,6 @@ namespace Rhinox.XR.Grapple.It
         /// </summary>
         private bool _isValidTeleportPoint = false;
 
-        /// <summary>
-        /// A flag that indicates whether the left sensor is enabled.
-        /// </summary>
-        private bool _isEnabledL = false;
-
-        /// <summary>
-        /// A flag that indicates whether the right sensor is enabled.
-        /// </summary>
-        private bool _isEnabledR = false;
-
         // The logic of how the teleport code works:
         // When a hand makes the teleport gesture it will call the <see cref="StartVisualCoroutine"/> which starts a timer before actualy enabling the teleport logic
         //     - If that hand stops making the teleport before the timer finishes the <see cref="StartVisualCoroutine"/> will be stopped
@@ -337,7 +327,6 @@ namespace Rhinox.XR.Grapple.It
 
             _handLayer = _jointManager.HandLayer;
 
-            _jointManager.TrackingAcquired += TrackingAcquired;
             _jointManager.TrackingLost += TrackingLost;
             _jointManager.OnJointCapsulesInitialized += InitializeIgnoreList;
 
@@ -417,7 +406,6 @@ namespace Rhinox.XR.Grapple.It
             GRPLJointManager.GlobalInitialized += JointManagerInitialized;
             GRPLGestureRecognizer.GlobalInitialized += GestureRecognizerInitialized;
 
-            _jointManager.TrackingAcquired += TrackingAcquired;
             _jointManager.TrackingLost += TrackingLost;
             _jointManager.OnJointCapsulesInitialized += InitializeIgnoreList;
 
@@ -436,7 +424,6 @@ namespace Rhinox.XR.Grapple.It
             GRPLJointManager.GlobalInitialized -= JointManagerInitialized;
             GRPLGestureRecognizer.GlobalInitialized -= GestureRecognizerInitialized;
 
-            _jointManager.TrackingAcquired -= TrackingAcquired;
             _jointManager.TrackingLost -= TrackingLost;
             _jointManager.OnJointCapsulesInitialized -= InitializeIgnoreList;
 
@@ -734,8 +721,7 @@ namespace Rhinox.XR.Grapple.It
 
         /// <summary>
         /// This method is called when the <see cref="RhinoxGesture"/> associated with this teleporter is recognized. It
-        /// initializes the teleportation process by setting _isEnabledL or _isEnabledR to true, depending on which hand
-        /// is pointing, and starting a coroutine to draw the arc.
+        /// initializes the teleportation process by starting or resuming the the visual coroutine.
         /// </summary>
         /// <param name="hand">Which hand is triggered the teleport gesture</param>
         private void StartedPointing(RhinoxHand hand)
@@ -757,8 +743,7 @@ namespace Rhinox.XR.Grapple.It
 
         /// <summary>
         /// This method is called when the <see cref="RhinoxGesture"/> associated with this teleporter is no longer
-        /// recognized. It stops the visualization coroutine, and disables the teleportation process by setting
-        /// _isEnabledL or _isEnabledR to false.
+        /// recognized. It stops the visualization coroutine and stops the arc calculations.
         /// </summary>
         /// <param name="hand">Which hand is triggered the teleport gesture</param>
         private void StoppedPointing(RhinoxHand hand)
@@ -777,44 +762,33 @@ namespace Rhinox.XR.Grapple.It
         }
 
         /// <summary>
-        /// This method is called when the joint manager acquires tracking for a hand. If the hand is the left or right
-        /// hand, and the corresponding sensor has not been set up yet, this method sets up the corresponding sensor.
-        /// </summary>
-        /// <param name="hand">The hand that acquired tracking.</param>
-        private void TrackingAcquired(RhinoxHand hand) => SetHandEnabled(true, hand);
-
-        /// <summary>
         /// This method is called when tracking is lost for a hand. If the hand is the left or right hand, and the
         /// corresponding sensor has been set up, this method disables the corresponding sensor.
         /// </summary>
         /// <param name="hand">The hand that lost tracking.</param>
-        private void TrackingLost(RhinoxHand hand) => SetHandEnabled(false, hand);
-
-        public void SetHandEnabled(bool newState, RhinoxHand handedness)
+        private void TrackingLost(RhinoxHand handedness)
         {
             switch (handedness)
             {
                 case RhinoxHand.Left:
-                    _isEnabledL = newState;
+                    _sensorObjL.SetActive(false);
+                    ShowArc = false;
                     break;
                 case RhinoxHand.Right:
-                    _isEnabledR = newState;
+                    _sensorObjR.SetActive(false);
+                    ShowArc = false;
                     break;
             }
         }
 
+        /// <summary>
+        /// Check if the given hand is teleporting gesture hand.
+        /// </summary>
+        /// <param name="handedness">The hand that you want to check.</param>
+        /// <returns>If the given hand is indeed the gesturing hand.</returns>
         public bool IsHandEnabled(RhinoxHand handedness)
         {
-            switch (handedness)
-            {
-                case RhinoxHand.Left:
-                    return _isEnabledL;
-                case RhinoxHand.Right:
-                    return _isEnabledR;
-                case RhinoxHand.Invalid:
-                default:
-                    return false;
-            }
+            return _hand == handedness && ShowArc;
         }
     }
 }

@@ -1,5 +1,7 @@
+using Rhinox.GUIUtils.Attributes;
 using Rhinox.Lightspeed;
 using Rhinox.Perceptor;
+using Sirenix.OdinInspector;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +16,7 @@ namespace Rhinox.XR.Grapple.It
     /// </summary>
     /// <remarks />
     /// <dependencies><see cref="GRPLGestureRecognizer"/></dependencies>
+    [SmartFallbackDrawn(false)]
     public class GRPLGrabbableBase : GRPLInteractable
     {
         [Space(10f)]
@@ -24,14 +27,15 @@ namespace Rhinox.XR.Grapple.It
         [SerializeField] private bool _useCollidersInsteadOfBoundingBox = false;
 
         [SerializeField]
-        [HideIfField(true, nameof(_useCollidersInsteadOfBoundingBox))]
+        [HideIf(nameof(_useCollidersInsteadOfBoundingBox))]
         private bool _showBoundingBox;
+
         [SerializeField]
-        [HideIfField(true, nameof(_useCollidersInsteadOfBoundingBox))]
+        [HideIf(nameof(_useCollidersInsteadOfBoundingBox))]
         private Vector3 _boundingBoxExtensionValues = new Vector3(0.5f, 0.5f, 0.5f);
 
         [SerializeField]//TODO: ASK SENSIORS
-        [HideIfField(false, nameof(_useCollidersInsteadOfBoundingBox))]
+        [ShowIf(nameof(_useCollidersInsteadOfBoundingBox))]
         private List<Collider> _boundColliders;
 
         public event Action<GRPLGrabbableBase, RhinoxHand> OnGrabbed;
