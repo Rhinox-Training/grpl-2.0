@@ -34,7 +34,7 @@ namespace Rhinox.XR.Grapple.It
         [HideIf(nameof(_useCollidersInsteadOfBoundingBox))]
         private Vector3 _boundingBoxExtensionValues = new Vector3(0.5f, 0.5f, 0.5f);
 
-        [SerializeField]//TODO: ASK SENSIORS
+        [SerializeField]
         [ShowIf(nameof(_useCollidersInsteadOfBoundingBox))]
         private List<Collider> _boundColliders;
 
