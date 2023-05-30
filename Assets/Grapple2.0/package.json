@@ -1,0 +1,53 @@
+{
+  "name": "com.rhinox.open.grpl2",
+  "displayName": "Grapple 2.0",
+  "version": "1.0.0",
+  "unity": "2021.3",
+  "description": "Hand tracking game framework for Unity",
+  "keywords": [
+    "unity",
+    "vr",
+    "xr",
+    "hand tracking"
+  ],
+  "catergory":"Unity",
+  "dependencies": {
+    "com.rhinox.open.guiutils": "2.8.1",
+    "com.rhinox.open.lightspeed": "1.4.2",
+    "com.rhinox.open.perceptor": "0.2.0",
+    "jillejr.newtonsoft.json-for-unity.converters": "1.5.0",
+    "com.unity.xr.interaction.toolkit": "1.1.0",
+    "com.unity.xr.hands": "1.1.0",
+    "com.unity.xr.openxr": "1.6.0"
+  },
+  "samples": [
+    {
+      "displayName": "Demo",
+      "path": "Samples~/Demo",
+      "description": "Contains demo scenes for the grapple interaction toolkit and gesture recognizer."
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rhinox-Training/grpl-2.0"
+  },
+  "homepage": "https://rhinox-training.github.io/grpl-2.0/",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Rhinox",
+    "email": "hello@rhinox.be",
+    "url": "https://www.rhinox.be/"
+  },
+  "contributors": [
+    {
+      "name": "Tristan Wauthier",
+      "email": "tristan.wauthier@hotmail.com",
+      "url": "tristanwauthier.com"
+    },
+    {
+      "name": "Glenn Quintyn",
+      "email": "glennquintyn@gmail.com",
+      "url": "https://glennquintyn.github.io/GlennQuintynPortfolio"
+    }
+  ]
+}
