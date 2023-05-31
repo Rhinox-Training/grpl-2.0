@@ -53,6 +53,7 @@ To have a look at a more in depth explanation about the Grapple Sample scenes, [
 
 ## Credits
 Both Grapple 2.0 Core and Grapple 2.0 Interaction Toolkit were created By Tristan Wauthier and Glenn Quintynn during their internship at Rhinox.
+
 Tristan Wauthier
 - Github: https://github.com/Tris666w
 - Portfolio: https://www.tristanwauthier.com/
