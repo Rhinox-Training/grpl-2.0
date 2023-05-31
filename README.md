@@ -1,4 +1,3 @@
-[![openupm](https://img.shields.io/npm/v/com.rhinox.open.grpl2?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.rhinox.open.grpl2/)
 # Grapple 2.0
 Grapple is an open source, hand tracking framework for Unity. It is designed
 to create hand tracking VR applications that can be easily ported to different platforms. Grapple consists of the
@@ -9,6 +8,7 @@ Grapple Core and Grapple Interaction Toolkit.
 The documentation for the entire Grapple 2.0 framework can be found [click here](https://rhinox-training.github.io/grpl-2.0/).
 
 ## Grapple 2.0 Core
+[![openupm](https://img.shields.io/npm/v/com.rhinox.open.grpl2?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.rhinox.open.grpl2/)
 Within the Core package, the core fundamentals of a hand tracking application and some utilities are implemented. These
 are:
 - Joint system
@@ -23,6 +23,7 @@ To have a look at the documentation and installation guide of Grapple 2.0 Core, 
 To have a look at the OpenUPM release of Grapple 2.0 Core, [click here](https://openupm.com/packages/com.rhinox.open.grpl2/).
 
 ## Grapple 2.0 Interaction Toolkit
+[![openupm](https://img.shields.io/npm/v/com.rhinox.open.grpl2?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.rhinox.open.grpl2it/)
 The Grapple Interaction Toolkit provides functionality to create interactive experiences in Unity. The main features of
 the Grapple IT package are:
 
