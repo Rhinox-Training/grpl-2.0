@@ -42,7 +42,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7429548208622763271}
   m_Layer: 0
-  m_Name: Scissors Hand
+  m_Name: ScissorsHand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -694,7 +694,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f9c42f752a540d34cbbec50b978ddc6e, type: 2}
+  - {fileID: 2100000, guid: fdc82094abb23954ab3987598c0ef5ec, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

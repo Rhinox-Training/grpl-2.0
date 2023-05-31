@@ -682,7 +682,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4774391778573713469}
   m_Layer: 0
-  m_Name: Paper
+  m_Name: PaperHand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
