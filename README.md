@@ -52,7 +52,7 @@ The samples can be imported from the Unity package manager, after the Interactio
 To have a look at a more in depth explanation about the Grapple Sample scenes, [click here](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_Samples/GRPLSamples.html)
 
 ## Credits
-Both Grapple 2.0 Core and Grapple 2.0 Interaction Toolkit were created By Tristan Wauthier and Glenn Quintynn during their internship at Rhinox.
+Both Grapple 2.0 Core and Grapple 2.0 Interaction Toolkit were created by Tristan Wauthier and Glenn Quintynn during their internship at Rhinox.
 
 Tristan Wauthier
 - Github: https://github.com/Tris666w
