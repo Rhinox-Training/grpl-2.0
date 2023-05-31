@@ -1,9 +1,10 @@
 [![openupm](https://img.shields.io/npm/v/com.rhinox.open.grpl2?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.rhinox.open.grpl2/)
-![GrappleLogoWhite](https://github.com/Rhinox-Training/grpl-2.0/assets/55093987/be4368cf-7d1f-4e2f-90c6-bb5dc2b94ede)
 # Grapple 2.0
 Grapple is an open source, hand tracking framework for Unity. It is designed
 to create hand tracking VR applications that can be easily ported to different platforms. Grapple consists of the
 Grapple Core and Grapple Interaction Toolkit.
+
+<img alt="GrappleLogoWhite"src="https://github.com/Rhinox-Training/grpl-2.0/assets/55093987/be4368cf-7d1f-4e2f-90c6-bb5dc2b94ede" width="200" />
 
 The documentation for the entire Grapple 2.0 framework can be found [click here](https://rhinox-training.github.io/grpl-2.0/).
 
