@@ -13,7 +13,7 @@
 	],
 	"catergory": "Unity",
 	"dependencies": {
-		"com.rhinox.open.grpl2": "1.0.0",
+		"com.rhinox.open.grpl2": "1.0.1",
 		"com.unity.textmeshpro": "3.0.6"
 	},
 	"samples": [
