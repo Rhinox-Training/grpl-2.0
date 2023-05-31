@@ -1,7 +1,7 @@
 {
 	"name": "com.rhinox.open.grpl2it",
 	"displayName": "Grapple 2.0 Interaction Toolkit",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"unity": "2021.3",
 	"description": "Interaction toolkit for Grapple 2.0",
 	"keywords": [
