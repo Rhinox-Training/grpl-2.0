@@ -51,6 +51,15 @@ Within the Grapple sample package are 2 scenes.
 The samples can be imported from the Unity package manager, after the Interaction toolkit is installed.
 To have a look at a more in depth explanation about the Grapple Sample scenes, [click here](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_Samples/GRPLSamples.html)
 
-# License
+## Credits
+Both Grapple 2.0 Core and Grapple 2.0 Interaction Toolkit were created By Tristan Wauthier and Glenn Quintynn during their internship at Rhinox.
+Tristan Wauthier
+- Github: https://github.com/Tris666w
+- Portfolio: https://www.tristanwauthier.com/
 
+Glenn Quintynn
+- Github: https://github.com/GlennQuintyn
+- Portfolio: https://glennquintyn.github.io/GlennQuintynPortfolio
+
+# License
 Apache-2.0 © Rhinox NV
