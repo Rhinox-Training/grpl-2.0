@@ -19,6 +19,7 @@ are:
 To install Grapple 2.0 Core, go to the corresponding OpenUPM page and install it from there. The rest of the setup guide can be found int the documentation.
 
 To have a look at the documentation and installation guide of Grapple 2.0 Core, [click here](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_Core/core.html).
+
 To have a look at the OpenUPM release of Grapple 2.0 Core, [click here](https://openupm.com/packages/com.rhinox.open.grpl2/).
 
 ## Grapple 2.0 Interaction Toolkit
@@ -34,6 +35,7 @@ the Grapple IT package are:
 To install Grapple 2.0 Core, go to the corresponding OpenUPM page and install it from there.
 
 To have a look at the documentation of Grapple 2.0 Interaction Toolkit, [click here](https://rhinox-training.github.io/grpl-2.0/pages/GRPL_IT/GrappleIT.html).
+
 To have a look at the OpenUPM release of Grapple 2.0 Interaction Toolkit, [click here](https://openupm.com/packages/com.rhinox.open.grpl2it/).
 
 ## Grapple Samples
