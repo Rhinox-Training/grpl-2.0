@@ -1,3 +1,5 @@
+[![openupm](https://img.shields.io/npm/v/com.rhinox.open.grpl2?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.rhinox.open.grpl2/)
+
 # Grapple 2.0
 Grapple is an open source, hand tracking framework for Unity. It is designed
 to create hand tracking VR applications that can be easily ported to different platforms. Grapple consists of the
